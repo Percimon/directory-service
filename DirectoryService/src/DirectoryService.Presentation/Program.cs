@@ -11,6 +11,4 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json", "Directory Service"));
 }
 
-app.UseHttpsRedirection();
-
 app.Run();
