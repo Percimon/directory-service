@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using SharedKernel;
 
 namespace DirectoryService.Domain.ValueObjects;
 
@@ -11,8 +12,13 @@ public record DepartmentDepth
 
     public short Value { get; }
 
-    public static Result<DepartmentDepth> Create(short value)
+    public static Result<DepartmentDepth, Error> Create(short value)
     {
+        if (value < 0)
+        {
+            return Errors.General.ValueIsInvalid(nameof(DepartmentDepth));
+        }
+        
         return new DepartmentDepth(value);
     }
 }

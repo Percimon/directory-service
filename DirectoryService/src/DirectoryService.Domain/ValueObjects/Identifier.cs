@@ -1,4 +1,6 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Text.RegularExpressions;
+using CSharpFunctionalExtensions;
+using SharedKernel;
 
 namespace DirectoryService.Domain.ValueObjects;
 
@@ -15,21 +17,25 @@ public class Identifier
     
     public string Value { get; }
 
-    public static Result<Identifier> Create(string value)
+    public static Result<Identifier, Error> Create(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
-            
+            return Errors.General.ValueIsRequired(nameof(Identifier));
         }
 
-        if (value.Length < MIN_LENGTH)
+        if (value.Length < MIN_LENGTH || value.Length > MAX_LENGTH)
         {
-            
+            return Errors.General.ValueIsInvalid(nameof(Identifier));
         }
         
-        if (value.Length > MAX_LENGTH)
+        string pattern = @"^[a-zA-Z]+$"; 
+        
+        var patternCheck = Regex.IsMatch(value, pattern);
+        
+        if (!patternCheck)
         {
-            
+            return Errors.General.EnglishCharactersOnly(nameof(Identifier));
         }
         
         return new Identifier(value);
