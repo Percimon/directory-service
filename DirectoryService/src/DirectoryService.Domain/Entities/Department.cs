@@ -29,7 +29,7 @@ public class Department : SharedKernel.Entity<DepartmentId>
         Path path,
         DepartmentDepth departmentDepth,
         DateTime createdAt,
-        Location? location) : base(id)
+        DepartmentLocation? location) : base(id)
     {
         Name = name;
         Identifier = identifier;
@@ -41,7 +41,7 @@ public class Department : SharedKernel.Entity<DepartmentId>
 
         _children = [];
 
-        _departmentLocations = location is null ? [] : [DepartmentLocation.Create(id, location.Id.Value).Value];
+        _departmentLocations = location is null ? [] : [location];
     }
 
     public Name Name { get; private set; }
