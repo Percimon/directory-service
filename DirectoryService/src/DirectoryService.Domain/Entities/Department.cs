@@ -8,11 +8,11 @@ namespace DirectoryService.Domain.Entities;
 
 public class Department : SharedKernel.Entity<DepartmentId>
 {
-    private List<Position> _positions;
-    
-    private List<Location> _locations;
-    
     private List<Department> _children;
+
+    private List<DepartmentPosition> _departmentPositions;
+
+    private List<DepartmentLocation> _departmentLocations;
 
     private bool _isActive = true;
 
@@ -38,12 +38,10 @@ public class Department : SharedKernel.Entity<DepartmentId>
         Path = path;
         Depth = departmentDepth;
         CreatedAt = createdAt;
-        
+
         _children = [];
-        
-        _locations = location is null ? [] : [location];
-        
-        _positions = [];
+
+        _departmentLocations = location is null ? [] : [DepartmentLocation.Create(id, location.Id.Value).Value];
     }
 
     public Name Name { get; private set; }
@@ -52,16 +50,16 @@ public class Department : SharedKernel.Entity<DepartmentId>
 
     public Department? Parent { get; private set; }
 
-    public DepartmentId? ParentId { get; private set;}
+    public DepartmentId? ParentId { get; private set; }
 
     public Path Path { get; private set; }
 
     public IReadOnlyList<Department> Children => _children;
-    
-    public IReadOnlyList<Location> Locations => _locations;
-    
-    public IReadOnlyList<Position> Positions => _positions;
-    
+
+    public IReadOnlyList<DepartmentPosition> DepartmentPositions => _departmentPositions;
+
+    public IReadOnlyList<DepartmentLocation> DepartmentLocations => _departmentLocations;
+
     public bool IsActive => _isActive;
 
     public DepartmentDepth Depth { get; private set; }
@@ -77,62 +75,61 @@ public class Department : SharedKernel.Entity<DepartmentId>
         if (searchResult is null)
         {
             _children.Add(child);
-        
+
             return Result.Success<Error>();
         }
-       
+
         return Errors.General.AlreadyExists(nameof(Department), nameof(Children), child.Id.Value.ToString());
     }
-    
+
     public UnitResult<Error> RemoveChildDepartment(Department child)
     {
         _children.RemoveAll(x => x.Id.Value == child.Id.Value);
-        
+
         return Result.Success<Error>();
     }
     
-    public UnitResult<Error> AddLocation(Location location)
+    public UnitResult<Error> AddLocation(Guid locationId)
     {
-        var searchResult = _locations
-            .FirstOrDefault(x => x.Id.Value == location.Id.Value
-                                 || x.Name.Value == location.Name.Value);
+        var searchResult = _departmentLocations
+            .FirstOrDefault(x => x.LocationId == locationId);
+        
         if (searchResult is null)
         {
-            _locations.Add(location);
-        
+            _departmentLocations.Add(DepartmentLocation.Create(Id, locationId).Value);
+
             return Result.Success<Error>();
         }
-       
-        return Errors.General.AlreadyExists(nameof(Department), nameof(Locations), location.Id.Value.ToString());
+
+        return Errors.General.AlreadyExists(nameof(Department), nameof(locationId), locationId.ToString());
     }
-    
-    public UnitResult<Error> RemoveLocation(Location location)
+
+    public UnitResult<Error> RemoveLocation(Guid locationId)
     {
-        _children.RemoveAll(x => x.Id.Value == location.Id.Value);
-        
+        _departmentLocations.RemoveAll(x => x.LocationId == locationId);
+
         return Result.Success<Error>();
     }
-    
-    public UnitResult<Error> AddPosition(Position position)
+
+    public UnitResult<Error> AddPosition(Guid positionId)
     {
-        var searchResult = _positions
-            .FirstOrDefault(x => x.Id.Value == position.Id.Value 
-                                 || x.Name.Value == position.Name.Value);
+        var searchResult = _departmentPositions
+            .FirstOrDefault(x => x.PositionId == positionId);
 
         if (searchResult is null)
         {
-            _positions.Add(position);
-        
+            _departmentPositions.Add(DepartmentPosition.Create(Id, positionId).Value);
+
             return Result.Success<Error>();
         }
-       
-        return Errors.General.AlreadyExists(nameof(Department), nameof(Positions), position.Id.Value.ToString());
+
+        return Errors.General.AlreadyExists(nameof(Department), nameof(positionId), positionId.ToString());
     }
     
-    public UnitResult<Error> RemovePosition(Position position)
+    public UnitResult<Error> RemovePosition(Guid positionId)
     {
-        _positions.RemoveAll(x => x.Id.Value == position.Id.Value);
-        
+        _departmentPositions.RemoveAll(x => x.PositionId == positionId);
+
         return Result.Success<Error>();
     }
 }
