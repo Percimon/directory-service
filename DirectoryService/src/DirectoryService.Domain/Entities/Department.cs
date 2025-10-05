@@ -42,6 +42,8 @@ public class Department : SharedKernel.Entity<DepartmentId>
         _children = [];
 
         _departmentLocations = location is null ? [] : [location];
+
+        _departmentPositions = [];
     }
 
     public Name Name { get; private set; }
@@ -88,12 +90,12 @@ public class Department : SharedKernel.Entity<DepartmentId>
 
         return Result.Success<Error>();
     }
-    
+
     public UnitResult<Error> AddLocation(Guid locationId)
     {
         var searchResult = _departmentLocations
             .FirstOrDefault(x => x.LocationId == locationId);
-        
+
         if (searchResult is null)
         {
             _departmentLocations.Add(DepartmentLocation.Create(Id, locationId).Value);
@@ -125,7 +127,7 @@ public class Department : SharedKernel.Entity<DepartmentId>
 
         return Errors.General.AlreadyExists(nameof(Department), nameof(positionId), positionId.ToString());
     }
-    
+
     public UnitResult<Error> RemovePosition(Guid positionId)
     {
         _departmentPositions.RemoveAll(x => x.PositionId == positionId);
