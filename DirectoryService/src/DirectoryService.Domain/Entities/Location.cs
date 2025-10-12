@@ -8,14 +8,14 @@ namespace DirectoryService.Domain.Entities;
 public class Location : Entity<LocationId>
 {
     private bool _isActive = true;
-    
+
     //ef core
     private Location(LocationId id) : base(id)
     {
     }
-    
+
     public Location(
-        LocationId id, 
+        LocationId id,
         Name name,
         Address address,
         TimeZone timeZone,
@@ -23,20 +23,20 @@ public class Location : Entity<LocationId>
     {
         Name = name;
         Address = address;
-          TimeZone = timeZone;
+        TimeZone = timeZone;
         CreatedAt = createdAt;
-        
+
         _isActive = true;
     }
-    
+
     public Name Name { get; private set; }
-    
+
     public Address Address { get; private set; }
-    
+
     public TimeZone TimeZone { get; private set; }
-    
+
     public bool IsActive => _isActive;
-    
+
     public DateTime CreatedAt { get; }
 
     public DateTime UpdatedAt { get; private set; }

@@ -7,7 +7,7 @@ namespace DirectoryService.Domain.Entities;
 public class Position : Entity<PositionId>
 {
     private bool _isActive = true;
-    
+
     //ef core
     private Position(PositionId id) : base(id)
     {
@@ -23,11 +23,11 @@ public class Position : Entity<PositionId>
         Description = description;
         CreatedAt = createdAt;
     }
-    
+
     public Name Name { get; private set; }
-    
+
     public Description Description { get; private set; }
-    
+
     public bool IsActive => _isActive;
 
     public DateTime CreatedAt { get; }

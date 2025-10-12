@@ -6,7 +6,7 @@ namespace DirectoryService.Domain.ValueObjects;
 public record Description
 {
     private const int MAX_LENGTH = 10_000;
-    
+
     private Description(string value)
     {
         Value = value;
@@ -20,7 +20,7 @@ public record Description
         {
             return Errors.General.ValueIsInvalid(nameof(Description));
         }
-        
+
         return new Description(value);
     }
 }

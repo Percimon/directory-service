@@ -7,7 +7,7 @@ namespace DirectoryService.Domain.ValueObjects;
 public record Address
 {
     private const int MAX_LENGTH = 150;
-    
+
     public string City { get; }
 
     public string District { get; }

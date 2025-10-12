@@ -13,9 +13,9 @@ public record DepartmentPosition
     }
 
     public DepartmentId DepartmentId { get; }
-    
+
     public Guid PositionId { get; }
-    
+
     public static Result<DepartmentPosition, Error> Create(DepartmentId departmentId, Guid positionId)
     {
         return new DepartmentPosition(departmentId, positionId);
