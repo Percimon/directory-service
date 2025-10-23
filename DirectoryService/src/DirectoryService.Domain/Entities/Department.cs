@@ -34,7 +34,6 @@ public class Department : SharedKernel.Entity<DepartmentId>
         Name = name;
         Identifier = identifier;
         Parent = parent;
-        ParentId = parent?.Id;
         Path = path;
         Depth = departmentDepth;
         CreatedAt = createdAt;
@@ -51,8 +50,6 @@ public class Department : SharedKernel.Entity<DepartmentId>
     public Identifier Identifier { get; private set; }
 
     public Department? Parent { get; private set; }
-
-    public DepartmentId? ParentId { get; private set; }
 
     public Path Path { get; private set; }
 
@@ -94,11 +91,11 @@ public class Department : SharedKernel.Entity<DepartmentId>
     public UnitResult<Error> AddLocation(Guid locationId)
     {
         var searchResult = _departmentLocations
-            .FirstOrDefault(x => x.LocationId == locationId);
+            .FirstOrDefault(x => x.LocationId.Value == locationId);
 
         if (searchResult is null)
         {
-            _departmentLocations.Add(DepartmentLocation.Create(Id, locationId).Value);
+            _departmentLocations.Add(DepartmentLocation.Create(Id, LocationId.Create(locationId)).Value);
 
             return Result.Success<Error>();
         }
@@ -108,7 +105,7 @@ public class Department : SharedKernel.Entity<DepartmentId>
 
     public UnitResult<Error> RemoveLocation(Guid locationId)
     {
-        _departmentLocations.RemoveAll(x => x.LocationId == locationId);
+        _departmentLocations.RemoveAll(x => x.LocationId.Value == locationId);
 
         return Result.Success<Error>();
     }
@@ -116,11 +113,11 @@ public class Department : SharedKernel.Entity<DepartmentId>
     public UnitResult<Error> AddPosition(Guid positionId)
     {
         var searchResult = _departmentPositions
-            .FirstOrDefault(x => x.PositionId == positionId);
+            .FirstOrDefault(x => x.PositionId.Value == positionId);
 
         if (searchResult is null)
         {
-            _departmentPositions.Add(DepartmentPosition.Create(Id, positionId).Value);
+            _departmentPositions.Add(DepartmentPosition.Create(Id, PositionId.Create(positionId)).Value);
 
             return Result.Success<Error>();
         }
@@ -130,7 +127,7 @@ public class Department : SharedKernel.Entity<DepartmentId>
 
     public UnitResult<Error> RemovePosition(Guid positionId)
     {
-        _departmentPositions.RemoveAll(x => x.PositionId == positionId);
+        _departmentPositions.RemoveAll(x => x.PositionId.Value == positionId);
 
         return Result.Success<Error>();
     }

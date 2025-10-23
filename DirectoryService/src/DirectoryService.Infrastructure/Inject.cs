@@ -8,7 +8,7 @@ public static class Inject
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddDbContext<DirectoryServiceDbContext>(_ =>
+        services.AddScoped<DirectoryServiceDbContext>(_ =>
             new DirectoryServiceDbContext(configuration.GetConnectionString("DirectoryServiceDb")!));
 
         return services;

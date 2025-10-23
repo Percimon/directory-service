@@ -5,10 +5,6 @@ namespace DirectoryService.Domain.ValueObjects;
 
 public record Path
 {
-    private const int MIN_LENGTH = 3;
-
-    private const int MAX_LENGTH = 150;
-
     private Path(string value)
     {
         Value = value;
@@ -23,12 +19,12 @@ public record Path
             return Errors.General.ValueIsRequired(nameof(Path));
         }
 
-        if (value.Length < MIN_LENGTH)
+        if (value.Length < Constants.TextLength.LENGTH_3)
         {
             return Errors.General.ValueIsInvalid(nameof(Path));
         }
 
-        if (value.Length > MAX_LENGTH)
+        if (value.Length > Constants.TextLength.LENGTH_150)
         {
             return Errors.General.ValueIsInvalid(nameof(Path));
         }

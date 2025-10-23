@@ -6,10 +6,6 @@ namespace DirectoryService.Domain.ValueObjects;
 
 public class Identifier
 {
-    private const int MIN_LENGTH = 3;
-
-    private const int MAX_LENGTH = 150;
-
     private Identifier(string value)
     {
         Value = value;
@@ -24,7 +20,7 @@ public class Identifier
             return Errors.General.ValueIsRequired(nameof(Identifier));
         }
 
-        if (value.Length < MIN_LENGTH || value.Length > MAX_LENGTH)
+        if (value.Length < Constants.TextLength.LENGTH_3 || value.Length > Constants.TextLength.LENGTH_150)
         {
             return Errors.General.ValueIsInvalid(nameof(Identifier));
         }
