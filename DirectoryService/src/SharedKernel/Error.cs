@@ -3,7 +3,7 @@
 public record Error
 {
     private const string SEPARATOR = "||";
-    
+
     public static readonly Error None = new(string.Empty, string.Empty, ErrorType.None);
 
     public string Code { get; }
@@ -15,8 +15,8 @@ public record Error
     public string? InvalidField { get; } = null;
 
     private Error(
-        string code, 
-        string message, 
+        string code,
+        string message,
         ErrorType type,
         string? invalidField = null)
     {

@@ -20,7 +20,7 @@ public record TimeZone
         {
             return Errors.General.ValueIsInvalid(nameof(TimeZone));
         }
-        
+
         return new TimeZone(value);
     }
 }

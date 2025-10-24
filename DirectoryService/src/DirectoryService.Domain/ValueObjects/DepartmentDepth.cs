@@ -18,7 +18,7 @@ public record DepartmentDepth
         {
             return Errors.General.ValueIsInvalid(nameof(DepartmentDepth));
         }
-        
+
         return new DepartmentDepth(value);
     }
 }

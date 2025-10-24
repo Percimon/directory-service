@@ -1,13 +1,11 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Reflection.Metadata;
+using CSharpFunctionalExtensions;
+using SharedKernel;
 
 namespace DirectoryService.Domain.ValueObjects;
 
 public record Name
 {
-    private const int MIN_LENGTH = 3;
-    
-    private const int MAX_LENGTH = 150;
-    
     private Name(string value)
     {
         Value = value;
@@ -19,19 +17,19 @@ public record Name
     {
         if (string.IsNullOrWhiteSpace(value))
         {
-            
+
         }
 
-        if (value.Length < MIN_LENGTH)
+        if (value.Length < Constants.TextLength.LENGTH_3)
         {
-            
+
         }
-        
-        if (value.Length > MAX_LENGTH)
+
+        if (value.Length > Constants.TextLength.LENGTH_150)
         {
-            
+
         }
-        
+
         return new Name(value);
     }
 }

@@ -5,8 +5,6 @@ namespace DirectoryService.Domain.ValueObjects;
 
 public record Description
 {
-    private const int MAX_LENGTH = 10_000;
-    
     private Description(string value)
     {
         Value = value;
@@ -16,11 +14,11 @@ public record Description
 
     public static Result<Description, Error> Create(string value)
     {
-        if (value.Length > MAX_LENGTH)
+        if (value.Length > Constants.TextLength.LENGTH_1000)
         {
             return Errors.General.ValueIsInvalid(nameof(Description));
         }
-        
+
         return new Description(value);
     }
 }
