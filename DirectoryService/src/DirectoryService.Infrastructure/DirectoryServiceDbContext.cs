@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using DirectoryService.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace DirectoryService.Infrastructure;
@@ -6,6 +7,8 @@ namespace DirectoryService.Infrastructure;
 public class DirectoryServiceDbContext : DbContext
 {
     private readonly string _connectionString;
+
+    public DbSet<Location> Locations => Set<Location>();
 
     public DirectoryServiceDbContext(string connectionString)
     {
