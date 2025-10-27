@@ -15,5 +15,4 @@ namespace SharedKernel
             public const int LENGTH_1000 = 1000;
         }
     }
-
 }

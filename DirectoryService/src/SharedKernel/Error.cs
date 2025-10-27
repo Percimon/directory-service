@@ -4,7 +4,7 @@ public record Error
 {
     private const string SEPARATOR = "||";
 
-    public static readonly Error None = new(string.Empty, string.Empty, ErrorType.None);
+    public static readonly Error None = new(string.Empty, string.Empty, ErrorType.NONE);
 
     public string Code { get; }
 
@@ -12,7 +12,7 @@ public record Error
 
     public ErrorType Type { get; }
 
-    public string? InvalidField { get; } = null;
+    public string? InvalidField { get; }
 
     private Error(
         string code,
@@ -27,13 +27,13 @@ public record Error
     }
 
     public static Error Validation(string code, string message, string? invalidField = null) =>
-        new(code, message, ErrorType.Validation, invalidField);
+        new(code, message, ErrorType.VALIDATION, invalidField);
 
-    public static Error NotFound(string code, string message) => new(code, message, ErrorType.NotFound);
+    public static Error NotFound(string code, string message) => new(code, message, ErrorType.NOT_FOUND);
 
-    public static Error Failure(string code, string message) => new(code, message, ErrorType.Failure);
+    public static Error Failure(string code, string message) => new(code, message, ErrorType.FAILURE);
 
-    public static Error Conflict(string code, string message) => new(code, message, ErrorType.Conflict);
+    public static Error Conflict(string code, string message) => new(code, message, ErrorType.CONFLICT);
 
     public string Serialize()
     {
@@ -58,9 +58,11 @@ public record Error
 
 public enum ErrorType
 {
-    None,
-    Validation,
-    NotFound,
-    Failure,
-    Conflict
+    NONE,
+    VALIDATION,
+    NOT_FOUND,
+    FAILURE,
+    CONFLICT,
+    AUTHENTIFICATION,
+    AUTHORIZATION,
 }

@@ -1,5 +1,6 @@
 using DirectoryService.Application.Locations.Create;
 using DirectoryService.Contracts;
+using DirectoryService.Presentation.EndpointResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DirectoryService.Presentation.Controllers
@@ -9,7 +10,7 @@ namespace DirectoryService.Presentation.Controllers
     public class LocationsController : Controller
     {
         [HttpPost]
-        public async Task<ActionResult<Guid>> Create(
+        public async Task<EndpointResult<Guid>> Create(
             [FromServices] CreateLocationHandler handler,
             [FromBody] CreateLocationRequest request,
             CancellationToken cancellationToken = default)
@@ -22,16 +23,7 @@ namespace DirectoryService.Presentation.Controllers
                 request.Structure,
                 request.TimeZone);
 
-            var result = await handler.Handle(command, cancellationToken);
-
-            //TO DO: result и envelope в следующем задании
-
-            if (result.IsFailure)
-            {
-                return BadRequest();
-            }
-
-            return Ok();
+            return await handler.Handle(command, cancellationToken);
         }
     }
 }
