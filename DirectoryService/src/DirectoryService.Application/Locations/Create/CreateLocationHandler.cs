@@ -17,7 +17,6 @@ namespace DirectoryService.Application.Locations.Create
             _repository = repository;
         }
 
-
         public async Task<Result<Guid, Error>> Handle(
             CreateLocationCommand command,
             CancellationToken cancellationToken = default)
