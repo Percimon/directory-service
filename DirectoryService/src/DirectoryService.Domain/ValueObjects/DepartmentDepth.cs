@@ -5,14 +5,14 @@ namespace DirectoryService.Domain.ValueObjects;
 
 public record DepartmentDepth
 {
-    private DepartmentDepth(short value)
+    private DepartmentDepth(int value)
     {
         Value = value;
     }
 
-    public short Value { get; }
+    public int Value { get; }
 
-    public static Result<DepartmentDepth, Error> Create(short value)
+    public static Result<DepartmentDepth, Error> Create(int value)
     {
         if (value < 0)
         {

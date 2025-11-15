@@ -6,13 +6,13 @@ using Path = DirectoryService.Domain.ValueObjects.Path;
 
 namespace DirectoryService.Domain.Entities;
 
-public class Department : SharedKernel.Entity<DepartmentId>
+public sealed class Department : SharedKernel.Entity<DepartmentId>
 {
-    private List<Department> _children;
+    private readonly List<Department> _children;
 
-    private List<DepartmentPosition> _departmentPositions;
+    private readonly List<DepartmentPosition> _departmentPositions;
 
-    private List<DepartmentLocation> _departmentLocations;
+    private readonly List<DepartmentLocation> _departmentLocations;
 
     private bool _isActive = true;
 
@@ -21,37 +21,37 @@ public class Department : SharedKernel.Entity<DepartmentId>
     {
     }
 
-    public Department(
+    private Department(
         DepartmentId id,
         Name name,
         Identifier identifier,
         Department? parent,
         Path path,
         DepartmentDepth departmentDepth,
-        DateTime createdAt,
-        DepartmentLocation? location) : base(id)
+        IEnumerable<DepartmentLocation> locations) : base(id)
     {
         Name = name;
         Identifier = identifier;
         Parent = parent;
         Path = path;
         Depth = departmentDepth;
-        CreatedAt = createdAt;
+        CreatedAt = DateTime.UtcNow;
+        UpdatedAt = DateTime.UtcNow;
 
         _children = [];
 
-        _departmentLocations = location is null ? [] : [location];
+        _departmentLocations = locations.ToList();
 
         _departmentPositions = [];
     }
 
-    public Name Name { get; private set; }
+    public Name Name { get; private set; } = null!;
 
-    public Identifier Identifier { get; private set; }
+    public Identifier Identifier { get; private set; } = null!;
 
     public Department? Parent { get; private set; }
 
-    public Path Path { get; private set; }
+    public Path Path { get; private set; } = null!;
 
     public IReadOnlyList<Department> Children => _children;
 
@@ -61,31 +61,67 @@ public class Department : SharedKernel.Entity<DepartmentId>
 
     public bool IsActive => _isActive;
 
-    public DepartmentDepth Depth { get; private set; }
+    public DepartmentDepth Depth { get; private set; } = null!;
 
     public DateTime CreatedAt { get; }
 
     public DateTime UpdatedAt { get; private set; }
 
-    public UnitResult<Error> AddChildDepartment(Department child)
+    public static Result<Department, Error> CreateParent(
+        Name name,
+        Identifier identifier,
+        IEnumerable<DepartmentLocation> departmentLocations,
+        DepartmentId? id = null)
     {
-        var searchResult = _children.FirstOrDefault(x => x.Id.Value == child.Id.Value);
+        var locations = departmentLocations.ToList();
 
-        if (searchResult is null)
+        if (locations.Count == 0)
         {
-            _children.Add(child);
-
-            return Result.Success<Error>();
+            return Error.Validation("department.location", "Department locations should contain at least one location");
         }
 
-        return Errors.General.AlreadyExists(nameof(Department), nameof(Children), child.Id.Value.ToString());
+        var path = Path.CreateParent(identifier);
+
+        var departmentDepth = DepartmentDepth.Create(0).Value;
+
+        return new Department(
+            id ?? DepartmentId.Create(Guid.NewGuid()),
+            name,
+            identifier,
+            null,
+            path,
+            departmentDepth,
+            locations);
     }
 
-    public UnitResult<Error> RemoveChildDepartment(Department child)
+    public static Result<Department, Error> CreateChild(
+        Name name,
+        Identifier identifier,
+        Department parent,
+        IEnumerable<DepartmentLocation> departmentLocations,
+        DepartmentId? id = null)
     {
-        _children.RemoveAll(x => x.Id.Value == child.Id.Value);
+        ArgumentNullException.ThrowIfNull(parent);
 
-        return Result.Success<Error>();
+        var path = parent.Path.CreateChild(identifier);
+
+        var locations = departmentLocations.ToList();
+
+        if (locations.Count == 0)
+        {
+            return Error.Validation("department.location", "Department locations should contain at least one location");
+        }
+
+        var departmentDepth = DepartmentDepth.Create(parent.Depth.Value + 1).Value;
+
+        return new Department(
+            id ?? DepartmentId.Create(Guid.NewGuid()),
+            name,
+            identifier,
+            parent,
+            path,
+            departmentDepth,
+            locations);
     }
 
     public UnitResult<Error> AddLocation(Guid locationId)

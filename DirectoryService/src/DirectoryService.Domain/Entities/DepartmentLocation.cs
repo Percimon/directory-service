@@ -4,7 +4,7 @@ using SharedKernel;
 
 namespace DirectoryService.Domain.Entities;
 
-public record DepartmentLocation
+public sealed class DepartmentLocation
 {
     //ef croe
     private DepartmentLocation()

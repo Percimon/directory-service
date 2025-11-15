@@ -1,6 +1,6 @@
 ﻿namespace SharedKernel;
 
-public class Errors
+public static class Errors
 {
     public static class General
     {

@@ -4,7 +4,7 @@ using SharedKernel;
 
 namespace DirectoryService.Domain.Entities;
 
-public class Position : Entity<PositionId>
+public sealed class Position : Entity<PositionId>
 {
     private bool _isActive = true;
 

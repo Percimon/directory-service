@@ -19,12 +19,7 @@ public record Name
             return Errors.General.ValueIsRequired(nameof(Name));
         }
 
-        if (value.Length < Constants.TextLength.LENGTH_3)
-        {
-            return Errors.General.ValueIsInvalid(nameof(Name));
-        }
-
-        if (value.Length > Constants.TextLength.LENGTH_150)
+        if (value.Length is < Constants.TextLength.LENGTH_3 or > Constants.TextLength.LENGTH_150)
         {
             return Errors.General.ValueIsInvalid(nameof(Name));
         }
