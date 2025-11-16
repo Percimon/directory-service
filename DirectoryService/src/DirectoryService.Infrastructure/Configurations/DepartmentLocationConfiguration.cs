@@ -24,14 +24,14 @@ namespace DirectoryService.Infrastructure.Configurations
                 .WithMany(d => d.DepartmentLocations)
                 .HasForeignKey(dl => dl.DepartmentId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder
                 .HasOne<Location>()
                 .WithMany()
                 .HasForeignKey(x => x.LocationId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
         }
     }
