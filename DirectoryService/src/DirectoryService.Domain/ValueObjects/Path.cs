@@ -14,16 +14,22 @@ public record Path
 
     public string Value { get; }
 
-    public static Path CreateParent(Identifier identifier)
+    public static Result<Path, Error> CreateParent(Identifier identifier)
     {
-        ArgumentNullException.ThrowIfNull(identifier);
+        if (identifier is null)
+        {
+            return Error.Validation("identifier", "Identifier cant be null");
+        }
 
         return new Path(identifier.Value);
     }
 
-    public Path CreateChild(Identifier childIdentifier)
+    public Result<Path, Error> CreateChild(Identifier childIdentifier)
     {
-        ArgumentNullException.ThrowIfNull(childIdentifier);
+        if (childIdentifier is null)
+        {
+            return Error.Validation("identifier", "Identifier cant be null");
+        }
 
         return new Path(Value + SEPARATOR + childIdentifier!.Value);
     }

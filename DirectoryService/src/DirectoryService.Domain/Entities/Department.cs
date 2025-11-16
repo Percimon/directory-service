@@ -81,6 +81,10 @@ public sealed class Department : SharedKernel.Entity<DepartmentId>
         }
 
         var path = Path.CreateParent(identifier);
+        if (path.IsFailure)
+        {
+            return path.Error;
+        }
 
         var departmentDepth = DepartmentDepth.Create(0).Value;
 
@@ -89,7 +93,7 @@ public sealed class Department : SharedKernel.Entity<DepartmentId>
             name,
             identifier,
             null,
-            path,
+            path.Value,
             departmentDepth,
             locations);
     }
@@ -101,9 +105,16 @@ public sealed class Department : SharedKernel.Entity<DepartmentId>
         IEnumerable<DepartmentLocation> departmentLocations,
         DepartmentId? id = null)
     {
-        ArgumentNullException.ThrowIfNull(parent);
+        if (parent is null)
+        {
+            return Error.Validation("department.parent", "Child shoud have parent");
+        }
 
         var path = parent.Path.CreateChild(identifier);
+        if (path.IsFailure)
+        {
+            return path.Error;
+        }
 
         var locations = departmentLocations.ToList();
 
@@ -119,7 +130,7 @@ public sealed class Department : SharedKernel.Entity<DepartmentId>
             name,
             identifier,
             parent,
-            path,
+            path.Value,
             departmentDepth,
             locations);
     }
