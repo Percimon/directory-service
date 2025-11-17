@@ -5,7 +5,7 @@ using TimeZone = DirectoryService.Domain.ValueObjects.TimeZone;
 
 namespace DirectoryService.Domain.Entities;
 
-public class Location : Entity<LocationId>
+public sealed class Location : Entity<LocationId>
 {
     private bool _isActive = true;
 

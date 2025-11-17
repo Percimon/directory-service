@@ -4,8 +4,6 @@ public record Error
 {
     private const string SEPARATOR = "||";
 
-    public static readonly Error None = new(string.Empty, string.Empty, ErrorType.NONE);
-
     public string Code { get; }
 
     public string Message { get; }

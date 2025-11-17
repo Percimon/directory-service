@@ -5,6 +5,8 @@ namespace DirectoryService.Domain.ValueObjects;
 
 public record Path
 {
+    private const char SEPARATOR = '/';
+
     private Path(string value)
     {
         Value = value;
@@ -12,23 +14,23 @@ public record Path
 
     public string Value { get; }
 
-    public static Result<Path, Error> Create(string value)
+    public static Result<Path, Error> CreateParent(Identifier identifier)
     {
-        if (string.IsNullOrWhiteSpace(value))
+        if (identifier is null)
         {
-            return Errors.General.ValueIsRequired(nameof(Path));
+            return Error.Validation("identifier", "Identifier cant be null");
         }
 
-        if (value.Length < Constants.TextLength.LENGTH_3)
+        return new Path(identifier.Value);
+    }
+
+    public Result<Path, Error> CreateChild(Identifier childIdentifier)
+    {
+        if (childIdentifier is null)
         {
-            return Errors.General.ValueIsInvalid(nameof(Path));
+            return Error.Validation("identifier", "Identifier cant be null");
         }
 
-        if (value.Length > Constants.TextLength.LENGTH_150)
-        {
-            return Errors.General.ValueIsInvalid(nameof(Path));
-        }
-
-        return new Path(value);
+        return new Path(Value + SEPARATOR + childIdentifier!.Value);
     }
 }

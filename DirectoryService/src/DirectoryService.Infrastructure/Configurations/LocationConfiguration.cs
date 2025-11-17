@@ -4,28 +4,30 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SharedKernel;
 
-public class LocationConfiguration : IEntityTypeConfiguration<Location>
+namespace DirectoryService.Infrastructure.Configurations
 {
-    public void Configure(EntityTypeBuilder<Location> builder)
+    public class LocationConfiguration : IEntityTypeConfiguration<Location>
     {
-        builder.ToTable("locations");
-
-        builder.HasKey(x => x.Id).HasName("pk_locations");
-
-        builder
-            .Property(x => x.Id)
-            .HasConversion(x => x.Value, id => LocationId.Create(id))
-            .HasColumnName("id");
-
-        builder.ComplexProperty(x => x.Name, nb =>
+        public void Configure(EntityTypeBuilder<Location> builder)
         {
-            nb.Property(name => name.Value)
-                .IsRequired()
-                .HasMaxLength(Constants.TextLength.LENGTH_150)
-                .HasColumnName("name");
-        });
+            builder.ToTable("locations");
 
-        builder.ComplexProperty(x => x.Address, ab =>
+            builder.HasKey(x => x.Id).HasName("pk_locations");
+
+            builder
+                .Property(x => x.Id)
+                .HasConversion(x => x.Value, id => LocationId.Create(id))
+                .HasColumnName("id");
+
+            builder.ComplexProperty(x => x.Name, nb =>
+            {
+                nb.Property(name => name.Value)
+                    .IsRequired()
+                    .HasMaxLength(Constants.TextLength.LENGTH_150)
+                    .HasColumnName("name");
+            });
+
+            builder.ComplexProperty(x => x.Address, ab =>
             {
                 ab.Property(a => a.City)
                     .IsRequired()
@@ -48,7 +50,7 @@ public class LocationConfiguration : IEntityTypeConfiguration<Location>
                     .HasColumnName("structure");
             });
 
-        builder.ComplexProperty(x => x.TimeZone, tb =>
+            builder.ComplexProperty(x => x.TimeZone, tb =>
             {
                 tb.Property(t => t.Value)
                     .IsRequired()
@@ -56,15 +58,16 @@ public class LocationConfiguration : IEntityTypeConfiguration<Location>
                     .HasColumnName("timezone");
             });
 
-        builder.Property(x => x.IsActive)
-          .IsRequired()
-          .HasColumnName("is_active");
+            builder.Property(x => x.IsActive)
+                .IsRequired()
+                .HasColumnName("is_active");
 
-        builder.Property(p => p.CreatedAt)
-            .IsRequired()
-            .HasColumnName("created_at");
+            builder.Property(p => p.CreatedAt)
+                .IsRequired()
+                .HasColumnName("created_at");
 
-        builder.Property(p => p.UpdatedAt)
-            .HasColumnName("updated_at");
+            builder.Property(p => p.UpdatedAt)
+                .HasColumnName("updated_at");
+        }
     }
 }

@@ -4,7 +4,7 @@ using SharedKernel;
 
 namespace DirectoryService.Domain.Entities;
 
-public record DepartmentPosition
+public sealed class DepartmentPosition
 {
     //ef core
     private DepartmentPosition()

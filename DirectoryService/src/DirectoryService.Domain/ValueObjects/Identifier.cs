@@ -4,8 +4,10 @@ using SharedKernel;
 
 namespace DirectoryService.Domain.ValueObjects;
 
-public class Identifier
+public record Identifier
 {
+    private static readonly Regex _identifierRegex = new("^[a-zA-Z]+$", RegexOptions.Compiled);
+
     private Identifier(string value)
     {
         Value = value;
@@ -20,16 +22,12 @@ public class Identifier
             return Errors.General.ValueIsRequired(nameof(Identifier));
         }
 
-        if (value.Length < Constants.TextLength.LENGTH_3 || value.Length > Constants.TextLength.LENGTH_150)
+        if (value.Length is < Constants.TextLength.LENGTH_3 or > Constants.TextLength.LENGTH_150)
         {
             return Errors.General.ValueIsInvalid(nameof(Identifier));
         }
 
-        string pattern = @"^[a-zA-Z]+$";
-
-        var patternCheck = Regex.IsMatch(value, pattern);
-
-        if (!patternCheck)
+        if (_identifierRegex.IsMatch(value))
         {
             return Errors.General.EnglishCharactersOnly(nameof(Identifier));
         }
