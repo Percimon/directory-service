@@ -1,9 +1,13 @@
+using Serilog;
+
 namespace DirectoryService.Presentation.Configuration
 {
     public static class AppExtensions
     {
         public static IApplicationBuilder Configure(this WebApplication app)
         {
+            app.UseSerilogRequestLogging();
+
             app.AddSwagger();
 
             app.MapControllers();

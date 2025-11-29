@@ -6,7 +6,7 @@ namespace DirectoryService.Domain.Entities;
 
 public sealed class DepartmentLocation
 {
-    //ef croe
+    //ef core
     private DepartmentLocation()
     {
 

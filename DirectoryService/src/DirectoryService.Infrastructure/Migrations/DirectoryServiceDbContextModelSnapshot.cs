@@ -48,8 +48,8 @@ namespace DirectoryService.Infrastructure.Migrations
                         {
                             b1.IsRequired();
 
-                            b1.Property<short>("Value")
-                                .HasColumnType("smallint")
+                            b1.Property<int>("Value")
+                                .HasColumnType("integer")
                                 .HasColumnName("depth");
                         });
 
@@ -270,7 +270,7 @@ namespace DirectoryService.Infrastructure.Migrations
                     b.HasOne("DirectoryService.Domain.Entities.Department", "Parent")
                         .WithMany("Children")
                         .HasForeignKey("fk_parent_id")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Parent");
                 });
@@ -280,13 +280,13 @@ namespace DirectoryService.Infrastructure.Migrations
                     b.HasOne("DirectoryService.Domain.Entities.Department", "Department")
                         .WithMany("DepartmentLocations")
                         .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("DirectoryService.Domain.Entities.Location", null)
                         .WithMany()
                         .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Department");
@@ -297,13 +297,13 @@ namespace DirectoryService.Infrastructure.Migrations
                     b.HasOne("DirectoryService.Domain.Entities.Department", "Department")
                         .WithMany("DepartmentPositions")
                         .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("DirectoryService.Domain.Entities.Position", null)
                         .WithMany()
                         .HasForeignKey("PositionId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Department");
