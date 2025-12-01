@@ -1,3 +1,4 @@
+using DirectoryService.Presentation.Middlewares;
 using Serilog;
 
 namespace DirectoryService.Presentation.Configuration
@@ -6,6 +7,8 @@ namespace DirectoryService.Presentation.Configuration
     {
         public static IApplicationBuilder Configure(this WebApplication app)
         {
+            app.UseRequestCorrelationId();
+
             app.UseSerilogRequestLogging();
 
             app.AddSwagger();
