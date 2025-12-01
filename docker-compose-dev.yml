@@ -1,4 +1,15 @@
 services:
+  directory-service:
+    container_name: directory-service
+    build: 
+      context: ./backend/DirectoryService
+      dockerfile: Dockerfile
+    ports:
+      - 9001:9001
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_URLS=http://+:9001
+    restart: always
   postgres:
     container_name: ds_postgres
     image: postgres
