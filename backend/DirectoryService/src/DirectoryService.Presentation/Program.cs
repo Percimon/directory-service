@@ -10,7 +10,11 @@ try
 {
     Log.Information("Starting web application..");
 
-    var builder = WebApplication.CreateBuilder(args);
+    WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+    string environment = builder.Environment.EnvironmentName;
+
+    builder.Configuration.AddJsonFile($"appsetiings.{environment}", true, true);
 
     builder.Services.AddConfiguration(builder.Configuration);
 
