@@ -3,6 +3,7 @@ using DirectoryService.Application.Database;
 using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.Identifiers;
 using DirectoryService.Domain.ValueObjects;
+using Microsoft.Extensions.Logging;
 using SharedKernel;
 using TimeZone = DirectoryService.Domain.ValueObjects.TimeZone;
 
@@ -11,10 +12,14 @@ namespace DirectoryService.Application.Locations.Create
     public class CreateLocationHandler
     {
         private readonly ILocationsRepository _repository;
+        private readonly ILogger<CreateLocationHandler> _logger;
 
-        public CreateLocationHandler(ILocationsRepository repository)
+        public CreateLocationHandler(
+            ILocationsRepository repository,
+            ILogger<CreateLocationHandler> logger)
         {
             _repository = repository;
+            _logger = logger;
         }
 
         public async Task<Result<Guid, Error>> Handle(
@@ -55,6 +60,8 @@ namespace DirectoryService.Application.Locations.Create
 
             if (result.IsFailure)
                 return result.Error;
+
+            _logger.LogInformation("Location created with id={Id}", location.Id.Value);
 
             return location.Id.Value;
         }
