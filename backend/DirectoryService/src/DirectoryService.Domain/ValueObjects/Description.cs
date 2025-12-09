@@ -16,7 +16,7 @@ public record Description
     {
         if (value.Length > Constants.TextLength.LENGTH_1000)
         {
-            return Errors.General.ValueIsInvalid(nameof(Description));
+            return GeneralErrors.ValueIsInvalid(nameof(Description));
         }
 
         return new Description(value);

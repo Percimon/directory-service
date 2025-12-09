@@ -18,7 +18,7 @@ public record TimeZone
 
         if (!result)
         {
-            return Errors.General.ValueIsInvalid(nameof(TimeZone));
+            return GeneralErrors.ValueIsInvalid(nameof(TimeZone));
         }
 
         return new TimeZone(value);

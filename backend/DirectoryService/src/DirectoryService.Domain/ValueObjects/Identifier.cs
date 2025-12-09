@@ -19,17 +19,17 @@ public record Identifier
     {
         if (string.IsNullOrWhiteSpace(value))
         {
-            return Errors.General.ValueIsRequired(nameof(Identifier));
+            return GeneralErrors.ValueIsRequired(nameof(Identifier));
         }
 
         if (value.Length is < Constants.TextLength.LENGTH_3 or > Constants.TextLength.LENGTH_150)
         {
-            return Errors.General.ValueIsInvalid(nameof(Identifier));
+            return GeneralErrors.ValueIsInvalid(nameof(Identifier));
         }
 
         if (_identifierRegex.IsMatch(value))
         {
-            return Errors.General.EnglishCharactersOnly(nameof(Identifier));
+            return GeneralErrors.EnglishCharactersOnly(nameof(Identifier));
         }
 
         return new Identifier(value);

@@ -16,12 +16,12 @@ public record Name
     {
         if (string.IsNullOrWhiteSpace(value))
         {
-            return Errors.General.ValueIsRequired(nameof(Name));
+            return GeneralErrors.ValueIsRequired(nameof(Name));
         }
 
         if (value.Length is < Constants.TextLength.LENGTH_3 or > Constants.TextLength.LENGTH_150)
         {
-            return Errors.General.ValueIsInvalid(nameof(Name));
+            return GeneralErrors.ValueIsInvalid(nameof(Name));
         }
 
         return new Name(value);

@@ -29,7 +29,7 @@ namespace DirectoryService.Presentation.Middlewares
 
                 var error = Error.Failure("server.internal", ex.Message);
 
-                var envelope = Envelope.Error(error);
+                var envelope = Envelope.Fail(error);
 
                 context.Response.ContentType = "application/json";
 

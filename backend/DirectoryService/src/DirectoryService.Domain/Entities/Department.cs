@@ -147,7 +147,7 @@ public sealed class Department : SharedKernel.Entity<DepartmentId>
             return Result.Success<Error>();
         }
 
-        return Errors.General.AlreadyExists(nameof(Department), nameof(locationId), locationId.ToString());
+        return GeneralErrors.AlreadyExists(nameof(Department), nameof(locationId), locationId.ToString());
     }
 
     public UnitResult<Error> RemoveLocation(Guid locationId)
@@ -169,7 +169,7 @@ public sealed class Department : SharedKernel.Entity<DepartmentId>
             return Result.Success<Error>();
         }
 
-        return Errors.General.AlreadyExists(nameof(Department), nameof(positionId), positionId.ToString());
+        return GeneralErrors.AlreadyExists(nameof(Department), nameof(positionId), positionId.ToString());
     }
 
     public UnitResult<Error> RemovePosition(Guid positionId)

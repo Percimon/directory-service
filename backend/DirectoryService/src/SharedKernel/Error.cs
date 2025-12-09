@@ -1,66 +1,74 @@
-﻿namespace SharedKernel;
+﻿using System.Text.Json.Serialization;
+
+namespace SharedKernel;
+
+public record ErrorMessage(string Code, string Message, string? InvalidField = null);
 
 public record Error
 {
-    private const string SEPARATOR = "||";
-
-    public string Code { get; }
-
-    public string Message { get; }
+    public IReadOnlyList<ErrorMessage> Messages { get; } = [];
 
     public ErrorType Type { get; }
 
-    public string? InvalidField { get; }
-
-    private Error(
-        string code,
-        string message,
-        ErrorType type,
-        string? invalidField = null)
+    [JsonConstructor]
+    private Error(IReadOnlyList<ErrorMessage> messages, ErrorType type)
     {
-        Code = code;
-        Message = message;
+        Messages = messages.ToArray();
         Type = type;
-        InvalidField = invalidField;
     }
+
+    private Error(IEnumerable<ErrorMessage> messages, ErrorType type)
+    {
+        Messages = messages.ToArray();
+        Type = type;
+    }
+
+    public string GetMessage() => string.Join(";", Messages.Select(m => m.ToString()));
 
     public static Error Validation(string code, string message, string? invalidField = null) =>
-        new(code, message, ErrorType.VALIDATION, invalidField);
+        new([new ErrorMessage(code, message, invalidField)], ErrorType.VALIDATION);
 
-    public static Error NotFound(string code, string message) => new(code, message, ErrorType.NOT_FOUND);
+    public static Error NotFound(string code, string message, string? invalidField = null) =>
+        new([new ErrorMessage(code, message, invalidField)], ErrorType.NOT_FOUND);
 
-    public static Error Failure(string code, string message) => new(code, message, ErrorType.FAILURE);
+    public static Error Failure(string code, string message, string? invalidField = null) =>
+        new([new ErrorMessage(code, message, invalidField)], ErrorType.FAILURE);
 
-    public static Error Conflict(string code, string message) => new(code, message, ErrorType.CONFLICT);
+    public static Error Conflict(string code, string message, string? invalidField = null) =>
+        new([new ErrorMessage(code, message, invalidField)], ErrorType.CONFLICT);
 
-    public string Serialize()
-    {
-        return string.Join(SEPARATOR, Code, Message, Type);
-    }
+    public static Error Authentication(string code, string message, string? invalidField = null) =>
+        new([new ErrorMessage(code, message, invalidField)], ErrorType.AUTHENTICATION);
 
-    public static Error Deserialize(string serialized)
-    {
-        var parts = serialized.Split(SEPARATOR);
+    public static Error Authorization(string code, string message, string? invalidField = null) =>
+        new([new ErrorMessage(code, message, invalidField)], ErrorType.AUTHORIZATION);
 
-        if (parts.Length < 3)
-            throw new ArgumentException("Invalid serialized format");
+    public static Error Validation(params IEnumerable<ErrorMessage> messages) =>
+        new(messages, ErrorType.VALIDATION);
 
-        if (Enum.TryParse<ErrorType>(parts[2], out var type) == false)
-            throw new ArgumentException("Invalid serialized format");
+    public static Error NotFound(params IEnumerable<ErrorMessage> messages) =>
+        new(messages, ErrorType.NOT_FOUND);
 
-        return new Error(parts[0], parts[1], type);
-    }
+    public static Error Failure(params IEnumerable<ErrorMessage> messages) =>
+        new(messages, ErrorType.FAILURE);
 
-    public ErrorList ToErrorList() => new([this]);
+    public static Error Conflict(params IEnumerable<ErrorMessage> messages) =>
+        new(messages, ErrorType.CONFLICT);
+
+    public static Error Authentication(params IEnumerable<ErrorMessage> messages) =>
+        new(messages, ErrorType.AUTHENTICATION);
+
+    public static Error Authorization(params IEnumerable<ErrorMessage> messages) =>
+        new(messages, ErrorType.AUTHORIZATION);
 }
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ErrorType
 {
-    NONE,
     VALIDATION,
     NOT_FOUND,
     FAILURE,
     CONFLICT,
-    AUTHENTIFICATION,
+    AUTHENTICATION,
     AUTHORIZATION,
 }

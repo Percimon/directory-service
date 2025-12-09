@@ -33,28 +33,28 @@ public record Address
         string structure)
     {
         if (string.IsNullOrWhiteSpace(city))
-            return Errors.General.ValueIsRequired("city");
+            return GeneralErrors.ValueIsRequired("city");
 
         if (city.Length > Constants.TextLength.LENGTH_150)
-            return Errors.General.ValueIsInvalid("city");
+            return GeneralErrors.ValueIsInvalid("city");
 
         if (string.IsNullOrWhiteSpace(district))
-            return Errors.General.ValueIsRequired("district");
+            return GeneralErrors.ValueIsRequired("district");
 
         if (district.Length > Constants.TextLength.LENGTH_150)
-            return Errors.General.ValueIsInvalid("district");
+            return GeneralErrors.ValueIsInvalid("district");
 
         if (string.IsNullOrWhiteSpace(street))
-            return Errors.General.ValueIsRequired("street");
+            return GeneralErrors.ValueIsRequired("street");
 
         if (street.Length > Constants.TextLength.LENGTH_150)
-            return Errors.General.ValueIsInvalid("street");
+            return GeneralErrors.ValueIsInvalid("street");
 
         if (string.IsNullOrWhiteSpace(structure))
-            return Errors.General.ValueIsRequired("structure");
+            return GeneralErrors.ValueIsRequired("structure");
 
         if (structure.Length > Constants.TextLength.LENGTH_150)
-            return Errors.General.ValueIsInvalid("structure");
+            return GeneralErrors.ValueIsInvalid("structure");
 
         return new Address(city, district, street, structure);
     }

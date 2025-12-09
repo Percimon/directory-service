@@ -1,48 +1,53 @@
-namespace SharedKernel
+using System.Text.Json.Serialization;
+
+namespace SharedKernel;
+
+public record Envelope
 {
-    public record Envelope
+    public object? Result { get; }
+
+    public Error? Error { get; }
+
+    public bool IsError => Error != null;
+
+    public DateTime TimeGenerated { get; }
+
+    [JsonConstructor]
+    private Envelope(object? result, Error? error)
     {
-        public object? Result { get; }
-
-        public ErrorList? Errors { get; }
-
-        public DateTime TimeGenerated { get; }
-
-        public bool IsError => Errors is not null || (Errors is not null && Errors.Any());
-
-        private Envelope(object? result, ErrorList? errors)
-        {
-            Result = result;
-            Errors = errors;
-            TimeGenerated = DateTime.Now;
-        }
-
-        public static Envelope Ok(object? result = null) => new(result, null);
-
-        public static Envelope Error(ErrorList errors) => new(null, errors);
+        Result = result;
+        Error = error;
+        TimeGenerated = DateTime.UtcNow;
     }
 
-    public record Envelope<T>
+    public static Envelope Ok(object? result = null) =>
+        new(result, null);
+
+    public static Envelope Fail(Error error) =>
+        new(null, error);
+}
+
+public record Envelope<T>
+{
+    public T? Result { get; }
+
+    public Error? Error { get; }
+
+    public bool IsError => Error != null;
+
+    public DateTime TimeGenerated { get; }
+
+    [JsonConstructor]
+    private Envelope(T? result, Error? error)
     {
-        public T? Result { get; }
-
-        public ErrorList? Errors { get; }
-
-        public DateTime TimeGenerated { get; }
-
-        public bool IsError => Errors is not null || (Errors is not null && Errors.Any());
-
-        private Envelope(T? result, ErrorList? errors)
-        {
-            Result = result;
-            Errors = errors;
-            TimeGenerated = DateTime.Now;
-        }
-
-        public static Envelope<T> Ok(T? result = default) =>
-            new(result, null);
-
-        public static Envelope<T> Error(ErrorList errors) =>
-            new(default, errors);
+        Result = result;
+        Error = error;
+        TimeGenerated = DateTime.Now;
     }
+
+    public static Envelope<T> Ok(T? result = default) =>
+        new(result, null);
+
+    public static Envelope<T> Fail(Error error) =>
+        new(default, error);
 }
