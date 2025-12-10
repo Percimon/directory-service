@@ -1,0 +1,37 @@
+services:
+  directory-service:
+    container_name: directory-service
+    build: 
+      context: ./backend/DirectoryService
+      dockerfile: Dockerfile
+    ports:
+      - 9001:9001
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_URLS=http://+:9001
+    restart: always
+  postgres:
+    container_name: ds_postgres
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: directory_service_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5434:5432
+    volumes:
+      - postgres-data:/var/lib/postgres/data
+  seq:
+    container_name: seq
+    image: datalust/seq:latest
+    restart: always
+    ports:
+      - "5341:5341"
+      - "8081:80"
+    environment:
+      - ACCEPT_EULA=Y
+      - SEQ_FIRSTRUN_NOAUTHENTICATION:"true" 
+
+volumes:
+  postgres-data:
