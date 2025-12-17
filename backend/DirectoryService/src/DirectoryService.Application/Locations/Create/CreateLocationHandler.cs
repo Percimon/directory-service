@@ -1,8 +1,12 @@
 using CSharpFunctionalExtensions;
 using DirectoryService.Application.Database;
+using DirectoryService.Application.Validation;
+using DirectoryService.Contracts;
 using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.Identifiers;
 using DirectoryService.Domain.ValueObjects;
+using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
 using SharedKernel;
 using TimeZone = DirectoryService.Domain.ValueObjects.TimeZone;
@@ -13,25 +17,32 @@ namespace DirectoryService.Application.Locations.Create
     {
         private readonly ILocationsRepository _repository;
         private readonly ILogger<CreateLocationHandler> _logger;
+        private readonly IValidator<CreateLocationCommand> _validator;
 
         public CreateLocationHandler(
             ILocationsRepository repository,
-            ILogger<CreateLocationHandler> logger)
+            ILogger<CreateLocationHandler> logger,
+            IValidator<CreateLocationCommand> validator)
         {
             _repository = repository;
             _logger = logger;
+            _validator = validator;
         }
 
         public async Task<Result<Guid, Error>> Handle(
             CreateLocationCommand command,
             CancellationToken cancellationToken = default)
         {
+            ValidationResult validationResult = await _validator.ValidateAsync(command, cancellationToken);
+
+            if (!validationResult.IsValid)
+            {
+                validationResult.ToError();
+            }
+
             var locationId = LocationId.New();
 
             var name = Name.Create(command.Name);
-
-            if (name.IsFailure)
-                return name.Error;
 
             var address = Address.Create(
                 command.City,
@@ -39,13 +50,7 @@ namespace DirectoryService.Application.Locations.Create
                 command.Street,
                 command.Structure);
 
-            if (address.IsFailure)
-                return address.Error;
-
             var timeZone = TimeZone.Create(command.TimeZone);
-
-            if (timeZone.IsFailure)
-                return timeZone.Error;
 
             var dateTime = DateTime.UtcNow;
 

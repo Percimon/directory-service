@@ -19,15 +19,19 @@ namespace DirectoryService.Infrastructure.Configurations
                 .HasConversion(x => x.Value, id => LocationId.Create(id))
                 .HasColumnName("id");
 
-            builder.ComplexProperty(x => x.Name, nb =>
+            builder.OwnsOne(x => x.Name, nb =>
             {
                 nb.Property(name => name.Value)
                     .IsRequired()
                     .HasMaxLength(Constants.TextLength.LENGTH_150)
                     .HasColumnName("name");
+
+                nb.HasIndex(x => x.Value)
+                    .IsUnique()
+                    .HasDatabaseName("ix_locations_name");
             });
 
-            builder.ComplexProperty(x => x.Address, ab =>
+            builder.OwnsOne(x => x.Address, ab =>
             {
                 ab.Property(a => a.City)
                     .IsRequired()
@@ -48,6 +52,10 @@ namespace DirectoryService.Infrastructure.Configurations
                     .IsRequired()
                     .HasMaxLength(Constants.TextLength.LENGTH_150)
                     .HasColumnName("structure");
+
+                ab.HasIndex(x => new { x.City, x.District, x.Street, x.Structure })
+                    .IsUnique()
+                    .HasDatabaseName("ix_locations_address");
             });
 
             builder.ComplexProperty(x => x.TimeZone, tb =>

@@ -1,7 +1,11 @@
+using System.Data.Common;
 using CSharpFunctionalExtensions;
 using DirectoryService.Application.Database;
 using DirectoryService.Domain.Entities;
+using DirectoryService.Domain.ValueObjects;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Npgsql;
 using SharedKernel;
 
 namespace DirectoryService.Infrastructure.Repositories
@@ -26,6 +30,24 @@ namespace DirectoryService.Infrastructure.Repositories
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
                 return location.Id.Value;
+            }
+            catch (DbUpdateException ex) when (ex.InnerException is PostgresException pgEx)
+            {
+                if (pgEx is { SqlState: PostgresErrorCodes.UniqueViolation, ConstraintName: not null })
+                {
+                    if (pgEx.ConstraintName.Contains("name", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return GeneralErrors.AlreadyExists(nameof(Location), nameof(Location.Name), location.Name.Value);
+                    }
+                    else if (pgEx.ConstraintName.Contains("address", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return GeneralErrors.AlreadyExists(nameof(Location), nameof(Location.Address), location.Address.ToString());
+                    }
+                }
+
+                _logger.LogError(ex, "Database update error while creating location with name: {name}", location.Name.Value);
+
+                return GeneralErrors.Failure("Database update error while creating location");
             }
             catch (Exception e)
             {
