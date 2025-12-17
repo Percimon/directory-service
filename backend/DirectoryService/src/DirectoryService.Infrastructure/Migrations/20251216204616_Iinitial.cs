@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DirectoryService.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class Iinitial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -41,14 +41,14 @@ namespace DirectoryService.Infrastructure.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    is_active = table.Column<bool>(type: "boolean", nullable: false),
-                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
                     city = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
                     district = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
                     street = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
                     structure = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
-                    name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    is_active = table.Column<bool>(type: "boolean", nullable: false),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     timezone = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
@@ -146,6 +146,18 @@ namespace DirectoryService.Infrastructure.Migrations
                 name: "IX_departments_fk_parent_id",
                 table: "departments",
                 column: "fk_parent_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_locations_address",
+                table: "locations",
+                columns: new[] { "city", "district", "street", "structure" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_locations_name",
+                table: "locations",
+                column: "name",
+                unique: true);
         }
 
         /// <inheritdoc />

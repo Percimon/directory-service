@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DirectoryService.Infrastructure.Migrations
 {
     [DbContext(typeof(DirectoryServiceDbContext))]
-    [Migration("20251209200534_Initial")]
-    partial class Initial
+    [Migration("20251216204616_Iinitial")]
+    partial class Iinitial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -165,46 +165,6 @@ namespace DirectoryService.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
-                    b.ComplexProperty<Dictionary<string, object>>("Address", "DirectoryService.Domain.Entities.Location.Address#Address", b1 =>
-                        {
-                            b1.IsRequired();
-
-                            b1.Property<string>("City")
-                                .IsRequired()
-                                .HasMaxLength(150)
-                                .HasColumnType("character varying(150)")
-                                .HasColumnName("city");
-
-                            b1.Property<string>("District")
-                                .IsRequired()
-                                .HasMaxLength(150)
-                                .HasColumnType("character varying(150)")
-                                .HasColumnName("district");
-
-                            b1.Property<string>("Street")
-                                .IsRequired()
-                                .HasMaxLength(150)
-                                .HasColumnType("character varying(150)")
-                                .HasColumnName("street");
-
-                            b1.Property<string>("Structure")
-                                .IsRequired()
-                                .HasMaxLength(150)
-                                .HasColumnType("character varying(150)")
-                                .HasColumnName("structure");
-                        });
-
-                    b.ComplexProperty<Dictionary<string, object>>("Name", "DirectoryService.Domain.Entities.Location.Name#Name", b1 =>
-                        {
-                            b1.IsRequired();
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasMaxLength(150)
-                                .HasColumnType("character varying(150)")
-                                .HasColumnName("name");
-                        });
-
                     b.ComplexProperty<Dictionary<string, object>>("TimeZone", "DirectoryService.Domain.Entities.Location.TimeZone#TimeZone", b1 =>
                         {
                             b1.IsRequired();
@@ -310,6 +270,79 @@ namespace DirectoryService.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Department");
+                });
+
+            modelBuilder.Entity("DirectoryService.Domain.Entities.Location", b =>
+                {
+                    b.OwnsOne("DirectoryService.Domain.ValueObjects.Address", "Address", b1 =>
+                        {
+                            b1.Property<Guid>("LocationId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("City")
+                                .IsRequired()
+                                .HasMaxLength(150)
+                                .HasColumnType("character varying(150)")
+                                .HasColumnName("city");
+
+                            b1.Property<string>("District")
+                                .IsRequired()
+                                .HasMaxLength(150)
+                                .HasColumnType("character varying(150)")
+                                .HasColumnName("district");
+
+                            b1.Property<string>("Street")
+                                .IsRequired()
+                                .HasMaxLength(150)
+                                .HasColumnType("character varying(150)")
+                                .HasColumnName("street");
+
+                            b1.Property<string>("Structure")
+                                .IsRequired()
+                                .HasMaxLength(150)
+                                .HasColumnType("character varying(150)")
+                                .HasColumnName("structure");
+
+                            b1.HasKey("LocationId");
+
+                            b1.HasIndex("City", "District", "Street", "Structure")
+                                .IsUnique()
+                                .HasDatabaseName("ix_locations_address");
+
+                            b1.ToTable("locations");
+
+                            b1.WithOwner()
+                                .HasForeignKey("LocationId");
+                        });
+
+                    b.OwnsOne("DirectoryService.Domain.ValueObjects.Name", "Name", b1 =>
+                        {
+                            b1.Property<Guid>("LocationId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasMaxLength(150)
+                                .HasColumnType("character varying(150)")
+                                .HasColumnName("name");
+
+                            b1.HasKey("LocationId");
+
+                            b1.HasIndex("Value")
+                                .IsUnique()
+                                .HasDatabaseName("ix_locations_name");
+
+                            b1.ToTable("locations");
+
+                            b1.WithOwner()
+                                .HasForeignKey("LocationId");
+                        });
+
+                    b.Navigation("Address")
+                        .IsRequired();
+
+                    b.Navigation("Name")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("DirectoryService.Domain.Entities.Department", b =>

@@ -58,4 +58,8 @@ public record Address
 
         return new Address(city, district, street, structure);
     }
+
+    public override string ToString() =>
+        $"City: {City}, District: {District}, Street: {Street}, Structure: {Structure}";
+
 }
