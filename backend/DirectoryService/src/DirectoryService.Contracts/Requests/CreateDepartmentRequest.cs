@@ -1,6 +1,6 @@
-﻿namespace DirectoryService.Contracts.Requests;
+namespace DirectoryService.Contracts.Requests;
 
-public record CreateLocationRequest(
+public record CreateDepartmentRequest(
     string Name,
     string City,
     string District,

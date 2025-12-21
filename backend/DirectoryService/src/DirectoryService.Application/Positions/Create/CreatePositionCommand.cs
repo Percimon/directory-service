@@ -1,6 +1,6 @@
-namespace DirectoryService.Application.Locations.Create;
+namespace DirectoryService.Application.Positions.Create;
 
-public record CreateLocationCommand(
+public record CreatePositionCommand(
     string Name,
     string City,
     string District,

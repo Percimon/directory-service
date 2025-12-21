@@ -1,40 +1,39 @@
 using System.Net;
 using SharedKernel;
 
-namespace DirectoryService.Presentation.EndpointResults
+namespace DirectoryService.Presentation.EndpointResults;
+
+public sealed class SuccessResult : IResult
 {
-    public sealed class SuccessResult : IResult
+    public Task ExecuteAsync(HttpContext httpContext)
     {
-        public Task ExecuteAsync(HttpContext httpContext)
-        {
-            ArgumentNullException.ThrowIfNull(httpContext);
+        ArgumentNullException.ThrowIfNull(httpContext);
 
-            var envelope = Envelope.Ok();
+        var envelope = Envelope.Ok();
 
-            httpContext.Response.StatusCode = (int)HttpStatusCode.OK;
+        httpContext.Response.StatusCode = (int)HttpStatusCode.OK;
 
-            return httpContext.Response.WriteAsJsonAsync(envelope);
-        }
+        return httpContext.Response.WriteAsJsonAsync(envelope);
+    }
+}
+
+public sealed class SuccessResult<TValue> : IResult
+{
+    private readonly TValue _value;
+
+    public SuccessResult(TValue value)
+    {
+        _value = value;
     }
 
-    public sealed class SuccessResult<TValue> : IResult
+    public Task ExecuteAsync(HttpContext httpContext)
     {
-        private readonly TValue _value;
+        ArgumentNullException.ThrowIfNull(httpContext);
 
-        public SuccessResult(TValue value)
-        {
-            _value = value;
-        }
+        var envelope = Envelope.Ok(_value);
 
-        public Task ExecuteAsync(HttpContext httpContext)
-        {
-            ArgumentNullException.ThrowIfNull(httpContext);
+        httpContext.Response.StatusCode = (int)HttpStatusCode.OK;
 
-            var envelope = Envelope.Ok(_value);
-
-            httpContext.Response.StatusCode = (int)HttpStatusCode.OK;
-
-            return httpContext.Response.WriteAsJsonAsync(envelope);
-        }
+        return httpContext.Response.WriteAsJsonAsync(envelope);
     }
 }

@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace DirectoryService.Presentation.Controllers;
 
 [ApiController]
-[Route("api/locations")]
-public class LocationsController : Controller
+[Route("api/departments")]
+public class DepartmentsController : Controller
 {
     [HttpPost]
     public async Task<EndpointResult<Guid>> Create(

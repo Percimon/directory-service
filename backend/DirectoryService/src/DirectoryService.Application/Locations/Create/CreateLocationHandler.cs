@@ -11,64 +11,63 @@ using Microsoft.Extensions.Logging;
 using SharedKernel;
 using TimeZone = DirectoryService.Domain.ValueObjects.TimeZone;
 
-namespace DirectoryService.Application.Locations.Create
+namespace DirectoryService.Application.Locations.Create;
+
+public class CreateLocationHandler
 {
-    public class CreateLocationHandler
+    private readonly ILocationsRepository _repository;
+    private readonly ILogger<CreateLocationHandler> _logger;
+    private readonly IValidator<CreateLocationCommand> _validator;
+
+    public CreateLocationHandler(
+        ILocationsRepository repository,
+        ILogger<CreateLocationHandler> logger,
+        IValidator<CreateLocationCommand> validator)
     {
-        private readonly ILocationsRepository _repository;
-        private readonly ILogger<CreateLocationHandler> _logger;
-        private readonly IValidator<CreateLocationCommand> _validator;
+        _repository = repository;
+        _logger = logger;
+        _validator = validator;
+    }
 
-        public CreateLocationHandler(
-            ILocationsRepository repository,
-            ILogger<CreateLocationHandler> logger,
-            IValidator<CreateLocationCommand> validator)
+    public async Task<Result<Guid, Error>> Handle(
+        CreateLocationCommand command,
+        CancellationToken cancellationToken = default)
+    {
+        ValidationResult validationResult = await _validator.ValidateAsync(command, cancellationToken);
+
+        if (!validationResult.IsValid)
         {
-            _repository = repository;
-            _logger = logger;
-            _validator = validator;
+            validationResult.ToError();
         }
 
-        public async Task<Result<Guid, Error>> Handle(
-            CreateLocationCommand command,
-            CancellationToken cancellationToken = default)
-        {
-            ValidationResult validationResult = await _validator.ValidateAsync(command, cancellationToken);
+        var locationId = LocationId.New();
 
-            if (!validationResult.IsValid)
-            {
-                validationResult.ToError();
-            }
+        var name = Name.Create(command.Name);
 
-            var locationId = LocationId.New();
+        var address = Address.Create(
+            command.City,
+            command.District,
+            command.Street,
+            command.Structure);
 
-            var name = Name.Create(command.Name);
+        var timeZone = TimeZone.Create(command.TimeZone);
 
-            var address = Address.Create(
-                command.City,
-                command.District,
-                command.Street,
-                command.Structure);
+        var dateTime = DateTime.UtcNow;
 
-            var timeZone = TimeZone.Create(command.TimeZone);
+        var location = new Location(
+            locationId,
+            name.Value,
+            address.Value,
+            timeZone.Value,
+            dateTime);
 
-            var dateTime = DateTime.UtcNow;
+        var result = await _repository.Add(location, cancellationToken);
 
-            var location = new Location(
-                locationId,
-                name.Value,
-                address.Value,
-                timeZone.Value,
-                dateTime);
+        if (result.IsFailure)
+            return result.Error;
 
-            var result = await _repository.Add(location, cancellationToken);
+        _logger.LogInformation("Location created with id={Id}", location.Id.Value);
 
-            if (result.IsFailure)
-                return result.Error;
-
-            _logger.LogInformation("Location created with id={Id}", location.Id.Value);
-
-            return location.Id.Value;
-        }
+        return location.Id.Value;
     }
 }

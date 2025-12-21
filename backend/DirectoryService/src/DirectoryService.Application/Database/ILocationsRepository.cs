@@ -2,10 +2,9 @@ using CSharpFunctionalExtensions;
 using DirectoryService.Domain.Entities;
 using SharedKernel;
 
-namespace DirectoryService.Application.Database
+namespace DirectoryService.Application.Database;
+
+public interface ILocationsRepository
 {
-    public interface ILocationsRepository
-    {
-        Task<Result<Guid, Error>> Add(Location location, CancellationToken cancellationToken = default);
-    }
+    Task<Result<Guid, Error>> Add(Location location, CancellationToken cancellationToken = default);
 }
