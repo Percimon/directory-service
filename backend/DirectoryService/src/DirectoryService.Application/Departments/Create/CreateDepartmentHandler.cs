@@ -67,6 +67,14 @@ public class CreateDepartmentHandler
                 departmentLocations,
                 departmentId);
 
+            if (departmentResult.IsFailure)
+                return departmentResult.Error;
+
+            var saveResult = await _departmentsRepository.Add(departmentResult.Value, cancellationToken);
+
+            if (saveResult.IsFailure)
+                return saveResult.Error;
+
             _logger.LogInformation("Department created with id={Id}", departmentId.Value);
 
             return departmentResult.Value.Id.Value;
@@ -85,7 +93,15 @@ public class CreateDepartmentHandler
                 departmentLocations,
                 departmentId);
 
-            _logger.LogInformation("Department created with id={Id}", departmentId.Value);
+            if (departmentResult.IsFailure)
+                return departmentResult.Error;
+
+            var saveResult = await _departmentsRepository.Add(departmentResult.Value, cancellationToken);
+
+            if (saveResult.IsFailure)
+                return saveResult.Error;
+
+            _logger.LogInformation("Child department created with id={Id}", departmentId.Value);
 
             return departmentResult.Value.Id.Value;
         }
@@ -99,9 +115,9 @@ public class CreateDepartmentHandler
 
         string query =
             $"""
-                SELECT COUNT(1) 
-                FROM departments 
-                WHERE Id IN (@Ids)
+                SELECT COUNT(id) 
+                FROM locations 
+                WHERE id IN ANY(@Ids) AND is_active = TRUE;
             """;
 
         using (var connection = _sqlConnectionFactory.Create())

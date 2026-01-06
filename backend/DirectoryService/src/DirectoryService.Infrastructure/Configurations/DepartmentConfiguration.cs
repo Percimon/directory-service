@@ -18,20 +18,28 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
             .HasConversion(id => id.Value, value => DepartmentId.Create(value))
             .HasColumnName("id");
 
-        builder.ComplexProperty(x => x.Name, nb =>
+        builder.OwnsOne(x => x.Name, nb =>
         {
             nb.Property(name => name.Value)
                 .IsRequired()
                 .HasMaxLength(Constants.TextLength.LENGTH_50)
                 .HasColumnName("name");
+
+            nb.HasIndex(x => x.Value)
+                .IsUnique()
+                .HasDatabaseName("ix_departments_name");
         });
 
-        builder.ComplexProperty(x => x.Identifier, tb =>
+        builder.OwnsOne(x => x.Identifier, tb =>
         {
             tb.Property(d => d.Value)
                 .IsRequired()
                 .HasMaxLength(Constants.TextLength.LENGTH_150)
                 .HasColumnName("identifier");
+
+            tb.HasIndex(x => x.Value)
+                .IsUnique()
+                .HasDatabaseName("ix_departments_identifier");
         });
 
         builder.ComplexProperty(x => x.Path, tb =>

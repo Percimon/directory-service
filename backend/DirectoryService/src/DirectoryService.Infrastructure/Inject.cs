@@ -20,6 +20,8 @@ public static class Inject
 
         services.AddScoped<IDepartmentsRepository, DepartmentsRepository>();
 
+        services.AddScoped<IPositionsRepository, PositionsRepository>();
+
         return services;
     }
 }

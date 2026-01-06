@@ -12,6 +12,8 @@ public class DirectoryServiceDbContext : DbContext
 
     public DbSet<Department> Departments => Set<Department>();
 
+    public DbSet<Position> Positions => Set<Position>();
+
     public DirectoryServiceDbContext(string connectionString)
     {
         _connectionString = connectionString;

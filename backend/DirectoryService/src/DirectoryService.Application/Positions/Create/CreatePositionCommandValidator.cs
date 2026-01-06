@@ -12,5 +12,13 @@ public class CreatePositionCommandValidator : AbstractValidator<CreatePositionCo
     {
         RuleFor(x => x.Name)
             .MustBeValueObject(Name.Create);
+
+        RuleFor(x => x.Description)
+            .MustBeValueObject(Description.Create);
+
+        RuleFor(x => x.Departments)
+            .NotEmpty()
+            .Must(departments => departments.Distinct().Count() == departments.Count)
+            .WithMessage("Department IDs list must not be empty and must not contain duplicates");
     }
 }
