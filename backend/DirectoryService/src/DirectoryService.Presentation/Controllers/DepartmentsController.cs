@@ -1,3 +1,4 @@
+using DirectoryService.Application.Departments.Create;
 using DirectoryService.Application.Locations.Create;
 using DirectoryService.Contracts.Requests;
 using DirectoryService.Presentation.EndpointResults;
@@ -11,17 +12,15 @@ public class DepartmentsController : Controller
 {
     [HttpPost]
     public async Task<EndpointResult<Guid>> Create(
-        [FromServices] CreateLocationHandler handler,
-        [FromBody] CreateLocationRequest request,
+        [FromServices] CreateDepartmentHandler handler,
+        [FromBody] CreateDepartmentRequest request,
         CancellationToken cancellationToken = default)
     {
-        var command = new CreateLocationCommand(
+        var command = new CreateDepartmentCommand(
             request.Name,
-            request.City,
-            request.District,
-            request.Street,
-            request.Structure,
-            request.TimeZone);
+            request.Identifier,
+            request.ParentId,
+            request.Locations);
 
         return await handler.Handle(command, cancellationToken);
     }

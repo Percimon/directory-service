@@ -13,10 +13,12 @@ public class CreateDepartmentCommandValidator : AbstractValidator<CreateDepartme
         RuleFor(x => x.Name)
             .MustBeValueObject(Name.Create);
 
-        RuleFor(x => new { x.City, x.District, x.Street, x.Structure })
-            .MustBeValueObject(a => Address.Create(a.City, a.District, a.Street, a.Structure));
+        RuleFor(x => x.Identifier)
+            .MustBeValueObject(Identifier.Create);
 
-        RuleFor(x => x.TimeZone)
-            .MustBeValueObject(TimeZone.Create);
+        RuleFor(x => x.Locations)
+            .NotEmpty()
+            .Must(locations => locations.Distinct().Count() == locations.Count)
+            .WithMessage("Location IDs list must not be empty and must not contain duplicates");
     }
 }

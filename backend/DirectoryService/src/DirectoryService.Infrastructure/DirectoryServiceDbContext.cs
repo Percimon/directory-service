@@ -10,6 +10,8 @@ public class DirectoryServiceDbContext : DbContext
 
     public DbSet<Location> Locations => Set<Location>();
 
+    public DbSet<Department> Departments => Set<Department>();
+
     public DirectoryServiceDbContext(string connectionString)
     {
         _connectionString = connectionString;

@@ -1,4 +1,5 @@
 using System.Data.Common;
+using System.Diagnostics.CodeAnalysis;
 using CSharpFunctionalExtensions;
 using DirectoryService.Application.Database;
 using DirectoryService.Domain.Entities;
@@ -13,9 +14,12 @@ namespace DirectoryService.Infrastructure.Repositories;
 public class LocationsRepository : ILocationsRepository
 {
     private readonly DirectoryServiceDbContext _dbContext;
+
     private readonly ILogger<LocationsRepository> _logger;
 
-    public LocationsRepository(DirectoryServiceDbContext dbContext, ILogger<LocationsRepository> logger)
+    public LocationsRepository(
+        DirectoryServiceDbContext dbContext,
+        ILogger<LocationsRepository> logger)
     {
         _dbContext = dbContext;
         _logger = logger;
@@ -57,5 +61,15 @@ public class LocationsRepository : ILocationsRepository
 
             return Error.Failure("location.insert", message);
         }
+    }
+
+    public UnitResult<Error> IdExists(Guid id)
+    {
+        var query = _dbContext.Locations.FirstOrDefault(l => id == l.Id.Value);
+
+        if (query is null)
+            return GeneralErrors.NotFound(id);
+
+        return UnitResult.Success<Error>();
     }
 }

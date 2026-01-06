@@ -12,11 +12,5 @@ public class CreatePositionCommandValidator : AbstractValidator<CreatePositionCo
     {
         RuleFor(x => x.Name)
             .MustBeValueObject(Name.Create);
-
-        RuleFor(x => new { x.City, x.District, x.Street, x.Structure })
-            .MustBeValueObject(a => Address.Create(a.City, a.District, a.Street, a.Structure));
-
-        RuleFor(x => x.TimeZone)
-            .MustBeValueObject(TimeZone.Create);
     }
 }

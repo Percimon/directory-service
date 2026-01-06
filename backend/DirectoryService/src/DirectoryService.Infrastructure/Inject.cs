@@ -1,3 +1,4 @@
+using DirectoryService.Application.Abstractions;
 using DirectoryService.Application.Database;
 using DirectoryService.Infrastructure;
 using DirectoryService.Infrastructure.Repositories;
@@ -13,7 +14,11 @@ public static class Inject
         services.AddScoped<DirectoryServiceDbContext>(_ =>
             new DirectoryServiceDbContext(configuration.GetConnectionString("DirectoryServiceDb")!));
 
+        services.AddScoped<ISqlConnectionFactory, SqlConnectionFactory>();
+
         services.AddScoped<ILocationsRepository, LocationsRepository>();
+
+        services.AddScoped<IDepartmentsRepository, DepartmentsRepository>();
 
         return services;
     }

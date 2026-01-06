@@ -37,7 +37,7 @@ public class CreateLocationHandler
 
         if (!validationResult.IsValid)
         {
-            validationResult.ToError();
+            return validationResult.ToError();
         }
 
         var locationId = LocationId.New();

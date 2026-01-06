@@ -1,6 +1,11 @@
 using CSharpFunctionalExtensions;
+using Dapper;
+using DirectoryService.Application.Abstractions;
 using DirectoryService.Application.Database;
 using DirectoryService.Application.Validation;
+using DirectoryService.Domain.Entities;
+using DirectoryService.Domain.Identifiers;
+using DirectoryService.Domain.ValueObjects;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
@@ -10,16 +15,19 @@ namespace DirectoryService.Application.Departments.Create;
 
 public class CreateDepartmentHandler
 {
-    private readonly ILocationsRepository _repository;
+    private readonly IDepartmentsRepository _departmentsRepository;
+    private readonly ISqlConnectionFactory _sqlConnectionFactory;
     private readonly ILogger<CreateDepartmentHandler> _logger;
     private readonly IValidator<CreateDepartmentCommand> _validator;
 
     public CreateDepartmentHandler(
-        ILocationsRepository repository,
+        IDepartmentsRepository departmentsRepository,
+        ISqlConnectionFactory sqlConnectionFactory,
         ILogger<CreateDepartmentHandler> logger,
         IValidator<CreateDepartmentCommand> validator)
     {
-        _repository = repository;
+        _departmentsRepository = departmentsRepository;
+        _sqlConnectionFactory = sqlConnectionFactory;
         _logger = logger;
         _validator = validator;
     }
@@ -32,9 +40,75 @@ public class CreateDepartmentHandler
 
         if (!validationResult.IsValid)
         {
-            validationResult.ToError();
+            return validationResult.ToError();
         }
 
-        return;
+        DepartmentId departmentId = DepartmentId.New().Value;
+
+        Name name = Name.Create(command.Name).Value;
+
+        Identifier identifier = Identifier.Create(command.Identifier).Value;
+
+        bool locationsAreExist = AllIdsAreExist(command.Locations);
+
+        if (!locationsAreExist)
+        {
+            return GeneralErrors.NotFound();
+        }
+
+        IEnumerable<DepartmentLocation> departmentLocations = command.Locations
+            .Select(id => DepartmentLocation.Create(departmentId, LocationId.Create(id)).Value);
+
+        if (command.ParentId is null)
+        {
+            var departmentResult = Department.CreateParent(
+                name,
+                identifier,
+                departmentLocations,
+                departmentId);
+
+            _logger.LogInformation("Department created with id={Id}", departmentId.Value);
+
+            return departmentResult.Value.Id.Value;
+        }
+        else
+        {
+            var parentQuery = await _departmentsRepository.GetById(departmentId.Value, cancellationToken);
+
+            if (parentQuery.IsFailure)
+                return parentQuery.Error;
+
+            var departmentResult = Department.CreateChild(
+                name,
+                identifier,
+                parentQuery.Value,
+                departmentLocations,
+                departmentId);
+
+            _logger.LogInformation("Department created with id={Id}", departmentId.Value);
+
+            return departmentResult.Value.Id.Value;
+        }
+    }
+
+    private bool AllIdsAreExist(IReadOnlyList<Guid> ids)
+    {
+        DynamicParameters parameters = new DynamicParameters();
+
+        parameters.Add("@Ids", ids);
+
+        string query =
+            $"""
+                SELECT COUNT(1) 
+                FROM departments 
+                WHERE Id IN (@Ids)
+            """;
+
+        using (var connection = _sqlConnectionFactory.Create())
+        {
+            int count = connection.ExecuteScalar<int>(query, parameters);
+
+            return count == ids.Count;
+        }
     }
 }
