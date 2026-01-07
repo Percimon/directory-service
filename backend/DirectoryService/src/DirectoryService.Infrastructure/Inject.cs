@@ -1,6 +1,6 @@
 using DirectoryService.Application.Abstractions;
 using DirectoryService.Application.Database;
-using DirectoryService.Infrastructure;
+using DirectoryService.Infrastructure.Database;
 using DirectoryService.Infrastructure.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +15,8 @@ public static class Inject
             new DirectoryServiceDbContext(configuration.GetConnectionString("DirectoryServiceDb")!));
 
         services.AddScoped<ISqlConnectionFactory, SqlConnectionFactory>();
+
+        services.AddScoped<ITransactionManager, TransactionManager>();
 
         services.AddScoped<ILocationsRepository, LocationsRepository>();
 

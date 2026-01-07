@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace DirectoryService.Infrastructure;
+namespace DirectoryService.Infrastructure.Database;
 
 public class DirectoryServiceDbContext : DbContext
 {
@@ -13,6 +13,8 @@ public class DirectoryServiceDbContext : DbContext
     public DbSet<Department> Departments => Set<Department>();
 
     public DbSet<Position> Positions => Set<Position>();
+
+    public DbSet<DepartmentPosition> DepartmentPositions => Set<DepartmentPosition>();
 
     public DirectoryServiceDbContext(string connectionString)
     {

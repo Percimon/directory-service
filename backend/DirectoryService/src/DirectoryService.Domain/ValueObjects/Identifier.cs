@@ -27,7 +27,7 @@ public record Identifier
             return GeneralErrors.ValueIsInvalid(nameof(Identifier));
         }
 
-        if (_identifierRegex.IsMatch(value))
+        if (!_identifierRegex.IsMatch(value))
         {
             return GeneralErrors.EnglishCharactersOnly(nameof(Identifier));
         }

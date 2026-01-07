@@ -81,7 +81,7 @@ public class CreateDepartmentHandler
         }
         else
         {
-            var parentQuery = await _departmentsRepository.GetById(departmentId.Value, cancellationToken);
+            var parentQuery = await _departmentsRepository.GetById(command.ParentId, cancellationToken);
 
             if (parentQuery.IsFailure)
                 return parentQuery.Error;
@@ -114,10 +114,10 @@ public class CreateDepartmentHandler
         parameters.Add("@Ids", ids);
 
         string query =
-            $"""
+            """
                 SELECT COUNT(id) 
                 FROM locations 
-                WHERE id IN ANY(@Ids) AND is_active = TRUE;
+                WHERE id = ANY(@Ids) AND is_active = TRUE;
             """;
 
         using (var connection = _sqlConnectionFactory.Create())

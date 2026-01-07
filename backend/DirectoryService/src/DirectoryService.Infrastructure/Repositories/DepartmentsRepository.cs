@@ -1,6 +1,8 @@
 using CSharpFunctionalExtensions;
 using DirectoryService.Application.Database;
 using DirectoryService.Domain.Entities;
+using DirectoryService.Domain.Identifiers;
+using DirectoryService.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Npgsql;
@@ -22,13 +24,19 @@ public class DepartmentsRepository : IDepartmentsRepository
         _logger = logger;
     }
 
-    public async Task<Result<Department, Error>> GetById(Guid id, CancellationToken cancellationToken = default)
+    public async Task<Result<Department, Error>> GetById(
+        DepartmentId id,
+        CancellationToken cancellationToken = default)
     {
-        var result = _dbContext.Departments.FirstOrDefault(d => d.Id.Value == id && d.IsActive);
+        var result = _dbContext.Departments
+            .Include(d => d.Children)
+            .Include(d => d.DepartmentLocations)
+            .Include(d => d.DepartmentPositions)
+            .FirstOrDefault(d => d.Id == id && d.IsActive);
 
         if (result is null)
         {
-            return GeneralErrors.NotFound(id);
+            return GeneralErrors.NotFound(id.Value);
         }
 
         return result;
@@ -46,10 +54,17 @@ public class DepartmentsRepository : IDepartmentsRepository
         }
         catch (DbUpdateException ex) when (ex.InnerException is PostgresException pgEx)
         {
-            if (pgEx is { SqlState: PostgresErrorCodes.UniqueViolation, ConstraintName: not null }
-                && pgEx.ConstraintName.Contains("name", StringComparison.InvariantCultureIgnoreCase))
+            if (pgEx is { SqlState: PostgresErrorCodes.UniqueViolation, ConstraintName: not null })
             {
-                return GeneralErrors.AlreadyExists(nameof(Department), nameof(Department.Name), department.Name.Value);
+                if (pgEx.ConstraintName.Contains("name", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return GeneralErrors.AlreadyExists(nameof(Department), nameof(Department.Name), department.Name.Value);
+                }
+
+                if (pgEx.ConstraintName.Contains("identifier", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return GeneralErrors.AlreadyExists(nameof(Department), nameof(Department.Identifier), department.Identifier.Value);
+                }
             }
 
             _logger.LogError(ex, "Database update error while creating Department with name: {name}", department.Name.Value);
@@ -63,6 +78,28 @@ public class DepartmentsRepository : IDepartmentsRepository
             _logger.LogError(e, message);
 
             return Error.Failure("department.insert", message);
+        }
+    }
+
+    public async Task<UnitResult<Error>> AddPositions(
+        IEnumerable<DepartmentPosition> departmentPositions,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _dbContext.DepartmentPositions.AddRangeAsync(departmentPositions, cancellationToken);
+
+            await _dbContext.SaveChangesAsync(cancellationToken);
+
+            return UnitResult.Success<Error>();
+        }
+        catch (Exception e)
+        {
+            string message = "Failed to insert DepartmentPosition navigation";
+
+            _logger.LogError(e, message);
+
+            return Error.Failure("department.position.insert", message);
         }
     }
 }

@@ -7,7 +7,7 @@ using DirectoryService.Application.Abstractions;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 
-namespace DirectoryService.Infrastructure;
+namespace DirectoryService.Infrastructure.Database;
 
 public class SqlConnectionFactory : ISqlConnectionFactory
 {

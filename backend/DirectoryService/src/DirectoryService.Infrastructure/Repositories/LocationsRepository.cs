@@ -3,7 +3,9 @@ using System.Diagnostics.CodeAnalysis;
 using CSharpFunctionalExtensions;
 using DirectoryService.Application.Database;
 using DirectoryService.Domain.Entities;
+using DirectoryService.Domain.Identifiers;
 using DirectoryService.Domain.ValueObjects;
+using DirectoryService.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Npgsql;
@@ -63,12 +65,12 @@ public class LocationsRepository : ILocationsRepository
         }
     }
 
-    public UnitResult<Error> IdExists(Guid id)
+    public UnitResult<Error> IdExists(LocationId id)
     {
-        var query = _dbContext.Locations.FirstOrDefault(l => id == l.Id.Value);
+        var query = _dbContext.Locations.FirstOrDefault(l => id == l.Id && l.IsActive);
 
         if (query is null)
-            return GeneralErrors.NotFound(id);
+            return GeneralErrors.NotFound(id.Value);
 
         return UnitResult.Success<Error>();
     }
