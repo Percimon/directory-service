@@ -81,25 +81,21 @@ public class DepartmentsRepository : IDepartmentsRepository
         }
     }
 
-    public async Task<UnitResult<Error>> AddPositions(
-        IEnumerable<DepartmentPosition> departmentPositions,
-        CancellationToken cancellationToken)
+    public async Task<UnitResult<Error>> Save(CancellationToken cancellationToken)
     {
         try
         {
-            await _dbContext.DepartmentPositions.AddRangeAsync(departmentPositions, cancellationToken);
-
             await _dbContext.SaveChangesAsync(cancellationToken);
 
             return UnitResult.Success<Error>();
         }
         catch (Exception e)
         {
-            string message = "Failed to insert DepartmentPosition navigation";
+            string message = "Failed to save changes";
 
             _logger.LogError(e, message);
 
-            return Error.Failure("department.position.insert", message);
+            return Error.Failure("database", message);
         }
     }
 }

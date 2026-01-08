@@ -15,7 +15,7 @@ namespace DirectoryService.Application.Positions.Create;
 
 public class CreatePositionHandler
 {
-    private readonly IPositionsRepository _postionsRepository;
+    private readonly IPositionsRepository _positionsRepository;
     private readonly IDepartmentsRepository _departmentsRepository;
     private readonly ITransactionManager _transactionManager;
     private readonly ISqlConnectionFactory _sqlConnectionFactory;
@@ -30,7 +30,7 @@ public class CreatePositionHandler
         IValidator<CreatePositionCommand> validator,
         ITransactionManager transactionManager)
     {
-        _postionsRepository = postionsRepository;
+        _positionsRepository = postionsRepository;
         _departmentsRepository = departmentsRepository;
         _sqlConnectionFactory = sqlConnectionFactory;
         _logger = logger;
@@ -66,19 +66,34 @@ public class CreatePositionHandler
 
         var position = new Position(positionId, name, description, createdAt);
 
-        var addResult = await _postionsRepository.Add(position, cancellationToken);
+        var addResult = await _positionsRepository.Add(position, cancellationToken);
 
         if (addResult.IsFailure)
         {
             return addResult.Error;
         }
 
-        var departmentPositions = command.Departments
-            .Select(d => DepartmentPosition.Create(DepartmentId.Create(d), positionId).Value).ToList();
+        foreach (Guid depId in command.Departments)
+        {
+            var id = DepartmentId.Create(depId);
 
-        await _departmentsRepository.AddPositions(departmentPositions, cancellationToken);
+            var dep = await _departmentsRepository.GetById(id, cancellationToken);
 
-        _logger.LogInformation("Position created with id={Id}", positionId.Value);
+            if (dep.IsFailure)
+                return dep.Error;
+
+            var depValue = dep.Value;
+
+            var addPositionResult = depValue.AddPosition(positionId.Value);
+
+            if (addPositionResult.IsFailure)
+                return addPositionResult.Error;
+        }
+
+        var saveResult = await _departmentsRepository.Save(cancellationToken);
+
+        if (saveResult.IsFailure)
+            return saveResult.Error;
 
         return position.Id.Value;
     }

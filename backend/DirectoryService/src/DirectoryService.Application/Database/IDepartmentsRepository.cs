@@ -11,5 +11,5 @@ public interface IDepartmentsRepository
 
     Task<Result<Guid, Error>> Add(Department department, CancellationToken cancellationToken);
 
-    Task<UnitResult<Error>> AddPositions(IEnumerable<DepartmentPosition> departmentPositions, CancellationToken cancellationToken);
+    Task<UnitResult<Error>> Save(CancellationToken cancellationToken);
 }
