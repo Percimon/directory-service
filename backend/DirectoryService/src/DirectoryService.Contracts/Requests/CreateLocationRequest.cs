@@ -1,4 +1,4 @@
-﻿namespace DirectoryService.Contracts;
+﻿namespace DirectoryService.Contracts.Requests;
 
 public record CreateLocationRequest(
     string Name,

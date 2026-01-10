@@ -13,7 +13,6 @@ public sealed class DepartmentPosition
 
     private DepartmentPosition(DepartmentId departmentId, PositionId positionId)
     {
-        Id = Guid.NewGuid();
         DepartmentId = departmentId;
         PositionId = positionId;
     }

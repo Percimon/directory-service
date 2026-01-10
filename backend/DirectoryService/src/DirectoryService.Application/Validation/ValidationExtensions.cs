@@ -8,20 +8,19 @@ using FluentValidation.Results;
 using SharedKernel;
 using ValidationResult = FluentValidation.Results.ValidationResult;
 
-namespace DirectoryService.Application.Validation
-{
-    public static class ValidationExtensions
-    {
-        public static Error ToError(this ValidationResult validationResult)
-        {
-            IEnumerable<ErrorMessage> errorMessages = validationResult
-                .Errors
-                .SelectMany(e =>
-                {
-                    return JsonSerializer.Deserialize<Error>(e.ErrorMessage).Messages;
-                });
+namespace DirectoryService.Application.Validation;
 
-            return Error.Validation(errorMessages);
-        }
+public static class ValidationExtensions
+{
+    public static Error ToError(this ValidationResult validationResult)
+    {
+        IEnumerable<ErrorMessage> errorMessages = validationResult
+            .Errors
+            .SelectMany(e =>
+            {
+                return JsonSerializer.Deserialize<Error>(e.ErrorMessage).Messages;
+            });
+
+        return Error.Validation(errorMessages);
     }
 }

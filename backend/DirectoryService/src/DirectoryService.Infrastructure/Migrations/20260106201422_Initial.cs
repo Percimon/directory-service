@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DirectoryService.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Iinitial : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,13 +16,13 @@ namespace DirectoryService.Infrastructure.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
+                    name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    identifier = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
                     fk_parent_id = table.Column<Guid>(type: "uuid", nullable: true),
                     is_active = table.Column<bool>(type: "boolean", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     depth = table.Column<int>(type: "integer", nullable: false),
-                    identifier = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
-                    name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     path = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false)
                 },
                 constraints: table =>
@@ -61,11 +61,11 @@ namespace DirectoryService.Infrastructure.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
+                    name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     is_active = table.Column<bool>(type: "boolean", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
-                    name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
+                    description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -148,6 +148,18 @@ namespace DirectoryService.Infrastructure.Migrations
                 column: "fk_parent_id");
 
             migrationBuilder.CreateIndex(
+                name: "ix_departments_identifier",
+                table: "departments",
+                column: "identifier",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_departments_name",
+                table: "departments",
+                column: "name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "ix_locations_address",
                 table: "locations",
                 columns: new[] { "city", "district", "street", "structure" },
@@ -156,6 +168,12 @@ namespace DirectoryService.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "ix_locations_name",
                 table: "locations",
+                column: "name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_positions_name",
+                table: "positions",
                 column: "name",
                 unique: true);
         }
