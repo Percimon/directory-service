@@ -14,14 +14,13 @@ public sealed class DepartmentLocation
 
     private DepartmentLocation(DepartmentId departmentId, LocationId locationId)
     {
-        Id = Guid.NewGuid();
         DepartmentId = departmentId;
         LocationId = locationId;
     }
 
     public Guid Id { get; }
 
-    public Department Department { get; } = null!;
+    public Department Department { get; }
 
     public DepartmentId DepartmentId { get; }
 

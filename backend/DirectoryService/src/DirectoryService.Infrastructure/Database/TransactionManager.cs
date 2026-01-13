@@ -53,8 +53,6 @@ public class TransactionManager : ITransactionManager
     {
         try
         {
-            var x = _dbContext.ChangeTracker.Entries;
-
             await _dbContext.SaveChangesAsync(cancellationToken);
 
             return UnitResult.Success<Error>();

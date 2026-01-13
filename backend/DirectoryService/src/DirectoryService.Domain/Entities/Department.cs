@@ -8,11 +8,11 @@ namespace DirectoryService.Domain.Entities;
 
 public sealed class Department : SharedKernel.Entity<DepartmentId>
 {
-    private readonly List<Department> _children;
+    private List<Department> _children;
 
-    private readonly List<DepartmentPosition> _departmentPositions;
+    private List<DepartmentPosition> _departmentPositions;
 
-    private readonly List<DepartmentLocation> _departmentLocations;
+    private List<DepartmentLocation> _departmentLocations;
 
     private bool _isActive = true;
 
@@ -135,19 +135,15 @@ public sealed class Department : SharedKernel.Entity<DepartmentId>
             locations);
     }
 
-    public UnitResult<Error> AddLocation(Guid locationId)
+    public UnitResult<Error> UpdateLocations(IEnumerable<Guid> locationIds)
     {
-        var searchResult = _departmentLocations
-            .FirstOrDefault(x => x.LocationId.Value == locationId);
+        var departmentLocations = locationIds
+            .Select(i => DepartmentLocation.Create(this.Id, LocationId.Create(i)).Value)
+            .ToList();
 
-        if (searchResult is null)
-        {
-            _departmentLocations.Add(DepartmentLocation.Create(Id, LocationId.Create(locationId)).Value);
+        _departmentLocations = departmentLocations;
 
-            return Result.Success<Error>();
-        }
-
-        return GeneralErrors.AlreadyExists(nameof(Department), nameof(locationId), locationId.ToString());
+        return UnitResult.Success<Error>();
     }
 
     public UnitResult<Error> RemoveLocation(Guid locationId)

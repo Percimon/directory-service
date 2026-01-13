@@ -24,14 +24,14 @@ public class DepartmentLocationConfiguration : IEntityTypeConfiguration<Departme
             .WithMany(d => d.DepartmentLocations)
             .HasForeignKey(dl => dl.DepartmentId)
             .IsRequired()
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder
             .HasOne<Location>()
             .WithMany()
             .HasForeignKey(x => x.LocationId)
             .IsRequired()
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
 
     }
 }

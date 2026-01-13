@@ -29,9 +29,6 @@ public class DepartmentsRepository : IDepartmentsRepository
         CancellationToken cancellationToken = default)
     {
         var result = _dbContext.Departments
-            .Include(d => d.Children)
-            .Include(d => d.DepartmentLocations)
-            .Include(d => d.DepartmentPositions)
             .FirstOrDefault(d => d.Id == id && d.IsActive);
 
         if (result is null)
@@ -97,5 +94,19 @@ public class DepartmentsRepository : IDepartmentsRepository
 
             return Error.Failure("database", message);
         }
+    }
+
+    public async Task<Result<Department, Error>> GetByIdWithLocations(DepartmentId id, CancellationToken cancellationToken)
+    {
+        var result = _dbContext.Departments
+            .Include(d => d.DepartmentLocations)
+            .FirstOrDefault(d => d.Id == id && d.IsActive);
+
+        if (result is null)
+        {
+            return GeneralErrors.NotFound(id.Value);
+        }
+
+        return result;
     }
 }
