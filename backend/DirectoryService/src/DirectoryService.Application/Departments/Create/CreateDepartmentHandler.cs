@@ -16,18 +16,18 @@ namespace DirectoryService.Application.Departments.Create;
 public class CreateDepartmentHandler
 {
     private readonly IDepartmentsRepository _departmentsRepository;
-    private readonly ISqlConnectionFactory _sqlConnectionFactory;
+    private readonly ILocationsRepository _locationsRepository;
     private readonly ILogger<CreateDepartmentHandler> _logger;
     private readonly IValidator<CreateDepartmentCommand> _validator;
 
     public CreateDepartmentHandler(
         IDepartmentsRepository departmentsRepository,
-        ISqlConnectionFactory sqlConnectionFactory,
+        ILocationsRepository locationsRepository,
         ILogger<CreateDepartmentHandler> logger,
         IValidator<CreateDepartmentCommand> validator)
     {
         _departmentsRepository = departmentsRepository;
-        _sqlConnectionFactory = sqlConnectionFactory;
+        _locationsRepository = locationsRepository;
         _logger = logger;
         _validator = validator;
     }
@@ -49,11 +49,15 @@ public class CreateDepartmentHandler
 
         Identifier identifier = Identifier.Create(command.Identifier).Value;
 
-        bool locationsAreExist = AllIdsAreExist(command.Locations);
+        List<LocationId> locationIds = command.Locations
+                    .Select(i => LocationId.Create(i))
+                    .ToList();
 
-        if (!locationsAreExist)
+        UnitResult<Error> locationsAreExist = await _locationsRepository.LocationsExist(locationIds, cancellationToken);
+
+        if (locationsAreExist.IsFailure)
         {
-            return GeneralErrors.NotFound();
+            return locationsAreExist.Error;
         }
 
         IEnumerable<DepartmentLocation> departmentLocations = command.Locations
@@ -104,27 +108,6 @@ public class CreateDepartmentHandler
             _logger.LogInformation("Child department created with id={Id}", departmentId.Value);
 
             return departmentResult.Value.Id.Value;
-        }
-    }
-
-    private bool AllIdsAreExist(IReadOnlyList<Guid> ids)
-    {
-        DynamicParameters parameters = new DynamicParameters();
-
-        parameters.Add("@Ids", ids);
-
-        string query =
-            """
-                SELECT COUNT(id) 
-                FROM locations 
-                WHERE id = ANY(@Ids) AND is_active = TRUE;
-            """;
-
-        using (var connection = _sqlConnectionFactory.Create())
-        {
-            int count = connection.ExecuteScalar<int>(query, parameters);
-
-            return count == ids.Count;
         }
     }
 }

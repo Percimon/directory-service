@@ -65,7 +65,7 @@ public class LocationsRepository : ILocationsRepository
         }
     }
 
-    public UnitResult<Error> IdExists(LocationId id)
+    public UnitResult<Error> LocationExists(LocationId id)
     {
         var query = _dbContext.Locations.FirstOrDefault(l => id == l.Id && l.IsActive);
 
@@ -73,5 +73,33 @@ public class LocationsRepository : ILocationsRepository
             return GeneralErrors.NotFound(id.Value);
 
         return UnitResult.Success<Error>();
+    }
+
+    public async Task<UnitResult<Error>> LocationsExist(IEnumerable<LocationId> ids, CancellationToken cancellationToken)
+    {
+        try
+        {
+            if (ids is null)
+                return Error.NotFound("location.id", "Locations id list is null");
+
+            LocationId[] locationIds = ids.ToArray();
+
+            int expectedCount = locationIds.Length;
+
+            if (expectedCount == 0)
+                return Error.NotFound("location.id", "Locations id list is empty");
+
+            int count = await _dbContext.Locations
+                .Where(l => Array.IndexOf(locationIds, l.Id) > -1 && l.IsActive)
+                .CountAsync(cancellationToken);
+
+            return expectedCount == count
+                ? UnitResult.Success<Error>()
+                : Error.NotFound("location.id", "One of location ids were not found");
+        }
+        catch (Exception ex)
+        {
+            return Error.Failure("database", "Locations id count failed");
+        }
     }
 }

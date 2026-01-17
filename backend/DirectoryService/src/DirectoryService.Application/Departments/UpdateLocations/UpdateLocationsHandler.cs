@@ -15,22 +15,22 @@ namespace DirectoryService.Application.Departments.UpdateLocations;
 public class UpdateLocationsHandler
 {
     private readonly IDepartmentsRepository _departmentsRepository;
+    private readonly ILocationsRepository _locationsRepository;
     private readonly ITransactionManager _transactionManager;
     private readonly ILogger<UpdateLocationsHandler> _logger;
     private readonly IValidator<UpdateLocationsCommand> _validator;
-    private readonly ISqlConnectionFactory _sqlConnectionFactory;
 
     public UpdateLocationsHandler(
         IDepartmentsRepository departmentsRepository,
+        ILocationsRepository locationsRepository,
         ILogger<UpdateLocationsHandler> logger,
         IValidator<UpdateLocationsCommand> validator,
-        ISqlConnectionFactory sqlConnectionFactory,
         ITransactionManager transactionManager)
     {
         _departmentsRepository = departmentsRepository;
+        _locationsRepository = locationsRepository;
         _logger = logger;
         _validator = validator;
-        _sqlConnectionFactory = sqlConnectionFactory;
         _transactionManager = transactionManager;
     }
 
@@ -63,13 +63,17 @@ public class UpdateLocationsHandler
             return depResult.Error;
         }
 
-        bool locationsAreExist = AllIdsAreExist(command.LocationIds);
+        List<LocationId> locationIds = command.LocationIds
+            .Select(i => LocationId.Create(i))
+            .ToList();
 
-        if (!locationsAreExist)
+        UnitResult<Error> locationsAreExist = await _locationsRepository.LocationsExist(locationIds, cancellationToken);
+
+        if (locationsAreExist.IsFailure)
         {
             transactionScope.Rollback();
 
-            return GeneralErrors.NotFound();
+            return locationsAreExist.Error;
         }
 
         depResult.Value.UpdateLocations(command.LocationIds);
@@ -95,26 +99,5 @@ public class UpdateLocationsHandler
         _logger.LogInformation("Locations were updated for department with id={Id}", depId.Value);
 
         return depId.Value;
-    }
-
-    private bool AllIdsAreExist(IReadOnlyList<Guid> ids)
-    {
-        DynamicParameters parameters = new DynamicParameters();
-
-        parameters.Add("@Ids", ids);
-
-        string query =
-            """
-                SELECT COUNT(id) 
-                FROM locations 
-                WHERE id = ANY(@Ids) AND is_active = TRUE;
-            """;
-
-        using (var connection = _sqlConnectionFactory.Create())
-        {
-            int count = connection.ExecuteScalar<int>(query, parameters);
-
-            return count == ids.Count;
-        }
     }
 }
