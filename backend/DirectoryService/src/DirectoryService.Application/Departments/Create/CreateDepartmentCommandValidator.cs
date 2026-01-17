@@ -2,6 +2,7 @@ using DirectoryService.Application.Departments.Create;
 using DirectoryService.Application.Validation;
 using DirectoryService.Domain.ValueObjects;
 using FluentValidation;
+using SharedKernel;
 using TimeZone = DirectoryService.Domain.ValueObjects.TimeZone;
 
 namespace DirectoryService.Application.Locations.Create;
@@ -19,6 +20,6 @@ public class CreateDepartmentCommandValidator : AbstractValidator<CreateDepartme
         RuleFor(x => x.Locations)
             .NotEmpty()
             .Must(locations => locations.Distinct().Count() == locations.Count)
-            .WithMessage("Location IDs list must not be empty and must not contain duplicates");
+            .WithError(GeneralErrors.ValueIsInvalid("Location IDs list"));
     }
 }

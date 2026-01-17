@@ -29,9 +29,6 @@ public class DepartmentsRepository : IDepartmentsRepository
         CancellationToken cancellationToken = default)
     {
         var result = _dbContext.Departments
-            .Include(d => d.Children)
-            .Include(d => d.DepartmentLocations)
-            .Include(d => d.DepartmentPositions)
             .FirstOrDefault(d => d.Id == id && d.IsActive);
 
         if (result is null)
@@ -96,6 +93,62 @@ public class DepartmentsRepository : IDepartmentsRepository
             _logger.LogError(e, message);
 
             return Error.Failure("database", message);
+        }
+    }
+
+    public async Task<Result<Department, Error>> GetByIdWithLocations(DepartmentId id, CancellationToken cancellationToken)
+    {
+        var result = _dbContext.Departments
+            .Include(d => d.DepartmentLocations)
+            .FirstOrDefault(d => d.Id == id && d.IsActive);
+
+        if (result is null)
+        {
+            return GeneralErrors.NotFound(id.Value);
+        }
+
+        return result;
+    }
+
+    public async Task<Result<Department, Error>> GetByIdWithPositions(DepartmentId id, CancellationToken cancellationToken)
+    {
+        var result = _dbContext.Departments
+           .Include(d => d.DepartmentPositions)
+           .FirstOrDefault(d => d.Id == id && d.IsActive);
+
+        if (result is null)
+        {
+            return GeneralErrors.NotFound(id.Value);
+        }
+
+        return result;
+    }
+
+    public async Task<UnitResult<Error>> DepartmentsExist(IEnumerable<DepartmentId> ids, CancellationToken cancellationToken)
+    {
+        try
+        {
+            if (ids is null)
+                return Error.NotFound("department.id", "Departments id list is null");
+
+            DepartmentId[] departmentIds = ids.ToArray();
+
+            int expectedCount = departmentIds.Length;
+
+            if (expectedCount == 0)
+                return Error.NotFound("department.id", "Departments id list is empty");
+
+            int count = await _dbContext.Departments
+                .Where(l => Array.IndexOf(departmentIds, l.Id) > -1 && l.IsActive)
+                .CountAsync(cancellationToken);
+
+            return expectedCount == count
+                ? UnitResult.Success<Error>()
+                : Error.NotFound("department.id", "One of department ids were not found");
+        }
+        catch (Exception ex)
+        {
+            return Error.Failure("database", "Department id count failed");
         }
     }
 }

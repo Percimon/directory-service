@@ -7,7 +7,9 @@ namespace DirectoryService.Application.Database;
 
 public interface ILocationsRepository
 {
-    Task<Result<Guid, Error>> Add(Location location, CancellationToken cancellationToken = default);
+    Task<Result<Guid, Error>> Add(Location location, CancellationToken cancellationToken);
 
-    UnitResult<Error> IdExists(LocationId id);
+    UnitResult<Error> LocationExists(LocationId id);
+
+    Task<UnitResult<Error>> LocationsExist(IEnumerable<LocationId> ids, CancellationToken cancellationToken);
 }

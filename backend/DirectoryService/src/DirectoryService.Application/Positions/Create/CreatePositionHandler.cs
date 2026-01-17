@@ -18,21 +18,18 @@ public class CreatePositionHandler
     private readonly IPositionsRepository _positionsRepository;
     private readonly IDepartmentsRepository _departmentsRepository;
     private readonly ITransactionManager _transactionManager;
-    private readonly ISqlConnectionFactory _sqlConnectionFactory;
     private readonly ILogger<CreatePositionHandler> _logger;
     private readonly IValidator<CreatePositionCommand> _validator;
 
     public CreatePositionHandler(
         IPositionsRepository postionsRepository,
         IDepartmentsRepository departmentsRepository,
-        ISqlConnectionFactory sqlConnectionFactory,
         ILogger<CreatePositionHandler> logger,
         IValidator<CreatePositionCommand> validator,
         ITransactionManager transactionManager)
     {
         _positionsRepository = postionsRepository;
         _departmentsRepository = departmentsRepository;
-        _sqlConnectionFactory = sqlConnectionFactory;
         _logger = logger;
         _validator = validator;
         _transactionManager = transactionManager;
@@ -55,11 +52,15 @@ public class CreatePositionHandler
 
         Description description = Description.Create(command.Description).Value;
 
-        bool departmentsAreExist = AllIdsAreExist(command.Departments);
+        List<DepartmentId> departmentIds = command.Departments
+           .Select(i => DepartmentId.Create(i))
+           .ToList();
 
-        if (!departmentsAreExist)
+        UnitResult<Error> departmentsAreExist = await _departmentsRepository.DepartmentsExist(departmentIds, cancellationToken);
+
+        if (departmentsAreExist.IsFailure)
         {
-            return GeneralErrors.NotFound();
+            return departmentsAreExist.Error;
         }
 
         DateTime createdAt = DateTime.UtcNow;
@@ -77,7 +78,7 @@ public class CreatePositionHandler
         {
             var id = DepartmentId.Create(depId);
 
-            var dep = await _departmentsRepository.GetById(id, cancellationToken);
+            var dep = await _departmentsRepository.GetByIdWithPositions(id, cancellationToken);
 
             if (dep.IsFailure)
                 return dep.Error;
@@ -96,26 +97,5 @@ public class CreatePositionHandler
             return saveResult.Error;
 
         return position.Id.Value;
-    }
-
-    private bool AllIdsAreExist(IReadOnlyList<Guid> ids)
-    {
-        DynamicParameters parameters = new DynamicParameters();
-
-        parameters.Add("@Ids", ids);
-
-        string query =
-            $"""
-                SELECT COUNT(id) 
-                FROM departments 
-                WHERE id = ANY(@Ids) AND is_active = TRUE;
-            """;
-
-        using (var connection = _sqlConnectionFactory.Create())
-        {
-            int count = connection.ExecuteScalar<int>(query, parameters);
-
-            return count == ids.Count;
-        }
     }
 }
