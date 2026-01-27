@@ -1,13 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
 using CSharpFunctionalExtensions;
 using FluentValidation;
-using SharedKernel;
+using SharedService.SharedKernel;
 
-namespace DirectoryService.Application.Validation;
+namespace SharedService.Core.Validation;
 
 public static class CustomValidators
 {

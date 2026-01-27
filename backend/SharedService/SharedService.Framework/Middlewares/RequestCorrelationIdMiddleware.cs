@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using DirectoryService.Presentation.Middlewares;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using Serilog.Context;
 
-namespace DirectoryService.Presentation.Middlewares;
+namespace SharedService.Framework.Middlewares;
 
 public class RequestCorrelationIdMiddleware
 {

@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace SharedKernel;
+namespace SharedService.SharedKernel;
 
 public record Envelope
 {
