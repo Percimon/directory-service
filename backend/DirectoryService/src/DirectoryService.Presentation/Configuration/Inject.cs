@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using DirectoryService.Application;
-using Serilog;
-using Serilog.Exceptions;
+﻿using DirectoryService.Application;
+using SharedService.Framework.Logging;
+using SharedService.Framework.Swagger;
 
 namespace DirectoryService.Presentation.Configuration;
 
@@ -12,9 +8,11 @@ public static class Inject
 {
     public static IServiceCollection AddConfiguration(this IServiceCollection services, IConfiguration configuration)
     {
-        return services.AddControllers()
-            .AddOpenApiSpec()
-            .AddSerilogLogging(configuration)
+        services.AddControllers();
+
+        return services
+            .AddOpenApiSpec("DirectoryService", "v1")
+            .AddSerilogLogging(configuration, "DirectoryService")
             .InjectApplication()
             .InjectInfrastructure(configuration);
     }

@@ -2,7 +2,7 @@
   <PropertyGroup>
     <!-- Package Metadata Properties -->
     <PackageId>Percimon.Framework</PackageId>
-    <Version>0.0.1</Version>
+    <Version>0.0.2</Version>
     <Authors>Percimon</Authors>
     <Description>Framework</Description>
     <RepositoryUrl>https://github.com/Percimon/directory-service</RepositoryUrl>

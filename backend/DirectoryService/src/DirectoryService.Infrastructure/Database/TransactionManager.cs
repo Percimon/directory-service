@@ -1,13 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using CSharpFunctionalExtensions;
-using DirectoryService.Application.Abstractions;
+﻿using CSharpFunctionalExtensions;
 using DirectoryService.Application.Database;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
-using SharedKernel;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Infrastructure.Database;
 

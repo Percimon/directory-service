@@ -1,8 +1,11 @@
-<Project>
+﻿<Project>
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
+    <PackageVersion Include="Percimon.SharedKernel" Version="0.0.1" />
+    <PackageVersion Include="Percimon.Framework" Version="0.0.2" />
+    <PackageVersion Include="Percimon.Core" Version="0.0.1" />
     <PackageVersion Include="StyleCop.Analyzers" Version="1.1.118" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="9.0.3" />
     <PackageVersion Include="CSharpFunctionalExtensions" Version="3.6.0" />

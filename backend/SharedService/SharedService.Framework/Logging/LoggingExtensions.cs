@@ -11,7 +11,7 @@ namespace SharedService.Framework.Logging
 {
     public static class LoggingExtensions
     {
-        private static IServiceCollection AddSerilogLogging(
+        public static IServiceCollection AddSerilogLogging(
             this IServiceCollection services,
             IConfiguration configuration,
             string serviceName)

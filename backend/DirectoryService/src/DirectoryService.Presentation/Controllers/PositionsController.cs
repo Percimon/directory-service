@@ -1,8 +1,7 @@
-using DirectoryService.Application.Locations.Create;
-using DirectoryService.Application.Positions.Create;
+﻿using DirectoryService.Application.Positions.Create;
 using DirectoryService.Contracts.Requests;
-using DirectoryService.Presentation.EndpointResults;
 using Microsoft.AspNetCore.Mvc;
+using SharedService.Framework.EndpointResults;
 
 namespace DirectoryService.Presentation.Controllers;
 

@@ -1,12 +1,12 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Domain.Identifiers;
 using DirectoryService.Domain.ValueObjects;
-using SharedKernel;
+using SharedService.SharedKernel;
 using Path = DirectoryService.Domain.ValueObjects.Path;
 
 namespace DirectoryService.Domain.Entities;
 
-public sealed class Department : SharedKernel.Entity<DepartmentId>
+public sealed class Department : SharedService.SharedKernel.Entity<DepartmentId>
 {
     private List<Department> _children;
 

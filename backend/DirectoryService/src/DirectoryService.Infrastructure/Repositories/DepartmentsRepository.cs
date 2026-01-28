@@ -1,4 +1,4 @@
-using CSharpFunctionalExtensions;
+﻿using CSharpFunctionalExtensions;
 using DirectoryService.Application.Database;
 using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.Identifiers;
@@ -6,7 +6,7 @@ using DirectoryService.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Npgsql;
-using SharedKernel;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Infrastructure.Repositories;
 

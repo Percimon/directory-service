@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <PackageReference Include="CSharpFunctionalExtensions"/>
+    <PackageReference Include="CSharpFunctionalExtensions" />
+    <PackageReference Include="Percimon.SharedKernel" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SharedKernel\SharedKernel.csproj" />
