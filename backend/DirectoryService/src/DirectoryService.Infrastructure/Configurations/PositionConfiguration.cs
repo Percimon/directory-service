@@ -1,7 +1,8 @@
-using DirectoryService.Domain.Entities;
+﻿using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.Identifiers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Infrastructure.Configurations;
 
