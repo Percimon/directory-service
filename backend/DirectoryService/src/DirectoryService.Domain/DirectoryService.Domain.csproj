@@ -3,7 +3,4 @@
     <PackageReference Include="CSharpFunctionalExtensions" />
     <PackageReference Include="Percimon.SharedKernel" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SharedKernel\SharedKernel.csproj" />
-  </ItemGroup>
 </Project>
