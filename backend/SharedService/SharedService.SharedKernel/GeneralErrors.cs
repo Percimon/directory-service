@@ -1,4 +1,4 @@
-﻿namespace SharedKernel;
+﻿namespace SharedService.SharedKernel;
 
 public static class GeneralErrors
 {

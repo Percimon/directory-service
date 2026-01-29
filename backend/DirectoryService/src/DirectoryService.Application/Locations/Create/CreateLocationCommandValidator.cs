@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using DirectoryService.Application.Validation;
-using DirectoryService.Contracts;
-using DirectoryService.Domain.ValueObjects;
+﻿using DirectoryService.Domain.ValueObjects;
 using FluentValidation;
+using SharedService.Core.Validation;
+using SharedService.SharedKernel;
 using TimeZone = DirectoryService.Domain.ValueObjects.TimeZone;
 
 namespace DirectoryService.Application.Locations.Create;

@@ -1,10 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using SharedKernel;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using SharedService.SharedKernel;
 
-namespace DirectoryService.Presentation.Middlewares;
+namespace SharedService.Framework.Middlewares;
 
 public class ExceptionMiddleware
 {

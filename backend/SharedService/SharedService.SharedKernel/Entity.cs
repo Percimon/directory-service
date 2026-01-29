@@ -1,4 +1,4 @@
-﻿namespace SharedKernel;
+﻿namespace SharedService.SharedKernel;
 
 public abstract class Entity<TId> where TId : notnull
 {

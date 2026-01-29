@@ -1,8 +1,8 @@
-using System.Data;
+﻿using System.Data;
 using CSharpFunctionalExtensions;
 using DirectoryService.Application.Database;
 using Microsoft.Extensions.Logging;
-using SharedKernel;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Infrastructure.Database;
 

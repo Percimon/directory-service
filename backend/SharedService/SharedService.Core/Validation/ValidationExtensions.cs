@@ -1,14 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text.Json;
-using System.Threading.Tasks;
-using FluentValidation.Results;
-using SharedKernel;
+﻿using System.Text.Json;
+using SharedService.SharedKernel;
 using ValidationResult = FluentValidation.Results.ValidationResult;
 
-namespace DirectoryService.Application.Validation;
+namespace SharedService.Core.Validation;
 
 public static class ValidationExtensions
 {

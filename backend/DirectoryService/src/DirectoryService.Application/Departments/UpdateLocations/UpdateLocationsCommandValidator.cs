@@ -1,6 +1,6 @@
-using DirectoryService.Application.Validation;
-using FluentValidation;
-using SharedKernel;
+﻿using FluentValidation;
+using SharedService.Core.Validation;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Application.Departments.UpdateLocations;
 

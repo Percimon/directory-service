@@ -1,0 +1,10 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- Package Metadata Properties -->
+    <PackageId>Percimon.SharedKernel</PackageId>
+    <Version>0.0.1</Version>
+    <Authors>Percimon</Authors>
+    <Description>SharedKernel</Description>
+    <RepositoryUrl>https://github.com/Percimon/directory-service</RepositoryUrl>
+  </PropertyGroup>
+</Project>

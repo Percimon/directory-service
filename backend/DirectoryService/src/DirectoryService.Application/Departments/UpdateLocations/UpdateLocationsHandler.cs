@@ -1,14 +1,12 @@
-using CSharpFunctionalExtensions;
-using Dapper;
-using DirectoryService.Application.Abstractions;
+﻿using CSharpFunctionalExtensions;
 using DirectoryService.Application.Database;
-using DirectoryService.Application.Validation;
 using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.Identifiers;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
-using SharedKernel;
+using SharedService.Core.Validation;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Application.Departments.UpdateLocations;
 

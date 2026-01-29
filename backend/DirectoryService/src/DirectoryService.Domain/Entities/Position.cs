@@ -1,6 +1,6 @@
 ﻿using DirectoryService.Domain.Identifiers;
 using DirectoryService.Domain.ValueObjects;
-using SharedKernel;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Domain.Entities;
 

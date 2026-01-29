@@ -1,9 +1,8 @@
-using DirectoryService.Application.Departments.Create;
-using DirectoryService.Application.Validation;
+﻿using DirectoryService.Application.Departments.Create;
 using DirectoryService.Domain.ValueObjects;
 using FluentValidation;
-using SharedKernel;
-using TimeZone = DirectoryService.Domain.ValueObjects.TimeZone;
+using SharedService.Core.Validation;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Application.Locations.Create;
 
