@@ -1,5 +1,4 @@
-﻿using FileService.Application;
-using SharedService.Framework.Logging;
+﻿using SharedService.Framework.Logging;
 using SharedService.Framework.Swagger;
 
 namespace FileService.Web.Configuration;
@@ -12,8 +11,6 @@ public static class Inject
 
         return services
             .AddOpenApiSpec("FileService", "v1")
-            .AddSerilogLogging(configuration, "FileService")
-            .InjectApplication()
-            .InjectInfrastructure(configuration);
+            .AddSerilogLogging(configuration, "FileService");
     }
 }
