@@ -1,4 +1,4 @@
-﻿using DirectoryService.Application;
+﻿using FileService.Application;
 using SharedService.Framework.Logging;
 using SharedService.Framework.Swagger;
 

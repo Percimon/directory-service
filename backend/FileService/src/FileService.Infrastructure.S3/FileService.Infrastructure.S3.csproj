@@ -2,4 +2,7 @@
   <ItemGroup>
     <PackageReference Include="Percimon.SharedKernel" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../FileService.Core/FileService.Core.csproj" />
+  </ItemGroup>
 </Project>

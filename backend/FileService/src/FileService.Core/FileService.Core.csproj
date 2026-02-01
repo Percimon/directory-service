@@ -6,4 +6,7 @@
     <PackageReference Include="Percimon.Core" />
     <PackageReference Include="Percimon.SharedKernel" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../FileService.Domain/FileService.Domain.csproj" />
+  </ItemGroup>
 </Project>
