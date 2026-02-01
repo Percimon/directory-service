@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+﻿FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 USER $APP_UID
 WORKDIR /app
 EXPOSE 9001
@@ -12,7 +12,6 @@ COPY ["src/DirectoryService.Contracts/DirectoryService.Contracts.csproj", "Direc
 COPY ["src/DirectoryService.Domain/DirectoryService.Domain.csproj", "DirectoryService.Domain/"]
 COPY ["src/DirectoryService.Infrastructure/DirectoryService.Infrastructure.csproj", "DirectoryService.Infrastructure/"]
 COPY ["src/DirectoryService.Presentation/DirectoryService.Presentation.csproj", "DirectoryService.Presentation/"]
-COPY ["src/SharedKernel/SharedKernel.csproj", "SharedKernel/"]
 
 COPY ["Directory.Build.props", "./"]
 COPY ["Directory.Packages.props", "./"]
