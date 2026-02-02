@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="CSharpFunctionalExtensions" />
+    <PackageReference Include="Dapper" />
+    <PackageReference Include="Microsoft.Extensions.Logging" />
+    <PackageReference Include="Percimon.Core" />
+    <PackageReference Include="Percimon.SharedKernel" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../FileService.Domain/FileService.Domain.csproj" />
+  </ItemGroup>
+</Project>

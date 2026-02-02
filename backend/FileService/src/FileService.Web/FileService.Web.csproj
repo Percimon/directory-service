@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Percimon.Framework" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../FileService.Contracts/FileService.Contracts.csproj" />
+    <ProjectReference Include="../FileService.Core/FileService.Core.csproj" />
+    <ProjectReference Include="../FileService.Domain/FileService.Domain.csproj" />
+    <ProjectReference Include="../FileService.Infrastructure.Postgres/FileService.Infrastructure.Postgres.csproj" />
+    <ProjectReference Include="../FileService.Infrastructure.S3/FileService.Infrastructure.S3.csproj" />
+  </ItemGroup>
+</Project>
