@@ -1,4 +1,5 @@
-﻿using DirectoryService.Application.Departments.Create;
+﻿using DirectoryService.Application.Departments.ChangeParent;
+using DirectoryService.Application.Departments.Create;
 using DirectoryService.Application.Departments.UpdateLocations;
 using DirectoryService.Contracts.Requests;
 using Microsoft.AspNetCore.Mvc;
@@ -33,6 +34,18 @@ public class DepartmentsController : Controller
         CancellationToken cancellationToken = default)
     {
         var command = new UpdateLocationsCommand(departmentId, request.LocationIds);
+
+        return await handler.Handle(command, cancellationToken);
+    }
+
+    [HttpPut("{departmentId}/parent")]
+    public async Task<EndpointResult<Guid>> ChangeParent(
+        [FromRoute] Guid departmentId,
+        [FromServices] ChangeParentHandler handler,
+        [FromBody] ChangeParentRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        var command = new ChangeParentCommand(departmentId, request.NewParentId);
 
         return await handler.Handle(command, cancellationToken);
     }
