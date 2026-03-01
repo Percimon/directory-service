@@ -151,4 +151,18 @@ public class DepartmentsRepository : IDepartmentsRepository
             return Error.Failure("database", "Department id count failed");
         }
     }
+
+    public async Task<Result<Department, Error>> GetByIdWithLock(DepartmentId id, CancellationToken cancellationToken)
+    {
+        var department = await _dbContext.Departments
+            .FromSql($"SELECT * FROM departments WHERE id = {id} FOR UPDATE")
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (department is null)
+        {
+            return GeneralErrors.NotFound(id.Value);
+        }
+
+        return department;
+    }
 }

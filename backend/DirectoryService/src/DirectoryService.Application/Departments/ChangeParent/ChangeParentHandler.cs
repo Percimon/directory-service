@@ -43,6 +43,48 @@ public class ChangeParentHandler : ICommandHandler<Guid, ChangeParentCommand>
             return validationResult.ToError();
         }
 
+        var transactionScopeResult = await _transactionManager.BeginTransactionAsync(cancellationToken);
+
+        if (transactionScopeResult.IsFailure)
+            return transactionScopeResult.Error;
+
+        using var transactionScope = transactionScopeResult.Value;
+
+        var currentDepartment = await _departmentsRepository.GetByIdWithLock(command.DepartmentId, cancellationToken);
+
+        if (currentDepartment.IsFailure)
+            return currentDepartment.Error;
+
+        if (command.NewParentId is not null)
+        {
+            var newParentExistsResult = await _departmentsRepository.DepartmentsExist([command.NewParentId], cancellationToken);
+
+            if (newParentExistsResult.IsFailure)
+            {
+                return Error.NotFound("department.database", "New parent was not found");
+            }
+
+            // Нельзя выбрать своё "дочернее" подразделение
+        }
+
+        var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
+
+        if (saveResult.IsFailure)
+        {
+            transactionScope.Rollback();
+
+            return saveResult.Error;
+        }
+
+        var commitResult = transactionScope.Commit();
+
+        if (commitResult.IsFailure)
+        {
+            transactionScope.Rollback();
+
+            return commitResult.Error;
+        }
+
         return command.DepartmentId;
     }
 }

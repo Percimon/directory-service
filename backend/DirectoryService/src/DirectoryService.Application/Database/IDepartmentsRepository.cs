@@ -9,6 +9,8 @@ public interface IDepartmentsRepository
 {
     Task<Result<Department, Error>> GetById(DepartmentId id, CancellationToken cancellationToken);
 
+    Task<Result<Department, Error>> GetByIdWithLock(DepartmentId id, CancellationToken cancellationToken);
+
     Task<Result<Department, Error>> GetByIdWithLocations(DepartmentId id, CancellationToken cancellationToken);
 
     Task<Result<Department, Error>> GetByIdWithPositions(DepartmentId id, CancellationToken cancellationToken);
