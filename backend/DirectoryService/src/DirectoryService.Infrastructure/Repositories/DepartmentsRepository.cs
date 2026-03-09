@@ -1,5 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
+using Dapper;
 using DirectoryService.Application.Database;
+using DirectoryService.Application.Dtos;
 using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.Identifiers;
 using DirectoryService.Infrastructure.Database;
@@ -155,7 +157,8 @@ public class DepartmentsRepository : IDepartmentsRepository
     public async Task<Result<Department, Error>> GetByIdWithLock(DepartmentId id, CancellationToken cancellationToken)
     {
         var department = await _dbContext.Departments
-            .FromSql($"SELECT * FROM departments WHERE id = {id} FOR UPDATE")
+            .FromSql($"SELECT * FROM departments WHERE id = {id} AND is_active = true FOR UPDATE NOWAIT")
+            .Include(d => d.Children)
             .FirstOrDefaultAsync(cancellationToken);
 
         if (department is null)
@@ -164,5 +167,45 @@ public class DepartmentsRepository : IDepartmentsRepository
         }
 
         return department;
+    }
+
+    public async Task<List<DepartmenDto>> GetHierarchyLtree(string rootPath)
+    {
+        const string sql =
+            """
+            SELECT id, 
+                parent_id, 
+                path, 
+                depth,
+                is_active 
+            FROM departments 
+            WHERE path <@ @rootPath::ltree
+            ORDER BY depth;
+            """;
+
+        var connection = _dbContext.Database.GetDbConnection();
+
+        var parameters = new { rootPath };
+
+        var departmentRows = (await connection.QueryAsync<DepartmenDto>(sql, parameters))
+            .ToList();
+
+        var departmentDictionary = departmentRows.ToDictionary(x => x.Id);
+
+        var roots = new List<DepartmenDto>();
+
+        foreach (var row in departmentRows)
+        {
+            if (row.Parent.HasValue && departmentDictionary.TryGetValue(row.Parent.Value, out var parent))
+            {
+                parent.Children.Add(departmentDictionary[row.Id]);
+            }
+            else
+            {
+                roots.Add(departmentDictionary[row.Id]);
+            }
+        }
+
+        return roots;
     }
 }

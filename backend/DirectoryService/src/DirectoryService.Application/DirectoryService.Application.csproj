@@ -10,4 +10,7 @@
     <PackageReference Include="Percimon.Core" />
     <PackageReference Include="Percimon.SharedKernel" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Dtos/" />
+  </ItemGroup>
 </Project>

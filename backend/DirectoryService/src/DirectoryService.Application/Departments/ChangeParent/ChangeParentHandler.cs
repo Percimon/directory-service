@@ -50,19 +50,17 @@ public class ChangeParentHandler : ICommandHandler<Guid, ChangeParentCommand>
 
         using var transactionScope = transactionScopeResult.Value;
 
-        var currentDepartment = await _departmentsRepository.GetByIdWithLock(command.DepartmentId, cancellationToken);
+        var department = await _departmentsRepository.GetByIdWithLock(command.DepartmentId, cancellationToken);
 
-        if (currentDepartment.IsFailure)
-            return currentDepartment.Error;
+        if (department.IsFailure)
+            return department.Error;
 
         if (command.NewParentId is not null)
         {
-            var newParentExistsResult = await _departmentsRepository.DepartmentsExist([command.NewParentId], cancellationToken);
+            var newParent = await _departmentsRepository.GetByIdWithLock(command.NewParentId, cancellationToken);
 
-            if (newParentExistsResult.IsFailure)
-            {
-                return Error.NotFound("department.database", "New parent was not found");
-            }
+            if (newParent.IsFailure)
+                return department.Error;
 
             // Нельзя выбрать своё "дочернее" подразделение
         }
