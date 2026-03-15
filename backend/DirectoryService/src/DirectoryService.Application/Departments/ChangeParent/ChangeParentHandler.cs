@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using CSharpFunctionalExtensions;
+﻿using CSharpFunctionalExtensions;
 using DirectoryService.Application.Database;
 using FluentValidation;
 using FluentValidation.Results;
@@ -50,19 +46,53 @@ public class ChangeParentHandler : ICommandHandler<Guid, ChangeParentCommand>
 
         using var transactionScope = transactionScopeResult.Value;
 
-        var department = await _departmentsRepository.GetByIdWithLock(command.DepartmentId, cancellationToken);
+        var queryResult = await _departmentsRepository.GetByIdWithLock(command.DepartmentId, cancellationToken);
 
-        if (department.IsFailure)
-            return department.Error;
+        if (queryResult.IsFailure)
+        {
+            transactionScope.Rollback();
+
+            return queryResult.Error;
+        }
+
+        string oldPath = queryResult.Value.Path.Value;
+
+        string newPath = string.Empty;
+
+        var lockDescendantsResult = await _departmentsRepository.LockDescendants(oldPath, cancellationToken);
+
+        if (lockDescendantsResult.IsFailure)
+        {
+            return lockDescendantsResult.Error;
+        }
 
         if (command.NewParentId is not null)
         {
             var newParent = await _departmentsRepository.GetByIdWithLock(command.NewParentId, cancellationToken);
 
             if (newParent.IsFailure)
-                return department.Error;
+                return newParent.Error;
 
-            // Нельзя выбрать своё "дочернее" подразделение
+            string newParentPath = newParent.Value.Path.Value;
+
+            if (newParentPath == oldPath || newParentPath.StartsWith($"{oldPath}."))
+            {
+                return GeneralErrors.Failure("New parent can't be child of current parent");
+            }
+
+            newPath = newParentPath;
+        }
+
+        var updateResult = await _departmentsRepository.ChangeParent(
+            oldPath,
+            newPath,
+            command.DepartmentId,
+            command.NewParentId,
+            cancellationToken);
+
+        if (updateResult.IsFailure)
+        {
+            return updateResult.Error;
         }
 
         var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
@@ -82,6 +112,8 @@ public class ChangeParentHandler : ICommandHandler<Guid, ChangeParentCommand>
 
             return commitResult.Error;
         }
+
+        _logger.LogInformation("Родитель  отдела с Id={id} обновлен, включая его дочерние сущности", command.DepartmentId);
 
         return command.DepartmentId;
     }

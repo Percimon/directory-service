@@ -20,4 +20,13 @@ public interface IDepartmentsRepository
     Task<UnitResult<Error>> Save(CancellationToken cancellationToken);
 
     Task<UnitResult<Error>> DepartmentsExist(IEnumerable<DepartmentId> ids, CancellationToken cancellationToken);
+
+    Task<UnitResult<Error>> ChangeParent(
+        string rootPath,
+        string newParentPath,
+        Guid departmentId,
+        Guid? newParentId,
+        CancellationToken cancellationToken);
+
+    Task<UnitResult<Error>> LockDescendants(string rootPath, CancellationToken cancellationToken);
 }

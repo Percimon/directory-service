@@ -1,5 +1,6 @@
 ﻿using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.Identifiers;
+using DirectoryService.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SharedService.SharedKernel;
@@ -55,12 +56,10 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
             .HasMethod("gist")
             .HasDatabaseName("idx_departments_path");
 
-        builder.ComplexProperty(x => x.Depth, tb =>
-        {
-            tb.Property(d => d.Value)
-                .IsRequired()
-                .HasColumnName("depth");
-        });
+        builder.Property(x => x.Depth)
+            .HasConversion(d => d.Value, value => DepartmentDepth.Create(value).Value)
+            .IsRequired()
+            .HasColumnName("depth");
 
         builder.Property(x => x.IsActive)
             .IsRequired()
