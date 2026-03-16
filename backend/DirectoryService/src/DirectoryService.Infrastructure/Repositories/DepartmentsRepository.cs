@@ -1,5 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
+using Dapper;
 using DirectoryService.Application.Database;
+using DirectoryService.Application.Dtos;
 using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.Identifiers;
 using DirectoryService.Infrastructure.Database;
@@ -151,4 +153,122 @@ public class DepartmentsRepository : IDepartmentsRepository
             return Error.Failure("database", "Department id count failed");
         }
     }
+
+    public async Task<Result<Department, Error>> GetByIdWithLock(DepartmentId id, CancellationToken cancellationToken)
+    {
+        var department = await _dbContext.Departments
+            .FromSql($"SELECT * FROM departments WHERE id = {id.Value} AND is_active = true FOR UPDATE NOWAIT")
+            .Include(d => d.Children)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (department is null)
+        {
+            return GeneralErrors.NotFound(id.Value);
+        }
+
+        return department;
+    }
+
+    public async Task<UnitResult<Error>> ChangeParent(
+        string rootPath,
+        string newParentPath,
+        Guid departmentId,
+        Guid? newParentId,
+        CancellationToken cancellationToken)
+    {
+        var sql =
+            """
+            UPDATE departments
+            SET 
+                path = (@newParentPath::ltree || subpath(path, nlevel(@rootPath::ltree) - 1)), 
+                depth = nlevel(@newParentPath::ltree || subpath(path, nlevel(@rootPath::ltree) - 1)) - 1
+            WHERE path <@ @rootPath::ltree;
+
+            UPDATE departments
+            SET fk_parent_id = @newParentId
+            WHERE id = @departmentId;
+            """;
+
+        try
+        {
+            await _dbContext.Database.ExecuteSqlRawAsync(
+                sql,
+                [new NpgsqlParameter("@rootPath", rootPath),
+                new NpgsqlParameter("@newParentPath", newParentPath),
+                new NpgsqlParameter("@newParentId", newParentId.HasValue ? newParentId : DBNull.Value),
+                new NpgsqlParameter("@departmentId", departmentId)],
+                cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            return Error.Failure("database", ex.Message);
+        }
+
+        return Result.Success<Error>();
+    }
+
+    public async Task<UnitResult<Error>> LockDescendants(string rootPath, CancellationToken cancellationToken)
+    {
+        const string sql =
+            """
+            SELECT id
+            FROM departments 
+            WHERE path <@ @rootPath::ltree
+            AND path != @rootPath::ltree FOR UPDATE NOWAIT;
+            """;
+        try
+        {
+            await _dbContext.Database.ExecuteSqlRawAsync(
+                sql,
+                [new NpgsqlParameter("@rootPath", rootPath)],
+                cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            return Error.Failure("database.lock-descendants", ex.Message);
+        }
+
+        return Result.Success<Error>();
+    }
+
+    public async Task<List<DepartmenDto>> GetHierarchyLtree(string rootPath)
+    {
+        const string sql =
+            """
+            SELECT id, 
+                parent_id, 
+                path, 
+                depth,
+                is_active 
+            FROM departments 
+            WHERE path <@ @rootPath::ltree
+            ORDER BY depth;
+            """;
+
+        var connection = _dbContext.Database.GetDbConnection();
+
+        var parameters = new { rootPath };
+
+        var departmentRows = (await connection.QueryAsync<DepartmenDto>(sql, parameters))
+            .ToList();
+
+        var departmentDictionary = departmentRows.ToDictionary(x => x.Id);
+
+        var roots = new List<DepartmenDto>();
+
+        foreach (var row in departmentRows)
+        {
+            if (row.Parent.HasValue && departmentDictionary.TryGetValue(row.Parent.Value, out var parent))
+            {
+                parent.Children.Add(departmentDictionary[row.Id]);
+            }
+            else
+            {
+                roots.Add(departmentDictionary[row.Id]);
+            }
+        }
+
+        return roots;
+    }
+
 }

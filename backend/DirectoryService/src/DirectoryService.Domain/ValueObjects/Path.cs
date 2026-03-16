@@ -5,7 +5,7 @@ namespace DirectoryService.Domain.ValueObjects;
 
 public record Path
 {
-    private const char SEPARATOR = '/';
+    private const char SEPARATOR = '.';
 
     private Path(string value)
     {
@@ -32,5 +32,15 @@ public record Path
         }
 
         return new Path(Value + SEPARATOR + childIdentifier!.Value);
+    }
+
+    public static Result<Path, Error> Create(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return Error.Validation("identifier", "Identifier cant be null");
+        }
+
+        return new Path(value);
     }
 }

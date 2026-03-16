@@ -1,8 +1,10 @@
 ﻿using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.Identifiers;
+using DirectoryService.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SharedService.SharedKernel;
+using Path = DirectoryService.Domain.ValueObjects.Path;
 
 namespace DirectoryService.Infrastructure.Configurations;
 
@@ -42,20 +44,22 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
                 .HasDatabaseName("ix_departments_identifier");
         });
 
-        builder.ComplexProperty(x => x.Path, tb =>
-        {
-            tb.Property(d => d.Value)
-                .IsRequired()
-                .HasMaxLength(Constants.TextLength.LENGTH_150)
-                .HasColumnName("path");
-        });
+        builder.Property(x => x.Path)
+            .HasColumnName("path")
+            .HasColumnType("ltree")
+            .IsRequired()
+            .HasConversion(
+                p => p.Value,
+                p => Path.Create(p).Value);
 
-        builder.ComplexProperty(x => x.Depth, tb =>
-        {
-            tb.Property(d => d.Value)
-                .IsRequired()
-                .HasColumnName("depth");
-        });
+        builder.HasIndex(x => x.Path)
+            .HasMethod("gist")
+            .HasDatabaseName("idx_departments_path");
+
+        builder.Property(x => x.Depth)
+            .HasConversion(d => d.Value, value => DepartmentDepth.Create(value).Value)
+            .IsRequired()
+            .HasColumnName("depth");
 
         builder.Property(x => x.IsActive)
             .IsRequired()
