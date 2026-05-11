@@ -3,6 +3,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.15" />
     <PackageVersion Include="Percimon.SharedKernel" Version="0.0.1" />
     <PackageVersion Include="Percimon.Framework" Version="0.0.2" />
     <PackageVersion Include="Percimon.Core" Version="0.0.2" />
