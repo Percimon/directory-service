@@ -41,7 +41,7 @@ public class CreateDepartmentTests : IClassFixture<DirectoryTestWebFactory>
         }
 
         // arrange
-        await using var scope = Services.CreateAsyncScope();
+        await using var scope = _services.CreateAsyncScope();
 
         var sut = scope.ServiceProvider.GetRequiredService<CreateDepartmentHandler>();
 
