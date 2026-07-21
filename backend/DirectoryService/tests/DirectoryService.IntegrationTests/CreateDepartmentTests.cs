@@ -10,14 +10,21 @@ using TimeZone = DirectoryService.Domain.ValueObjects.TimeZone;
 
 namespace DirectoryService.IntegrationTests;
 
-public class CreateDepartmentTests : DirectoryTestWebFactory
+public class CreateDepartmentTests : IClassFixture<DirectoryTestWebFactory>
 {
+    private readonly IServiceProvider _services;
+
+    public CreateDepartmentTests(DirectoryTestWebFactory factory)
+    {
+        _services = factory.Services;
+    }
+
     [Fact]
     public async Task CreateDepartment_with_valid_data_should_succeed()
     {
         LocationId id = LocationId.New();
 
-        await using (var dbScope = Services.CreateAsyncScope())
+        await using (var dbScope = _services.CreateAsyncScope())
         {
             var dbContext = dbScope.ServiceProvider.GetRequiredService<DirectoryServiceDbContext>();
 
