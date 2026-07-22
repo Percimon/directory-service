@@ -4,24 +4,28 @@ using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.Identifiers;
 using DirectoryService.Domain.ValueObjects;
 using DirectoryService.Infrastructure.Database;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Writers;
 using TimeZone = DirectoryService.Domain.ValueObjects.TimeZone;
 
 namespace DirectoryService.IntegrationTests;
 
-public class CreateDepartmentTests : IClassFixture<DirectoryTestWebFactory>
+public class CreateDepartmentTests : IClassFixture<DirectoryTestWebFactory>, IAsyncLifetime
 {
     private readonly IServiceProvider _services;
+    private readonly Func<Task> _resetDatabase;
 
     public CreateDepartmentTests(DirectoryTestWebFactory factory)
     {
         _services = factory.Services;
+        _resetDatabase = factory.ResetDatabaseAsync;
     }
 
     [Fact]
     public async Task CreateDepartment_with_valid_data_should_succeed()
     {
+        // arrange
         LocationId id = LocationId.New();
 
         await using (var dbScope = _services.CreateAsyncScope())
@@ -40,25 +44,53 @@ public class CreateDepartmentTests : IClassFixture<DirectoryTestWebFactory>
             await dbContext.SaveChangesAsync();
         }
 
-        // arrange
+        var cancellationToken = CancellationToken.None;
+
+        // act
+        var result = await ExecuteHandler(sut =>
+        {
+            CreateDepartmentCommand command = new CreateDepartmentCommand(
+                "DepartmentName",
+                "DepName",
+                null,
+                [id.Value]);
+
+            return sut.Handle(command, cancellationToken);
+        });
+
+        // asserts
+        await using var assertScope = _services.CreateAsyncScope();
+
+        var dbContext = assertScope.ServiceProvider.GetRequiredService<DirectoryServiceDbContext>();
+
+        var department = await dbContext.Departments
+            .FirstOrDefaultAsync(d => d.Id == DepartmentId.Create(result.Value), cancellationToken);
+
+        Assert.NotNull(department);
+
+        Assert.Equal(department.Id.Value, result.Value);
+
+        Assert.True(result.IsSuccess);
+
+        Assert.NotEqual(Guid.Empty, result.Value);
+    }
+
+    public async Task DisposeAsync()
+    {
+        await _resetDatabase();
+    }
+
+    public Task InitializeAsync()
+    {
+        return Task.CompletedTask;
+    }
+
+    private async Task<T> ExecuteHandler<T>(Func<CreateDepartmentHandler, Task<T>> action)
+    {
         await using var scope = _services.CreateAsyncScope();
 
         var sut = scope.ServiceProvider.GetRequiredService<CreateDepartmentHandler>();
 
-        var cancellationToken = CancellationToken.None;
-
-        CreateDepartmentCommand command = new CreateDepartmentCommand(
-            "DepartmentName",
-            "DepName",
-            null,
-            [id.Value]);
-
-        // act
-        var result = await sut.Handle(command, cancellationToken);
-
-        // asserts
-        Assert.True(result.IsSuccess);
-
-        Assert.NotEqual(Guid.Empty, result.Value);
+        return await action(sut);
     }
 }
