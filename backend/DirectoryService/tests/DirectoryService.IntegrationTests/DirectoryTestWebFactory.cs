@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Npgsql;
 using Respawn;
 using Testcontainers.PostgreSql;
 
@@ -51,7 +52,7 @@ public class DirectoryTestWebFactory : WebApplicationFactory<Program>, IAsyncLif
 
         await dbContext.Database.EnsureCreatedAsync();
 
-        _dbConnection = dbContext.Database.GetDbConnection();
+        _dbConnection = new NpgsqlConnection(_dbContainer.GetConnectionString());
 
         await _dbConnection.OpenAsync();
 
@@ -81,7 +82,7 @@ public class DirectoryTestWebFactory : WebApplicationFactory<Program>, IAsyncLif
             new RespawnerOptions()
             {
                 DbAdapter = DbAdapter.Postgres,
-                SchemasToExclude = ["public"],
+                SchemasToInclude = ["public"],
             });
     }
 }
