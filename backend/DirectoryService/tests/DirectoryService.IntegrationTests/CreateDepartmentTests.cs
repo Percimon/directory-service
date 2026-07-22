@@ -11,26 +11,24 @@ using TimeZone = DirectoryService.Domain.ValueObjects.TimeZone;
 
 namespace DirectoryService.IntegrationTests;
 
-public class CreateDepartmentTests : IClassFixture<DirectoryTestWebFactory>, IAsyncLifetime
+public class CreateDepartmentTests : DirectoryServiceBaseTests
 {
-    private readonly IServiceProvider _services;
-    private readonly Func<Task> _resetDatabase;
-
     public CreateDepartmentTests(DirectoryTestWebFactory factory)
+        : base(factory)
     {
-        _services = factory.Services;
-        _resetDatabase = factory.ResetDatabaseAsync;
     }
 
     [Fact]
     public async Task CreateDepartment_with_valid_data_should_succeed()
     {
         // arrange
+        DirectoryServiceDbContext dbContext = null;
+
         LocationId id = LocationId.New();
 
-        await using (var dbScope = _services.CreateAsyncScope())
+        await using (var dbScope = Services.CreateAsyncScope())
         {
-            var dbContext = dbScope.ServiceProvider.GetRequiredService<DirectoryServiceDbContext>();
+            dbContext = dbScope.ServiceProvider.GetRequiredService<DirectoryServiceDbContext>();
 
             var location = new Location(
                 id,
@@ -59,9 +57,9 @@ public class CreateDepartmentTests : IClassFixture<DirectoryTestWebFactory>, IAs
         });
 
         // asserts
-        await using var assertScope = _services.CreateAsyncScope();
+        await using var assertScope = Services.CreateAsyncScope();
 
-        var dbContext = assertScope.ServiceProvider.GetRequiredService<DirectoryServiceDbContext>();
+        dbContext = assertScope.ServiceProvider.GetRequiredService<DirectoryServiceDbContext>();
 
         var department = await dbContext.Departments
             .FirstOrDefaultAsync(d => d.Id == DepartmentId.Create(result.Value), cancellationToken);
@@ -75,19 +73,9 @@ public class CreateDepartmentTests : IClassFixture<DirectoryTestWebFactory>, IAs
         Assert.NotEqual(Guid.Empty, result.Value);
     }
 
-    public async Task DisposeAsync()
-    {
-        await _resetDatabase();
-    }
-
-    public Task InitializeAsync()
-    {
-        return Task.CompletedTask;
-    }
-
     private async Task<T> ExecuteHandler<T>(Func<CreateDepartmentHandler, Task<T>> action)
     {
-        await using var scope = _services.CreateAsyncScope();
+        await using var scope = Services.CreateAsyncScope();
 
         var sut = scope.ServiceProvider.GetRequiredService<CreateDepartmentHandler>();
 
