@@ -10,6 +10,8 @@ public static class Inject
     {
         services.AddControllers();
 
+        services.AddHealthChecks();
+
         return services
             .AddOpenApiSpec("DirectoryService", "v1")
             .AddSerilogLogging(configuration, "DirectoryService")
