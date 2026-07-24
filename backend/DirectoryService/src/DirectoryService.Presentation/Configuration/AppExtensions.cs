@@ -17,6 +17,8 @@ public static class AppExtensions
 
         app.MapControllers();
 
+        app.MapHealthChecks("/health");
+
         return app;
     }
 
