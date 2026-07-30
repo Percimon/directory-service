@@ -3,37 +3,13 @@
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import useTodos from "@/hooks/use-todos";
 import { useState } from "react";
-
-type Todo = {
-  id: string;
-  text: string;
-  isActive: boolean;
-};
 
 export default function PlaygroundPage() {
   const [newValue, setTodoValue] = useState<string>("");
 
-  const [todos, setTodos] = useState<Todo[]>([]);
-
-  function addTodos() {
-    if (!newValue.trim()) return;
-
-    setTodos([
-      ...todos,
-      { id: crypto.randomUUID(), text: newValue, isActive: false },
-    ]);
-  }
-
-  function toggleTodo(id: string) {
-    setTodos(
-      todos.map((x) => (x.id === id ? { ...x, isActive: !x.isActive } : x)),
-    );
-  }
-
-  function deleteTodo(id: string) {
-    setTodos(todos.filter((x) => x.id !== id));
-  }
+  const { todos, addTodos, toggleTodo, deleteTodo } = useTodos();
 
   return (
     <div className="flex flex-col">
@@ -43,7 +19,7 @@ export default function PlaygroundPage() {
           placeholder="Введите значение.."
           onChange={(e) => setTodoValue(e.currentTarget.value)}
         />
-        <Button onClick={() => addTodos()}>Create</Button>
+        <Button onClick={() => addTodos(newValue)}>Create</Button>
         <p>Невыполнено: {todos.filter((x) => x.isActive === false).length}</p>
       </div>
       <ul>
