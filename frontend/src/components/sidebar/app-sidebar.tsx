@@ -34,6 +34,11 @@ export default function AppSidebar() {
       label: "Позиции",
       icon: Plus,
     },
+    {
+      href: routes.playground,
+      label: "Playground",
+      icon: Plus,
+    },
   ];
   return (
     <Sidebar>
