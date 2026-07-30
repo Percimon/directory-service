@@ -26,7 +26,10 @@ export default function PlaygroundPage() {
         {todos.map((x) => (
           <li key={x.id}>
             <div className="flex flex-row gap-3">
-              <Checkbox checked={x.isActive} onClick={() => toggleTodo(x.id)} />
+              <Checkbox
+                checked={x.isActive}
+                onCheckedChange={() => toggleTodo(x.id)}
+              />
               {x.text}
               <Button onClick={() => deleteTodo(x.id)}>X</Button>
             </div>
