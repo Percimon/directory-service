@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 
@@ -20,8 +21,18 @@ export default function PlaygroundPage() {
 
     setTodos([
       ...todos,
-      { id: crypto.randomUUID(), text: newValue, isActive: true },
+      { id: crypto.randomUUID(), text: newValue, isActive: false },
     ]);
+  }
+
+  function toggleTodo(id: string) {
+    setTodos(
+      todos.map((x) => (x.id === id ? { ...x, isActive: !x.isActive } : x)),
+    );
+  }
+
+  function deleteTodo(id: string) {
+    setTodos(todos.filter((x) => x.id !== id));
   }
 
   return (
@@ -33,10 +44,17 @@ export default function PlaygroundPage() {
           onChange={(e) => setTodoValue(e.currentTarget.value)}
         />
         <Button onClick={() => addTodos()}>Create</Button>
+        <p>Невыполнено: {todos.filter((x) => x.isActive === false).length}</p>
       </div>
       <ul>
         {todos.map((x) => (
-          <li key={x.id}>{x.text}</li>
+          <li key={x.id}>
+            <div className="flex flex-row gap-3">
+              <Checkbox checked={x.isActive} onClick={() => toggleTodo(x.id)} />
+              {x.text}
+              <Button onClick={() => deleteTodo(x.id)}>X</Button>
+            </div>
+          </li>
         ))}
       </ul>
     </div>
