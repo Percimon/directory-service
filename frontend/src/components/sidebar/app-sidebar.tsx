@@ -69,7 +69,7 @@ export default function AppSidebar() {
                       asChild
                       isActive={isActive}
                       tooltip={item.label}
-                      className="hover:bg-gray-200 bg-accent transition-colors"
+                      className="hover:bg-gray-200 bg-accent data-[active=true]:bg-blue-200 transition-colors "
                       onClick={() => setOpenMobile(false)}
                     >
                       <Link
