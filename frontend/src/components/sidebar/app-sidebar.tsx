@@ -11,6 +11,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarTrigger,
+  useSidebar,
 } from "../ui/sidebar";
 import { Home, Plus } from "lucide-react";
 import Link from "next/link";
@@ -18,6 +19,8 @@ import { usePathname } from "next/navigation";
 
 export default function AppSidebar() {
   const pathname = usePathname();
+
+  const { setOpenMobile } = useSidebar();
 
   const menuItems = [
     {
@@ -66,7 +69,8 @@ export default function AppSidebar() {
                       asChild
                       isActive={isActive}
                       tooltip={item.label}
-                      className="bg-accent transition-colors"
+                      className="hover:bg-gray-200 bg-accent transition-colors"
+                      onClick={() => setOpenMobile(false)}
                     >
                       <Link
                         href={item.href}
