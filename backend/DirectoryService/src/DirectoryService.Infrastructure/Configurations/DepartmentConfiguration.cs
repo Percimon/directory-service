@@ -37,11 +37,11 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
             tb.Property(d => d.Value)
                 .IsRequired()
                 .HasMaxLength(Constants.TextLength.LENGTH_150)
-                .HasColumnName("identifier");
+                .HasColumnName("slug");
 
             tb.HasIndex(x => x.Value)
                 .IsUnique()
-                .HasDatabaseName("ix_departments_identifier");
+                .HasDatabaseName("ix_departments_slug");
         });
 
         builder.Property(x => x.Path)
