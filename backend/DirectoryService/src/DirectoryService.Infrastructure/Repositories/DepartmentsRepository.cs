@@ -62,7 +62,7 @@ public class DepartmentsRepository : IDepartmentsRepository
 
                 if (pgEx.ConstraintName.Contains("identifier", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    return GeneralErrors.AlreadyExists(nameof(Department), nameof(Department.Identifier), department.Identifier.Value);
+                    return GeneralErrors.AlreadyExists(nameof(Department), nameof(Department.Slug), department.Slug.Value);
                 }
             }
 

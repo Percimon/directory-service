@@ -14,7 +14,7 @@ public class CreateDepartmentCommandValidator : AbstractValidator<CreateDepartme
             .MustBeValueObject(Name.Create);
 
         RuleFor(x => x.Identifier)
-            .MustBeValueObject(Identifier.Create);
+            .MustBeValueObject(Slug.Create);
 
         RuleFor(x => x.Locations)
             .NotEmpty()
