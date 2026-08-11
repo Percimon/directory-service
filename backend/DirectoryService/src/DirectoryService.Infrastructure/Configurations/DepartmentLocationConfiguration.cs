@@ -1,4 +1,4 @@
-using DirectoryService.Domain.Entities;
+﻿using DirectoryService.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -18,6 +18,8 @@ public class DepartmentLocationConfiguration : IEntityTypeConfiguration<Departme
         builder.Property(x => x.DepartmentId).HasColumnName("department_id");
 
         builder.Property(x => x.LocationId).HasColumnName("location_id");
+
+        builder.Property(x => x.IsPrimary).HasColumnName("is_primary");
 
         builder
             .HasOne(dl => dl.Department)
