@@ -32,7 +32,7 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
                 .HasDatabaseName("ix_departments_name");
         });
 
-        builder.OwnsOne(x => x.Identifier, tb =>
+        builder.OwnsOne(x => x.Slug, tb =>
         {
             tb.Property(d => d.Value)
                 .IsRequired()

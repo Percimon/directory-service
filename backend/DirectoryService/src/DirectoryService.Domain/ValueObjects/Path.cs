@@ -14,7 +14,7 @@ public record Path
 
     public string Value { get; }
 
-    public static Result<Path, Error> CreateParent(Identifier identifier)
+    public static Result<Path, Error> CreateParent(Slug identifier)
     {
         if (identifier is null)
         {
@@ -24,7 +24,7 @@ public record Path
         return new Path(identifier.Value);
     }
 
-    public Result<Path, Error> CreateChild(Identifier childIdentifier)
+    public Result<Path, Error> CreateChild(Slug childIdentifier)
     {
         if (childIdentifier is null)
         {

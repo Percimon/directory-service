@@ -24,14 +24,14 @@ public sealed class Department : SharedService.SharedKernel.Entity<DepartmentId>
     private Department(
         DepartmentId id,
         Name name,
-        Identifier identifier,
+        Slug identifier,
         Department? parent,
         Path path,
         DepartmentDepth departmentDepth,
         IEnumerable<DepartmentLocation> locations) : base(id)
     {
         Name = name;
-        Identifier = identifier;
+        Slug = identifier;
         Parent = parent;
         Path = path;
         Depth = departmentDepth;
@@ -47,7 +47,7 @@ public sealed class Department : SharedService.SharedKernel.Entity<DepartmentId>
 
     public Name Name { get; private set; } = null!;
 
-    public Identifier Identifier { get; private set; } = null!;
+    public Slug Slug { get; private set; } = null!;
 
     public Department? Parent { get; private set; }
 
@@ -69,7 +69,7 @@ public sealed class Department : SharedService.SharedKernel.Entity<DepartmentId>
 
     public static Result<Department, Error> CreateParent(
         Name name,
-        Identifier identifier,
+        Slug identifier,
         IEnumerable<DepartmentLocation> departmentLocations,
         DepartmentId? id = null)
     {
@@ -100,7 +100,7 @@ public sealed class Department : SharedService.SharedKernel.Entity<DepartmentId>
 
     public static Result<Department, Error> CreateChild(
         Name name,
-        Identifier identifier,
+        Slug identifier,
         Department parent,
         IEnumerable<DepartmentLocation> departmentLocations,
         DepartmentId? id = null)

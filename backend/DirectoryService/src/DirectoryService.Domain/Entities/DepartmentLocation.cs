@@ -12,10 +12,14 @@ public sealed class DepartmentLocation
 
     }
 
-    private DepartmentLocation(DepartmentId departmentId, LocationId locationId)
+    private DepartmentLocation(
+        DepartmentId departmentId,
+        LocationId locationId,
+        bool isPrimary)
     {
         DepartmentId = departmentId;
         LocationId = locationId;
+        IsPrimary = isPrimary;
     }
 
     public Guid Id { get; }
@@ -26,8 +30,13 @@ public sealed class DepartmentLocation
 
     public LocationId LocationId { get; }
 
-    public static Result<DepartmentLocation, Error> Create(DepartmentId departmentId, LocationId locationId)
+    public bool IsPrimary { get; }
+
+    public static Result<DepartmentLocation, Error> Create(
+        DepartmentId departmentId,
+        LocationId locationId,
+        bool isPrimary = false)
     {
-        return new DepartmentLocation(departmentId, locationId);
+        return new DepartmentLocation(departmentId, locationId, isPrimary);
     }
 }
