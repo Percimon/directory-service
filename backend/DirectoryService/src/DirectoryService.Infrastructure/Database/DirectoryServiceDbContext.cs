@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DirectoryService.Infrastructure.Database;
 
-public class DirectoryServiceDbContext : DbContext
+public class AppDbContext : DbContext
 {
     private readonly string _connectionString;
 
@@ -16,7 +16,7 @@ public class DirectoryServiceDbContext : DbContext
 
     public DbSet<DepartmentPosition> DepartmentPositions => Set<DepartmentPosition>();
 
-    public DirectoryServiceDbContext(string connectionString)
+    public AppDbContext(string connectionString)
     {
         _connectionString = connectionString;
     }
@@ -24,7 +24,7 @@ public class DirectoryServiceDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasPostgresExtension("ltree");
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(DirectoryServiceDbContext).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

@@ -22,13 +22,13 @@ public class CreateDepartmentTests : DirectoryServiceBaseTests
     public async Task CreateDepartment_with_valid_data_should_succeed()
     {
         // arrange
-        DirectoryServiceDbContext dbContext = null;
+        AppDbContext dbContext = null;
 
         LocationId id = LocationId.New();
 
         await using (var dbScope = Services.CreateAsyncScope())
         {
-            dbContext = dbScope.ServiceProvider.GetRequiredService<DirectoryServiceDbContext>();
+            dbContext = dbScope.ServiceProvider.GetRequiredService<AppDbContext>();
 
             var location = new Location(
                 id,
@@ -59,7 +59,7 @@ public class CreateDepartmentTests : DirectoryServiceBaseTests
         // asserts
         await using var assertScope = Services.CreateAsyncScope();
 
-        dbContext = assertScope.ServiceProvider.GetRequiredService<DirectoryServiceDbContext>();
+        dbContext = assertScope.ServiceProvider.GetRequiredService<AppDbContext>();
 
         var department = await dbContext.Departments
             .FirstOrDefaultAsync(d => d.Id == DepartmentId.Create(result.Value), cancellationToken);
