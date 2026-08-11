@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Header from "@/components/header/header";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import AppSidebar from "@/components/sidebar/app-sidebar";
+import AppSidebar from "@/features/sidebar/app-sidebar";
+import { SidebarProvider } from "@/shared/components/ui/sidebar";
+import Header from "@/features/header/header";
 
 export const metadata: Metadata = {
   title: "Create Next App",

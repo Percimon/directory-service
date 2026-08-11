@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import useTodos from "@/hooks/use-todos";
+import useTodos from "@/shared/hooks/use-todos";
 import { useState } from "react";
 
 export default function PlaygroundPage() {

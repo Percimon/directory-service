@@ -12,7 +12,7 @@ import {
   SidebarMenuItem,
   SidebarTrigger,
   useSidebar,
-} from "../ui/sidebar";
+} from "../../shared/components/ui/sidebar";
 import { Home, Plus } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";

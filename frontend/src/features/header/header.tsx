@@ -1,4 +1,4 @@
-import { SidebarTrigger } from "../ui/sidebar";
+import { SidebarTrigger } from "../../shared/components/ui/sidebar";
 
 export default function Header() {
   return (
