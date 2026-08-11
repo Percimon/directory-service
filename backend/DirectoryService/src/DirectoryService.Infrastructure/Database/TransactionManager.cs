@@ -8,12 +8,12 @@ namespace DirectoryService.Infrastructure.Database;
 
 public class TransactionManager : ITransactionManager
 {
-    private readonly DirectoryServiceDbContext _dbContext;
+    private readonly AppDbContext _dbContext;
     private readonly ILogger<TransactionManager> _logger;
     private readonly ILoggerFactory _loggerFactory;
 
     public TransactionManager(
-        DirectoryServiceDbContext dbContext,
+        AppDbContext dbContext,
         ILogger<TransactionManager> logger,
         ILoggerFactory loggerFactory)
     {

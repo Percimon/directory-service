@@ -33,10 +33,10 @@ public class DirectoryTestWebFactory : WebApplicationFactory<Program>, IAsyncLif
 
         builder.ConfigureTestServices(services =>
         {
-            services.RemoveAll<DirectoryServiceDbContext>();
+            services.RemoveAll<AppDbContext>();
 
-            services.AddScoped<DirectoryServiceDbContext>(_ =>
-                new DirectoryServiceDbContext(_dbContainer.GetConnectionString()));
+            services.AddScoped<AppDbContext>(_ =>
+                new AppDbContext(_dbContainer.GetConnectionString()));
         });
     }
 
@@ -46,7 +46,7 @@ public class DirectoryTestWebFactory : WebApplicationFactory<Program>, IAsyncLif
 
         await using var scope = Services.CreateAsyncScope();
 
-        var dbContext = scope.ServiceProvider.GetRequiredService<DirectoryServiceDbContext>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
         await dbContext.Database.EnsureDeletedAsync();
 

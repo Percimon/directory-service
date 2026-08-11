@@ -12,12 +12,12 @@ namespace DirectoryService.Infrastructure.Repositories;
 
 public class LocationsRepository : ILocationsRepository
 {
-    private readonly DirectoryServiceDbContext _dbContext;
+    private readonly AppDbContext _dbContext;
 
     private readonly ILogger<LocationsRepository> _logger;
 
     public LocationsRepository(
-        DirectoryServiceDbContext dbContext,
+        AppDbContext dbContext,
         ILogger<LocationsRepository> logger)
     {
         _dbContext = dbContext;

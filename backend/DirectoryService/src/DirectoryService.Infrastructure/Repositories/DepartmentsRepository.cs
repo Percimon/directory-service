@@ -14,12 +14,12 @@ namespace DirectoryService.Infrastructure.Repositories;
 
 public class DepartmentsRepository : IDepartmentsRepository
 {
-    private readonly DirectoryServiceDbContext _dbContext;
+    private readonly AppDbContext _dbContext;
 
     private readonly ILogger<DepartmentsRepository> _logger;
 
     public DepartmentsRepository(
-        DirectoryServiceDbContext dbContext,
+        AppDbContext dbContext,
         ILogger<DepartmentsRepository> logger)
     {
         _dbContext = dbContext;

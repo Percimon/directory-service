@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace DirectoryService.Infrastructure.Migrations
 {
-    [DbContext(typeof(DirectoryServiceDbContext))]
+    [DbContext(typeof(AppDbContext))]
     [Migration("20260315145133_configUpdate")]
     partial class configUpdate
     {

@@ -11,8 +11,8 @@ public static class Inject
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddScoped<DirectoryServiceDbContext>(_ =>
-            new DirectoryServiceDbContext(configuration.GetConnectionString("DirectoryServiceDb")!));
+        services.AddScoped<AppDbContext>(_ =>
+            new AppDbContext(configuration.GetConnectionString("DirectoryServiceDb")!));
 
         services.AddScoped<ISqlConnectionFactory, SqlConnectionFactory>();
 
