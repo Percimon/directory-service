@@ -19,7 +19,7 @@ public class DepartmentsController : Controller
     {
         var command = new CreateDepartmentCommand(
             request.Name,
-            request.Identifier,
+            request.Slug,
             request.ParentId,
             request.Locations);
 
