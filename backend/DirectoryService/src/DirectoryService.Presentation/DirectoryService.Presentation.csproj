@@ -1,4 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web"><PropertyGroup>  <UserSecretsId>eaee1f19-fe14-4713-bd3f-5317f61ceecc</UserSecretsId>
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <UserSecretsId>eaee1f19-fe14-4713-bd3f-5317f61ceecc</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
@@ -6,6 +8,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Percimon.Framework" />
+    <PackageReference Include="Scalar.AspNetCore" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DirectoryService.Application\DirectoryService.Application.csproj" />

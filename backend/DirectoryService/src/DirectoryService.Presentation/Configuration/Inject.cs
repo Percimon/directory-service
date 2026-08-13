@@ -13,7 +13,7 @@ public static class Inject
         services.AddHealthChecks();
 
         return services
-            .AddOpenApiSpec("DirectoryService", "v1")
+            .AddOpenApi()
             .AddSerilogLogging(configuration, "DirectoryService")
             .InjectApplication()
             .InjectInfrastructure(configuration);
