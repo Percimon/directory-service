@@ -39,9 +39,16 @@ public class CreateLocationHandler
             return validationResult.ToError();
         }
 
-        var locationId = LocationId.New();
-
         var name = Name.Create(command.Name);
+
+        var nameExistenceResult = _repository.LocationNameExists(name.Value);
+
+        if (nameExistenceResult.IsFailure)
+        {
+            return nameExistenceResult.Error;
+        }
+
+        var locationId = LocationId.New();
 
         var address = Address.Create(
             command.City,
