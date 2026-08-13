@@ -2,6 +2,7 @@
 using DirectoryService.Application.Database;
 using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.Identifiers;
+using DirectoryService.Domain.ValueObjects;
 using DirectoryService.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -68,6 +69,16 @@ public class LocationsRepository : ILocationsRepository
 
         if (query is null)
             return GeneralErrors.NotFound(id.Value);
+
+        return UnitResult.Success<Error>();
+    }
+
+    public UnitResult<Error> LocationNameExists(Name name)
+    {
+        var query = _dbContext.Locations.FirstOrDefault(l => name.Value == l.Name.Value && l.IsActive);
+
+        if (query is not null)
+            return GeneralErrors.AlreadyExists(name.Value);
 
         return UnitResult.Success<Error>();
     }
