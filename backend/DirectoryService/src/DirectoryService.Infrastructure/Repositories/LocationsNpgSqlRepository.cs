@@ -57,7 +57,7 @@ public class LocationsNpgSqlRepository : ILocationsRepository
 
             return location.Id.Value;
         }
-        catch (DbUpdateException ex) when (ex.InnerException is PostgresException pgEx)
+        catch (PostgresException pgEx)
         {
             if (pgEx is { SqlState: PostgresErrorCodes.UniqueViolation, ConstraintName: not null })
             {
@@ -71,7 +71,7 @@ public class LocationsNpgSqlRepository : ILocationsRepository
                 }
             }
 
-            _logger.LogError(ex, "Database update error while creating location with name: {name}", location.Name.Value);
+            _logger.LogError(pgEx, "Database update error while creating location with name: {name}", location.Name.Value);
 
             return GeneralErrors.Failure("Database update error while creating location");
         }
@@ -85,7 +85,29 @@ public class LocationsNpgSqlRepository : ILocationsRepository
         }
     }
 
-    public UnitResult<Error> LocationExists(LocationId id) => throw new NotImplementedException();
+    public async Task<UnitResult<Error>> LocationExists(LocationId id)
+    {
+        using (var connection = _sqlConnectionFactory.Create())
+        {
+            string sql =
+                """
+                SELECT COUNT(*) AS total_count
+                FROM locations
+                WHERE id = @Id AND is_active = true;
+                """;
+
+            var nameParams = new
+            {
+                Id = id.Value,
+            };
+
+            int result = await connection.ExecuteScalarAsync<int>(sql, nameParams);
+
+            return result > 0
+                ? UnitResult.Success<Error>()
+                : GeneralErrors.NotFound(id.Value);
+        }
+    }
 
     public async Task<UnitResult<Error>> LocationNameExists(Name name)
     {
@@ -95,7 +117,7 @@ public class LocationsNpgSqlRepository : ILocationsRepository
                 """
                 SELECT COUNT(*) AS total_count
                 FROM locations
-                WHERE name = @Name;
+                WHERE name = @Name AND is_active = true;
                 """;
 
             var nameParams = new
@@ -111,5 +133,26 @@ public class LocationsNpgSqlRepository : ILocationsRepository
         }
     }
 
-    public Task<UnitResult<Error>> LocationsExist(IEnumerable<LocationId> ids, CancellationToken cancellationToken) => throw new NotImplementedException();
+    public async Task<UnitResult<Error>> LocationsExist(IEnumerable<LocationId> ids, CancellationToken cancellationToken)
+    {
+        var idList = ids.ToList();
+        if (idList.Count == 0)
+            return Result.Success<Error>(); // Пустой список — формально все есть
+
+        using (var connection = _sqlConnectionFactory.Create())
+        {
+            string sql =
+                """
+                SELECT (COUNT(DISTINCT id) = @ExpectedCount) 
+                FROM locations 
+                WHERE id IN @Ids;
+                """;
+
+            bool result = await connection.ExecuteScalarAsync<bool>(sql, new { Ids = idList, ExpectedCount = idList.Count });
+
+            return result
+                ? UnitResult.Success<Error>()
+                : Error.NotFound("location.id", "One of location ids were not found");
+        }
+    }
 }

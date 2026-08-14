@@ -63,9 +63,9 @@ public class LocationsRepository : ILocationsRepository
         }
     }
 
-    public UnitResult<Error> LocationExists(LocationId id)
+    public async Task<UnitResult<Error>> LocationExists(LocationId id)
     {
-        var query = _dbContext.Locations.FirstOrDefault(l => id == l.Id && l.IsActive);
+        var query = await _dbContext.Locations.FirstOrDefaultAsync(l => id == l.Id && l.IsActive);
 
         if (query is null)
             return GeneralErrors.NotFound(id.Value);

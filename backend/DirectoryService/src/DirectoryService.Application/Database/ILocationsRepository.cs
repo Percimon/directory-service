@@ -12,7 +12,7 @@ public interface ILocationsRepository
 
     Task<UnitResult<Error>> LocationNameExists(Name name);
 
-    UnitResult<Error> LocationExists(LocationId id);
+    Task<UnitResult<Error>> LocationExists(LocationId id);
 
     Task<UnitResult<Error>> LocationsExist(IEnumerable<LocationId> ids, CancellationToken cancellationToken);
 }
