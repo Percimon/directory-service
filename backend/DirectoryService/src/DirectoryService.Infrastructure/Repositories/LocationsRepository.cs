@@ -63,9 +63,9 @@ public class LocationsRepository : ILocationsRepository
         }
     }
 
-    public async Task<UnitResult<Error>> LocationExists(LocationId id)
+    public async Task<UnitResult<Error>> LocationExists(LocationId id, CancellationToken cancellationToken = default)
     {
-        var query = await _dbContext.Locations.FirstOrDefaultAsync(l => id == l.Id && l.IsActive);
+        var query = await _dbContext.Locations.FirstOrDefaultAsync(l => id == l.Id && l.IsActive, cancellationToken);
 
         if (query is null)
             return GeneralErrors.NotFound(id.Value);
@@ -73,9 +73,9 @@ public class LocationsRepository : ILocationsRepository
         return UnitResult.Success<Error>();
     }
 
-    public async Task<UnitResult<Error>> LocationNameExists(Name name)
+    public async Task<UnitResult<Error>> LocationNameExists(Name name, CancellationToken cancellationToken = default)
     {
-        var query = await _dbContext.Locations.FirstOrDefaultAsync(l => name.Value == l.Name.Value && l.IsActive);
+        var query = await _dbContext.Locations.FirstOrDefaultAsync(l => name.Value == l.Name.Value && l.IsActive, cancellationToken);
 
         if (query is not null)
             return GeneralErrors.AlreadyExists(name.Value);
@@ -83,7 +83,7 @@ public class LocationsRepository : ILocationsRepository
         return UnitResult.Success<Error>();
     }
 
-    public async Task<UnitResult<Error>> LocationsExist(IEnumerable<LocationId> ids, CancellationToken cancellationToken)
+    public async Task<UnitResult<Error>> LocationsExist(IEnumerable<LocationId> ids, CancellationToken cancellationToken = default)
     {
         try
         {
