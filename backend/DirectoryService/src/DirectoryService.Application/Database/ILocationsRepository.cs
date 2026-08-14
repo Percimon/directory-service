@@ -10,9 +10,9 @@ public interface ILocationsRepository
 {
     Task<Result<Guid, Error>> Add(Location location, CancellationToken cancellationToken);
 
-    UnitResult<Error> LocationNameExists(Name name);
+    Task<UnitResult<Error>> LocationNameExists(Name name, CancellationToken cancellationToken);
 
-    UnitResult<Error> LocationExists(LocationId id);
+    Task<UnitResult<Error>> LocationExists(LocationId id, CancellationToken cancellationToken);
 
     Task<UnitResult<Error>> LocationsExist(IEnumerable<LocationId> ids, CancellationToken cancellationToken);
 }

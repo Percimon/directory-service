@@ -41,7 +41,9 @@ public class DepartmentsRepository : IDepartmentsRepository
         return result;
     }
 
-    public async Task<Result<Guid, Error>> Add(Department department, CancellationToken cancellationToken = default)
+    public async Task<Result<Guid, Error>> Add(
+        Department department,
+        CancellationToken cancellationToken = default)
     {
         try
         {

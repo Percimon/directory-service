@@ -1,3 +1,5 @@
+﻿using SharedService.Core.Abstractions;
+
 namespace DirectoryService.Application.Locations.Create;
 
 public record CreateLocationCommand(
@@ -6,4 +8,4 @@ public record CreateLocationCommand(
     string District,
     string Street,
     string Structure,
-    string TimeZone);
+    string TimeZone) : ICommand;
