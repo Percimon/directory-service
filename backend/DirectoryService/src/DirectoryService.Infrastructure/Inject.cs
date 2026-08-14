@@ -1,4 +1,4 @@
-using DirectoryService.Application.Abstractions;
+﻿using DirectoryService.Application.Abstractions;
 using DirectoryService.Application.Database;
 using DirectoryService.Infrastructure.Database;
 using DirectoryService.Infrastructure.Repositories;
@@ -18,7 +18,7 @@ public static class Inject
 
         services.AddScoped<ITransactionManager, TransactionManager>();
 
-        services.AddScoped<ILocationsRepository, LocationsRepository>();
+        services.AddScoped<ILocationsRepository, LocationsNpgSqlRepository>();
 
         services.AddScoped<IDepartmentsRepository, DepartmentsRepository>();
 

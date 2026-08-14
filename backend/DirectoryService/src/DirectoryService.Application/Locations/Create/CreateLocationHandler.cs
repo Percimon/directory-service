@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using DirectoryService.Application.Abstractions;
 using DirectoryService.Application.Database;
 using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.Identifiers;
@@ -6,13 +7,14 @@ using DirectoryService.Domain.ValueObjects;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
+using SharedService.Core.Abstractions;
 using SharedService.Core.Validation;
 using SharedService.SharedKernel;
 using TimeZone = DirectoryService.Domain.ValueObjects.TimeZone;
 
 namespace DirectoryService.Application.Locations.Create;
 
-public class CreateLocationHandler
+public class CreateLocationHandler : ICommandHandler<Guid, CreateLocationCommand>
 {
     private readonly ILocationsRepository _repository;
     private readonly ILogger<CreateLocationHandler> _logger;
@@ -41,7 +43,7 @@ public class CreateLocationHandler
 
         var name = Name.Create(command.Name);
 
-        var nameExistenceResult = _repository.LocationNameExists(name.Value);
+        var nameExistenceResult = await _repository.LocationNameExists(name.Value);
 
         if (nameExistenceResult.IsFailure)
         {

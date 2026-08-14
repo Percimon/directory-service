@@ -10,7 +10,7 @@ public interface ILocationsRepository
 {
     Task<Result<Guid, Error>> Add(Location location, CancellationToken cancellationToken);
 
-    UnitResult<Error> LocationNameExists(Name name);
+    Task<UnitResult<Error>> LocationNameExists(Name name);
 
     UnitResult<Error> LocationExists(LocationId id);
 
