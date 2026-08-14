@@ -43,7 +43,7 @@ public class CreateLocationHandler : ICommandHandler<Guid, CreateLocationCommand
 
         var name = Name.Create(command.Name);
 
-        var nameExistenceResult = await _repository.LocationNameExists(name.Value);
+        var nameExistenceResult = await _repository.LocationNameExists(name.Value, cancellationToken);
 
         if (nameExistenceResult.IsFailure)
         {

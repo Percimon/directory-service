@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DirectoryService.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Inital : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -20,13 +20,13 @@ namespace DirectoryService.Infrastructure.Migrations
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    slug = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    identifier = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
                     fk_parent_id = table.Column<Guid>(type: "uuid", nullable: true),
                     path = table.Column<string>(type: "ltree", nullable: false),
                     is_active = table.Column<bool>(type: "boolean", nullable: false),
-                    depth = table.Column<int>(type: "integer", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    depth = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -81,8 +81,7 @@ namespace DirectoryService.Infrastructure.Migrations
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     department_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    location_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    is_primary = table.Column<bool>(type: "boolean", nullable: false)
+                    location_id = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -158,15 +157,15 @@ namespace DirectoryService.Infrastructure.Migrations
                 column: "fk_parent_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_departments_name",
+                name: "ix_departments_identifier",
                 table: "departments",
-                column: "name",
+                column: "identifier",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_departments_slug",
+                name: "ix_departments_name",
                 table: "departments",
-                column: "slug",
+                column: "name",
                 unique: true);
 
             migrationBuilder.CreateIndex(
