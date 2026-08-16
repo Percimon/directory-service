@@ -1,4 +1,5 @@
 ﻿using DirectoryService.Domain.Entities;
+using DirectoryService.Domain.Identifiers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -15,9 +16,13 @@ public class DepartmentLocationConfiguration : IEntityTypeConfiguration<Departme
 
         builder.Property(x => x.Id).HasColumnName("id");
 
-        builder.Property(x => x.DepartmentId).HasColumnName("department_id");
+        builder.Property(x => x.DepartmentId)
+            .HasConversion(id => id.Value, value => DepartmentId.Create(value))
+            .HasColumnName("department_id");
 
-        builder.Property(x => x.LocationId).HasColumnName("location_id");
+        builder.Property(x => x.LocationId)
+            .HasConversion(id => id.Value, value => LocationId.Create(value))
+            .HasColumnName("location_id");
 
         builder.Property(x => x.IsPrimary).HasColumnName("is_primary");
 

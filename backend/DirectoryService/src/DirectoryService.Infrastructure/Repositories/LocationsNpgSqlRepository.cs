@@ -135,8 +135,11 @@ public class LocationsNpgSqlRepository : ILocationsRepository
 
     public async Task<UnitResult<Error>> LocationsExist(IEnumerable<LocationId> ids, CancellationToken cancellationToken = default)
     {
-        var idList = ids.ToList();
-        if (idList.Count == 0)
+        var idList = ids
+            .Select(id => id.Value)
+            .ToArray();
+
+        if (idList.Length == 0)
             return Result.Success<Error>(); // Пустой список — формально все есть
 
         using (var connection = _sqlConnectionFactory.Create())
@@ -145,10 +148,10 @@ public class LocationsNpgSqlRepository : ILocationsRepository
                 """
                 SELECT (COUNT(DISTINCT id) = @ExpectedCount) 
                 FROM locations 
-                WHERE id IN @Ids AND is_active = true;;
+                WHERE id = ANY(@Ids) AND is_active = true;
                 """;
 
-            bool result = await connection.ExecuteScalarAsync<bool>(sql, new { Ids = idList, ExpectedCount = idList.Count });
+            bool result = await connection.ExecuteScalarAsync<bool>(sql, new { Ids = idList, ExpectedCount = idList.Length });
 
             return result
                 ? UnitResult.Success<Error>()

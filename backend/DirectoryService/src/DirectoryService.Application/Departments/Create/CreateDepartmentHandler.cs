@@ -103,7 +103,7 @@ public class CreateDepartmentHandler
             if (saveResult.IsFailure)
                 return saveResult.Error;
 
-            _logger.LogInformation("Child department created with id={Id}", departmentId.Value);
+            _logger.LogInformation("Child department created with id={Id} for parent department with id={ParentId}", departmentId.Value, command.ParentId.Value);
 
             return departmentResult.Value.Id.Value;
         }
