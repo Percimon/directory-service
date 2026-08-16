@@ -30,8 +30,8 @@ public class DepartmentsRepository : IDepartmentsRepository
         DepartmentId id,
         CancellationToken cancellationToken = default)
     {
-        var result = _dbContext.Departments
-            .FirstOrDefault(d => d.Id == id && d.IsActive);
+        var result = await _dbContext.Departments
+            .FirstOrDefaultAsync(d => d.Id == id && d.IsActive, cancellationToken);
 
         if (result is null)
         {

@@ -24,14 +24,14 @@ public sealed class Department : SharedService.SharedKernel.Entity<DepartmentId>
     private Department(
         DepartmentId id,
         Name name,
-        Slug identifier,
+        Slug slug,
         Department? parent,
         Path path,
         DepartmentDepth departmentDepth,
         IEnumerable<DepartmentLocation> locations) : base(id)
     {
         Name = name;
-        Slug = identifier;
+        Slug = slug;
         Parent = parent;
         Path = path;
         Depth = departmentDepth;
@@ -173,5 +173,13 @@ public sealed class Department : SharedService.SharedKernel.Entity<DepartmentId>
         _departmentPositions.RemoveAll(x => x.PositionId.Value == positionId);
 
         return Result.Success<Error>();
+    }
+
+    public UnitResult<Error> UpdateMainInfo(Name name, Slug slug)
+    {
+        Name = name;
+        Slug = slug;
+
+        return UnitResult.Success<Error>();
     }
 }

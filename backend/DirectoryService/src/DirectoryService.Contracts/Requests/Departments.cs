@@ -8,8 +8,7 @@ public record CreateDepartmentRequest(
 
 public record UpdateDepartmentRequest(
     string Name,
-    string Slug,
-    Guid? ParentId);
+    string Slug);
 
 public record ChangeParentRequest(Guid? NewParentId);
 

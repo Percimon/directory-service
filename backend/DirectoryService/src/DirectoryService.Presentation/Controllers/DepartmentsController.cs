@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Application.Departments.ChangeParent;
 using DirectoryService.Application.Departments.Create;
+using DirectoryService.Application.Departments.Update;
 using DirectoryService.Application.Departments.UpdateLocations;
 using DirectoryService.Contracts.Requests;
 using Microsoft.AspNetCore.Mvc;
@@ -26,12 +27,15 @@ public class DepartmentsController : Controller
     }
 
     [HttpPatch("{id}")]
-    public EndpointResult Update(
+    public async Task<EndpointResult<Guid>> Update(
         [FromRoute] Guid id,
         [FromBody] UpdateDepartmentRequest request,
+        [FromServices] UpdateDepartmentHandler handler,
         CancellationToken cancellationToken = default)
     {
-        return Result.Success<Error>();
+        var command = new UpdateDepartmentCommand(id, request.Name, request.Slug);
+
+        return await handler.Handle(command, cancellationToken);
     }
 
     [HttpDelete("{id}")]

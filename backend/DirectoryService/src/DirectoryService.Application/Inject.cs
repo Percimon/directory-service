@@ -1,5 +1,6 @@
 ﻿using DirectoryService.Application.Departments.ChangeParent;
 using DirectoryService.Application.Departments.Create;
+using DirectoryService.Application.Departments.Update;
 using DirectoryService.Application.Departments.UpdateLocations;
 using DirectoryService.Application.Locations.Create;
 using DirectoryService.Application.Positions.Create;
@@ -18,6 +19,8 @@ public static class Inject
 
         services.AddScoped<UpdateLocationsHandler>();
         services.AddScoped<ChangeParentHandler>();
+
+        services.AddScoped<UpdateDepartmentHandler>();
 
         services.AddValidatorsFromAssembly(typeof(Inject).Assembly);
 
