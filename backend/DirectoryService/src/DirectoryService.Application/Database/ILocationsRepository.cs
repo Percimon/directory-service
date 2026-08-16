@@ -8,6 +8,8 @@ namespace DirectoryService.Application.Database;
 
 public interface ILocationsRepository
 {
+    Task<Result<Location, Error>> GetById(LocationId id, CancellationToken cancellationToken);
+
     Task<Result<Guid, Error>> Add(Location location, CancellationToken cancellationToken);
 
     Task<UnitResult<Error>> LocationNameExists(Name name, CancellationToken cancellationToken);
@@ -15,4 +17,6 @@ public interface ILocationsRepository
     Task<UnitResult<Error>> LocationExists(LocationId id, CancellationToken cancellationToken);
 
     Task<UnitResult<Error>> LocationsExist(IEnumerable<LocationId> ids, CancellationToken cancellationToken);
+
+    Task<UnitResult<Error>> Save(CancellationToken cancellationToken);
 }

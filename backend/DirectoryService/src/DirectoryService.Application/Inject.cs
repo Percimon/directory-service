@@ -22,6 +22,8 @@ public static class Inject
 
         services.AddScoped<UpdateDepartmentHandler>();
 
+        services.AddScoped<UpdateLocationHandler>();
+
         services.AddValidatorsFromAssembly(typeof(Inject).Assembly);
 
         return services;
