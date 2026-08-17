@@ -18,7 +18,7 @@ public static class Inject
 
         services.AddScoped<ITransactionManager, TransactionManager>();
 
-        services.AddScoped<ILocationsRepository, LocationsNpgSqlRepository>();
+        services.AddScoped<ILocationsRepository, LocationsRepository>();
 
         services.AddScoped<IDepartmentsRepository, DepartmentsRepository>();
 

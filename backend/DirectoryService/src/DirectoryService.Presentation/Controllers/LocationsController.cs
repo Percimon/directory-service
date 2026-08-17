@@ -1,4 +1,5 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Threading.Tasks;
+using CSharpFunctionalExtensions;
 using DirectoryService.Application.Locations.Create;
 using DirectoryService.Contracts.Requests;
 using Microsoft.AspNetCore.Mvc;
@@ -24,12 +25,22 @@ public class LocationsController : Controller
     }
 
     [HttpPatch("{id}")]
-    public EndpointResult Update(
+    public async Task<EndpointResult<Guid>> Update(
         [FromRoute] Guid id,
         [FromBody] UpdateLocationRequest request,
+        [FromServices] UpdateLocationHandler handler,
         CancellationToken cancellationToken = default)
     {
-        return Result.Success<Error>();
+        var command = new UpdateLocationCommand(
+            id,
+            request.Name,
+            request.City,
+            request.District,
+            request.Street,
+            request.Structure,
+            request.TimeZone);
+
+        return await handler.Handle(command, cancellationToken);
     }
 
     [HttpDelete("{id}")]

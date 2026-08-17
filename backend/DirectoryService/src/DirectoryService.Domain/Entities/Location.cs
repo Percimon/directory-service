@@ -1,11 +1,12 @@
-﻿using DirectoryService.Domain.Identifiers;
+﻿using CSharpFunctionalExtensions;
+using DirectoryService.Domain.Identifiers;
 using DirectoryService.Domain.ValueObjects;
 using SharedService.SharedKernel;
 using TimeZone = DirectoryService.Domain.ValueObjects.TimeZone;
 
 namespace DirectoryService.Domain.Entities;
 
-public sealed class Location : Entity<LocationId>
+public sealed class Location : SharedService.SharedKernel.Entity<LocationId>
 {
     private bool _isActive = true;
 
@@ -40,4 +41,17 @@ public sealed class Location : Entity<LocationId>
     public DateTime CreatedAt { get; }
 
     public DateTime UpdatedAt { get; private set; }
+
+    public UnitResult<Error> UpdateMainInfo(
+        Name name,
+        Address address,
+        TimeZone timeZone)
+    {
+        Name = name;
+        Address = address;
+        TimeZone = timeZone;
+        UpdatedAt = DateTime.UtcNow;
+
+        return UnitResult.Success<Error>();
+    }
 }

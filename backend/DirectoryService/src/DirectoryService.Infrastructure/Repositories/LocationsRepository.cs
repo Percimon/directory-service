@@ -63,6 +63,16 @@ public class LocationsRepository : ILocationsRepository
         }
     }
 
+    public async Task<Result<Location, Error>> GetById(LocationId id, CancellationToken cancellationToken)
+    {
+        var query = await _dbContext.Locations.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+
+        if (query is null)
+            return GeneralErrors.NotFound(id.Value);
+
+        return query;
+    }
+
     public async Task<UnitResult<Error>> LocationExists(LocationId id, CancellationToken cancellationToken = default)
     {
         var query = await _dbContext.Locations.FirstOrDefaultAsync(l => id == l.Id && l.IsActive, cancellationToken);
@@ -108,6 +118,24 @@ public class LocationsRepository : ILocationsRepository
         catch (Exception ex)
         {
             return Error.Failure("database", "Locations id count failed");
+        }
+    }
+
+    public async Task<UnitResult<Error>> Save(CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _dbContext.SaveChangesAsync(cancellationToken);
+
+            return UnitResult.Success<Error>();
+        }
+        catch (Exception e)
+        {
+            string message = "Failed to save changes";
+
+            _logger.LogError(e, message);
+
+            return Error.Failure("database", message);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Application.Departments.ChangeParent;
 using DirectoryService.Application.Departments.Create;
+using DirectoryService.Application.Departments.Update;
 using DirectoryService.Application.Departments.UpdateLocations;
 using DirectoryService.Contracts.Requests;
 using Microsoft.AspNetCore.Mvc;
@@ -26,12 +27,15 @@ public class DepartmentsController : Controller
     }
 
     [HttpPatch("{id}")]
-    public EndpointResult Update(
+    public async Task<EndpointResult<Guid>> Update(
         [FromRoute] Guid id,
         [FromBody] UpdateDepartmentRequest request,
+        [FromServices] UpdateDepartmentHandler handler,
         CancellationToken cancellationToken = default)
     {
-        return Result.Success<Error>();
+        var command = new UpdateDepartmentCommand(id, request.Name, request.Slug);
+
+        return await handler.Handle(command, cancellationToken);
     }
 
     [HttpDelete("{id}")]
@@ -55,12 +59,36 @@ public class DepartmentsController : Controller
         return await handler.Handle(command, cancellationToken);
     }
 
+    [HttpPatch("{id}/locations/{locationId}")]
+    public async Task<EndpointResult<Guid>> AddLocation(
+        [FromRoute] Guid id,
+        [FromRoute] Guid locationId,
+        [FromServices] AddLocationHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var command = new AddLocationCommand(id, locationId);
+
+        return await handler.Handle(command, cancellationToken);
+    }
+
+    [HttpDelete("{id}/locations/{locationId}")]
+    public async Task<EndpointResult<Guid>> RemoveLocation(
+       [FromRoute] Guid id,
+       [FromRoute] Guid locationId,
+       [FromServices] RemoveLocationHandler handler,
+       CancellationToken cancellationToken = default)
+    {
+        var command = new RemoveLocationCommand(id, locationId);
+
+        return await handler.Handle(command, cancellationToken);
+    }
+
     [HttpPatch("{id}/locations")]
     public async Task<EndpointResult<Guid>> UpdateLocations(
-        [FromRoute] Guid id,
-        [FromServices] UpdateLocationsHandler handler,
-        [FromBody] UpdateLocationsRequest request,
-        CancellationToken cancellationToken = default)
+       [FromRoute] Guid id,
+       [FromServices] UpdateLocationsHandler handler,
+       [FromBody] UpdateLocationsRequest request,
+       CancellationToken cancellationToken = default)
     {
         var command = new UpdateLocationsCommand(id, request.LocationIds);
 
