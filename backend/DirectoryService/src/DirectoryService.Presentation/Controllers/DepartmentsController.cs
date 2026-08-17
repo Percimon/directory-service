@@ -71,6 +71,18 @@ public class DepartmentsController : Controller
         return await handler.Handle(command, cancellationToken);
     }
 
+    [HttpDelete("{id}/locations/{locationId}")]
+    public async Task<EndpointResult<Guid>> RemoveLocation(
+       [FromRoute] Guid id,
+       [FromRoute] Guid locationId,
+       [FromServices] RemoveLocationHandler handler,
+       CancellationToken cancellationToken = default)
+    {
+        var command = new RemoveLocationCommand(id, locationId);
+
+        return await handler.Handle(command, cancellationToken);
+    }
+
     [HttpPatch("{id}/locations")]
     public async Task<EndpointResult<Guid>> UpdateLocations(
        [FromRoute] Guid id,

@@ -160,9 +160,14 @@ public sealed class Department : SharedService.SharedKernel.Entity<DepartmentId>
 
     public UnitResult<Error> RemoveLocation(Guid locationId)
     {
+        var search = _departmentLocations.FirstOrDefault(x => x.LocationId.Value == locationId);
+
+        if (search is null)
+            return GeneralErrors.NotFound(locationId);
+
         _departmentLocations.RemoveAll(x => x.LocationId.Value == locationId);
 
-        return Result.Success<Error>();
+        return UnitResult.Success<Error>();
     }
 
     public UnitResult<Error> AddPosition(Guid positionId)
