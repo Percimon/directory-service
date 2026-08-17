@@ -66,7 +66,7 @@ public sealed class RemoveLocationHandler : ICommandHandler<Guid, RemoveLocation
 
         await _departmentsRepository.Save(cancellationToken);
 
-        _logger.LogInformation("Location with Id={LocationId} removed to Department with Id={DepartmentId}", command.LocationId, command.DepartmentId);
+        _logger.LogInformation("Location with Id={LocationId} removed from Department with Id={DepartmentId}", command.LocationId, command.DepartmentId);
 
         return command.LocationId;
     }
