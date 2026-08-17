@@ -24,6 +24,8 @@ public static class Inject
 
         services.AddScoped<UpdateLocationHandler>();
 
+        services.AddScoped<AddLocationHandler>();
+
         services.AddValidatorsFromAssembly(typeof(Inject).Assembly);
 
         return services;

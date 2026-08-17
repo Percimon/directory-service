@@ -135,6 +135,18 @@ public sealed class Department : SharedService.SharedKernel.Entity<DepartmentId>
             locations);
     }
 
+    public UnitResult<Error> AddLocation(Guid locationId)
+    {
+        var search = _departmentLocations.FirstOrDefault(x => x.LocationId.Value == locationId);
+
+        if (search is not null)
+            return GeneralErrors.AlreadyExists(nameof(Location), nameof(DepartmentLocations), locationId.ToString());
+
+        _departmentLocations.Add(DepartmentLocation.Create(Id, LocationId.Create(locationId)).Value);
+
+        return UnitResult.Success<Error>();
+    }
+
     public UnitResult<Error> UpdateLocations(IEnumerable<Guid> locationIds)
     {
         var departmentLocations = locationIds

@@ -9,7 +9,6 @@ public record CreateDepartmentRequest(
 public record UpdateDepartmentRequest(
     string Name,
     string Slug);
-
 public record ChangeParentRequest(Guid? NewParentId);
 
 public record UpdateLocationsRequest(IReadOnlyList<Guid> LocationIds);

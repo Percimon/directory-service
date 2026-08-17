@@ -59,12 +59,24 @@ public class DepartmentsController : Controller
         return await handler.Handle(command, cancellationToken);
     }
 
+    [HttpPatch("{id}/locations/{locationId}")]
+    public async Task<EndpointResult<Guid>> AddLocation(
+        [FromRoute] Guid id,
+        [FromRoute] Guid locationId,
+        [FromServices] AddLocationHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var command = new AddLocationCommand(id, locationId);
+
+        return await handler.Handle(command, cancellationToken);
+    }
+
     [HttpPatch("{id}/locations")]
     public async Task<EndpointResult<Guid>> UpdateLocations(
-        [FromRoute] Guid id,
-        [FromServices] UpdateLocationsHandler handler,
-        [FromBody] UpdateLocationsRequest request,
-        CancellationToken cancellationToken = default)
+       [FromRoute] Guid id,
+       [FromServices] UpdateLocationsHandler handler,
+       [FromBody] UpdateLocationsRequest request,
+       CancellationToken cancellationToken = default)
     {
         var command = new UpdateLocationsCommand(id, request.LocationIds);
 
