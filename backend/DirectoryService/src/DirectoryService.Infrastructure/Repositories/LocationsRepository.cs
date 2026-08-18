@@ -117,7 +117,7 @@ public class LocationsRepository : ILocationsRepository
         }
         catch (Exception ex)
         {
-            return Error.Failure("database", "Locations id count failed");
+            return Error.Failure("database", "Locations query failed");
         }
     }
 
