@@ -18,7 +18,11 @@ public class CreateDepartmentCommandValidator : AbstractValidator<CreateDepartme
 
         RuleFor(x => x.Locations)
             .NotEmpty()
+            .WithError(GeneralErrors.Failure("Location IDs list should not be empty"));
+
+        RuleFor(x => x.Locations)
             .Must(locations => locations.Distinct().Count() == locations.Count)
-            .WithError(GeneralErrors.ValueIsInvalid("Location IDs list"));
+            .WithError(GeneralErrors.Failure("Location IDs list should contain unique IDs"));
+
     }
 }
