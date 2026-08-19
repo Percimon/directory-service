@@ -16,19 +16,23 @@ public class CreateDepartmentHandler : ICommandHandler<Guid, CreateDepartmentCom
 {
     private readonly IDepartmentsRepository _departmentsRepository;
     private readonly ILocationsRepository _locationsRepository;
-    private readonly ILogger<CreateDepartmentHandler> _logger;
+    private readonly ITransactionManager _transactionManager;
     private readonly IValidator<CreateDepartmentCommand> _validator;
+    private readonly ILogger<CreateDepartmentHandler> _logger;
 
     public CreateDepartmentHandler(
         IDepartmentsRepository departmentsRepository,
         ILocationsRepository locationsRepository,
-        ILogger<CreateDepartmentHandler> logger,
-        IValidator<CreateDepartmentCommand> validator)
+        IValidator<CreateDepartmentCommand> validator,
+        ITransactionManager transactionManager,
+        ILogger<CreateDepartmentHandler> logger)
     {
         _departmentsRepository = departmentsRepository;
         _locationsRepository = locationsRepository;
-        _logger = logger;
         _validator = validator;
+        _transactionManager = transactionManager;
+        _logger = logger;
+
     }
 
     public async Task<Result<Guid, Error>> Handle(
@@ -73,7 +77,12 @@ public class CreateDepartmentHandler : ICommandHandler<Guid, CreateDepartmentCom
             if (departmentResult.IsFailure)
                 return departmentResult.Error;
 
-            var saveResult = await _departmentsRepository.Add(departmentResult.Value, cancellationToken);
+            var addResult = await _departmentsRepository.Add(departmentResult.Value, cancellationToken);
+
+            if (addResult.IsFailure)
+                return addResult.Error;
+
+            var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
 
             if (saveResult.IsFailure)
                 return saveResult.Error;
@@ -99,7 +108,12 @@ public class CreateDepartmentHandler : ICommandHandler<Guid, CreateDepartmentCom
             if (departmentResult.IsFailure)
                 return departmentResult.Error;
 
-            var saveResult = await _departmentsRepository.Add(departmentResult.Value, cancellationToken);
+            var addResult = await _departmentsRepository.Add(departmentResult.Value, cancellationToken);
+
+            if (addResult.IsFailure)
+                return addResult.Error;
+
+            var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
 
             if (saveResult.IsFailure)
                 return saveResult.Error;

@@ -17,8 +17,6 @@ public interface IDepartmentsRepository
 
     Task<Result<Guid, Error>> Add(Department department, CancellationToken cancellationToken);
 
-    Task<UnitResult<Error>> Save(CancellationToken cancellationToken);
-
     Task<UnitResult<Error>> DepartmentsExist(IEnumerable<DepartmentId> ids, CancellationToken cancellationToken);
 
     Task<UnitResult<Error>> ChangeParent(

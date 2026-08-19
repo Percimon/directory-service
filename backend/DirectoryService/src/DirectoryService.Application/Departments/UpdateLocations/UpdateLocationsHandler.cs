@@ -22,15 +22,15 @@ public class UpdateLocationsHandler : ICommandHandler<Guid, UpdateLocationsComma
     public UpdateLocationsHandler(
         IDepartmentsRepository departmentsRepository,
         ILocationsRepository locationsRepository,
-        ILogger<UpdateLocationsHandler> logger,
         IValidator<UpdateLocationsCommand> validator,
-        ITransactionManager transactionManager)
+        ITransactionManager transactionManager,
+        ILogger<UpdateLocationsHandler> logger)
     {
         _departmentsRepository = departmentsRepository;
         _locationsRepository = locationsRepository;
-        _logger = logger;
         _validator = validator;
         _transactionManager = transactionManager;
+        _logger = logger;
     }
 
     public async Task<Result<Guid, Error>> Handle(

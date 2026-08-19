@@ -29,8 +29,6 @@ public class PositionsRepository : IPositionsRepository
         {
             await _dbContext.Positions.AddAsync(position, cancellationToken);
 
-            await _dbContext.SaveChangesAsync(cancellationToken);
-
             return position.Id.Value;
         }
         catch (DbUpdateException ex) when (ex.InnerException is PostgresException pgEx)

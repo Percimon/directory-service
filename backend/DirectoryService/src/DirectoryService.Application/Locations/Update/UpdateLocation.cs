@@ -41,15 +41,18 @@ public class UpdateLocationHandler : ICommandHandler<Guid, UpdateLocationCommand
 {
     private readonly ILocationsRepository _repository;
     private readonly IValidator<UpdateLocationCommand> _validator;
+    private readonly ITransactionManager _transactionManager;
     private readonly ILogger<UpdateLocationHandler> _logger;
 
     public UpdateLocationHandler(
         ILocationsRepository repository,
         IValidator<UpdateLocationCommand> validator,
+        ITransactionManager transactionManager,
         ILogger<UpdateLocationHandler> logger)
     {
         _repository = repository;
         _validator = validator;
+        _transactionManager = transactionManager;
         _logger = logger;
     }
 
@@ -80,10 +83,14 @@ public class UpdateLocationHandler : ICommandHandler<Guid, UpdateLocationCommand
         if (result.IsFailure)
             return result.Error;
 
-        var saveResult = await _repository.Save(cancellationToken);
+        var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
 
         if (saveResult.IsFailure)
+        {
+            _logger.LogError("Failed to update Location with Id={Id}. Error: {Error}", command.Id, saveResult.Error);
+
             return saveResult.Error;
+        }
 
         _logger.LogInformation("Location with Id={Id} was updated.", command.Id);
 

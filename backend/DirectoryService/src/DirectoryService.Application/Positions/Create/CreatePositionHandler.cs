@@ -55,10 +55,19 @@ public class CreatePositionHandler : ICommandHandler<Guid, CreatePositionCommand
            .Select(i => DepartmentId.Create(i))
            .ToList();
 
+        var transactionScopeResult = await _transactionManager.BeginTransactionAsync(cancellationToken);
+
+        if (transactionScopeResult.IsFailure)
+            return transactionScopeResult.Error;
+
+        using var transactionScope = transactionScopeResult.Value;
+
         UnitResult<Error> departmentsAreExist = await _departmentsRepository.DepartmentsExist(departmentIds, cancellationToken);
 
         if (departmentsAreExist.IsFailure)
         {
+            transactionScope.Rollback();
+
             return departmentsAreExist.Error;
         }
 
@@ -70,6 +79,8 @@ public class CreatePositionHandler : ICommandHandler<Guid, CreatePositionCommand
 
         if (addResult.IsFailure)
         {
+            transactionScope.Rollback();
+
             return addResult.Error;
         }
 
@@ -80,20 +91,43 @@ public class CreatePositionHandler : ICommandHandler<Guid, CreatePositionCommand
             var dep = await _departmentsRepository.GetByIdWithPositions(id, cancellationToken);
 
             if (dep.IsFailure)
+            {
+                transactionScope.Rollback();
+
                 return dep.Error;
+            }
 
             var depValue = dep.Value;
 
             var addPositionResult = depValue.AddPosition(positionId.Value);
 
             if (addPositionResult.IsFailure)
+            {
+                transactionScope.Rollback();
+
                 return addPositionResult.Error;
+            }
         }
 
-        var saveResult = await _departmentsRepository.Save(cancellationToken);
+        var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
 
         if (saveResult.IsFailure)
+        {
+            transactionScope.Rollback();
+
+            _logger.LogError("Failed to create Position with name={Name}. Error: {Error}", command.Name, saveResult.Error);
+
             return saveResult.Error;
+        }
+
+        var commitResult = transactionScope.Commit();
+
+        if (commitResult.IsFailure)
+        {
+            _logger.LogError("Failed to commit transaction for Position with name={Name}. Error: {Error}", command.Name, commitResult.Error);
+
+            return commitResult.Error;
+        }
 
         return position.Id.Value;
     }

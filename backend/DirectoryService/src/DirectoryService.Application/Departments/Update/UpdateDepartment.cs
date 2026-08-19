@@ -34,15 +34,18 @@ public class UpdateDepartmentHandler : ICommandHandler<Guid, UpdateDepartmentCom
 {
     private readonly IDepartmentsRepository _repository;
     private readonly IValidator<UpdateDepartmentCommand> _validator;
+    private readonly ITransactionManager _transactionManager;
     private readonly ILogger<UpdateDepartmentHandler> _logger;
 
     public UpdateDepartmentHandler(
         IDepartmentsRepository repository,
         IValidator<UpdateDepartmentCommand> validator,
+        ITransactionManager transactionManager,
         ILogger<UpdateDepartmentHandler> logger)
     {
         _repository = repository;
         _validator = validator;
+        _transactionManager = transactionManager;
         _logger = logger;
     }
 
@@ -73,7 +76,14 @@ public class UpdateDepartmentHandler : ICommandHandler<Guid, UpdateDepartmentCom
         if (updateResult.IsFailure)
             return updateResult.Error;
 
-        await _repository.Save(cancellationToken);
+        var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
+
+        if (saveResult.IsFailure)
+        {
+            _logger.LogError("Failed to update Department with Id={DepartmentId}. Error: {Error}", command.DepartmentId, saveResult.Error);
+
+            return saveResult.Error;
+        }
 
         _logger.LogInformation("Department with id={Id} now has Name={Name} and Slug={Slug}", command.DepartmentId, command.Name, command.Slug);
 

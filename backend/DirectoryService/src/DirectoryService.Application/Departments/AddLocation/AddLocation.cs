@@ -30,17 +30,20 @@ public sealed class AddLocationHandler : ICommandHandler<Guid, AddLocationComman
     private readonly ILocationsRepository _locationsRepository;
     private readonly IDepartmentsRepository _departmentsRepository;
     private readonly IValidator<AddLocationCommand> _validator;
+    private readonly ITransactionManager _transactionManager;
     private readonly ILogger<AddLocationHandler> _logger;
 
     public AddLocationHandler(
         ILocationsRepository locationsRepository,
         IDepartmentsRepository departmentsRepository,
         IValidator<AddLocationCommand> validator,
+        ITransactionManager transactionManager,
         ILogger<AddLocationHandler> logger)
     {
         _locationsRepository = locationsRepository;
         _departmentsRepository = departmentsRepository;
         _validator = validator;
+        _transactionManager = transactionManager;
         _logger = logger;
     }
 
@@ -66,7 +69,12 @@ public sealed class AddLocationHandler : ICommandHandler<Guid, AddLocationComman
         if (addLocationResult.IsFailure)
             return addLocationResult.Error;
 
-        await _departmentsRepository.Save(cancellationToken);
+        var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
+
+        if (saveResult.IsFailure)
+        {
+            return saveResult.Error;
+        }
 
         _logger.LogInformation("Location with Id={LocationId} added to Department with Id={DepartmentId}", command.LocationId, command.DepartmentId);
 

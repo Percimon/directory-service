@@ -17,17 +17,20 @@ namespace DirectoryService.Application.Locations.Create;
 public class CreateLocationHandler : ICommandHandler<Guid, CreateLocationCommand>
 {
     private readonly ILocationsRepository _repository;
-    private readonly ILogger<CreateLocationHandler> _logger;
     private readonly IValidator<CreateLocationCommand> _validator;
+    private readonly ITransactionManager _transactionManager;
+    private readonly ILogger<CreateLocationHandler> _logger;
 
     public CreateLocationHandler(
         ILocationsRepository repository,
-        ILogger<CreateLocationHandler> logger,
-        IValidator<CreateLocationCommand> validator)
+        IValidator<CreateLocationCommand> validator,
+        ITransactionManager transactionManager,
+        ILogger<CreateLocationHandler> logger)
     {
         _repository = repository;
         _logger = logger;
         _validator = validator;
+        _transactionManager = transactionManager;
     }
 
     public async Task<Result<Guid, Error>> Handle(
@@ -73,6 +76,15 @@ public class CreateLocationHandler : ICommandHandler<Guid, CreateLocationCommand
 
         if (result.IsFailure)
             return result.Error;
+
+        var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
+
+        if (saveResult.IsFailure)
+        {
+            _logger.LogError("Failed to create Location with name={Name}. Error: {Error}", command.Name, saveResult.Error);
+
+            return saveResult.Error;
+        }
 
         _logger.LogInformation("Location created with id={Id}", location.Id.Value);
 
