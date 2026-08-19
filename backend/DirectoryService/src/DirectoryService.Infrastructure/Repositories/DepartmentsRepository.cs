@@ -85,7 +85,7 @@ public class DepartmentsRepository : IDepartmentsRepository
 
             _logger.LogError(ex, "Database update error while creating Department with name: {name}", department.Name.Value);
 
-            return Error.Failure("department.add", pgEx.Message);
+            return Error.Failure("department.add", ex.Message);
         }
         catch (Exception ex)
         {

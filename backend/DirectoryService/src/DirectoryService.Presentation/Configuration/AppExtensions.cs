@@ -9,9 +9,7 @@ public static class AppExtensions
     public static IApplicationBuilder Configure(this WebApplication app)
     {
         app.UseExceptionMiddleware();
-
         app.UseRequestCorrelationId();
-
         app.UseSerilogRequestLogging();
 
         app.MapControllers();
