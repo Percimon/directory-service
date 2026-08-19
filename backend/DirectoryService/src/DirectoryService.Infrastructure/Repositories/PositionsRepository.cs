@@ -43,7 +43,7 @@ public class PositionsRepository : IPositionsRepository
 
             _logger.LogError(ex, "Database update error while creating Position with name: {name}", position.Name.Value);
 
-            return GeneralErrors.Failure("Database update error while creating Position");
+            return Error.Failure("position.add", pgEx.Message);
         }
         catch (Exception e)
         {
@@ -51,7 +51,7 @@ public class PositionsRepository : IPositionsRepository
 
             _logger.LogError(e, message);
 
-            return Error.Failure("position.insert", message);
+            return Error.Failure("position.add", e.Message);
         }
     }
 }

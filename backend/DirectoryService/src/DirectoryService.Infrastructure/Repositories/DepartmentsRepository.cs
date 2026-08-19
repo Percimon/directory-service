@@ -197,13 +197,13 @@ public class DepartmentsRepository : IDepartmentsRepository
         {
             _logger.LogError(pEx, "Ошибка работы с БД");
 
-            return Error.Failure("department.exist", pEx.Message);
+            return Error.Failure("department.exists", pEx.Message);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Ошибка");
 
-            return Error.Failure("department.exist", ex.Message);
+            return Error.Failure("department.exists", ex.Message);
         }
     }
 
