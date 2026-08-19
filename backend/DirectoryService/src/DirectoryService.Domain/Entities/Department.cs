@@ -17,7 +17,8 @@ public sealed class Department : SharedService.SharedKernel.Entity<DepartmentId>
     private bool _isActive = true;
 
     //ef core
-    private Department(DepartmentId id) : base(id)
+    private Department(DepartmentId id)
+        : base(id)
     {
     }
 
@@ -28,7 +29,8 @@ public sealed class Department : SharedService.SharedKernel.Entity<DepartmentId>
         Department? parent,
         Path path,
         DepartmentDepth departmentDepth,
-        IEnumerable<DepartmentLocation> locations) : base(id)
+        IEnumerable<DepartmentLocation> locations)
+        : base(id)
     {
         Name = name;
         Slug = slug;

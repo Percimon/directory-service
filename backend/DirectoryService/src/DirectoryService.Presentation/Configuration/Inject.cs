@@ -1,4 +1,6 @@
 ﻿using DirectoryService.Application;
+using Serilog;
+using Serilog.Exceptions;
 using SharedService.Framework.Logging;
 using SharedService.Framework.Swagger;
 
@@ -14,7 +16,12 @@ public static class Inject
 
         return services
             .AddOpenApi()
-            .AddSerilogLogging(configuration, "DirectoryService")
+            .AddSerilog((sp, lc) => lc
+            .ReadFrom.Configuration(configuration)
+            .ReadFrom.Services(sp)
+            .Enrich.FromLogContext()
+            .Enrich.WithExceptionDetails()
+            .Enrich.WithProperty("ServiceName", "DirectoryService"))
             .InjectApplication()
             .InjectInfrastructure(configuration);
     }

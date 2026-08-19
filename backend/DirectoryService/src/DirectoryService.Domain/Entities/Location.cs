@@ -11,7 +11,8 @@ public sealed class Location : SharedService.SharedKernel.Entity<LocationId>
     private bool _isActive = true;
 
     //ef core
-    private Location(LocationId id) : base(id)
+    private Location(LocationId id)
+        : base(id)
     {
     }
 
@@ -20,7 +21,8 @@ public sealed class Location : SharedService.SharedKernel.Entity<LocationId>
         Name name,
         Address address,
         TimeZone timeZone,
-        DateTime createdAt) : base(id)
+        DateTime createdAt)
+        : base(id)
     {
         Name = name;
         Address = address;

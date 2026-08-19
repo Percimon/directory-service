@@ -9,7 +9,8 @@ public sealed class Position : Entity<PositionId>
     private bool _isActive = true;
 
     //ef core
-    private Position(PositionId id) : base(id)
+    private Position(PositionId id)
+        : base(id)
     {
     }
 
@@ -17,7 +18,8 @@ public sealed class Position : Entity<PositionId>
         PositionId id,
         Name name,
         Description description,
-        DateTime createdAt) : base(id)
+        DateTime createdAt)
+        : base(id)
     {
         Name = name;
         Description = description;
