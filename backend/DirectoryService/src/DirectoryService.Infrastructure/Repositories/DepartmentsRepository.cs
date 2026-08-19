@@ -30,15 +30,30 @@ public class DepartmentsRepository : IDepartmentsRepository
         DepartmentId id,
         CancellationToken cancellationToken = default)
     {
-        var result = await _dbContext.Departments
-            .FirstOrDefaultAsync(d => d.Id == id && d.IsActive, cancellationToken);
-
-        if (result is null)
+        try
         {
-            return GeneralErrors.NotFound(id.Value);
-        }
+            var result = await _dbContext.Departments
+                .FirstOrDefaultAsync(d => d.Id == id && d.IsActive, cancellationToken);
 
-        return result;
+            if (result is null)
+            {
+                return GeneralErrors.NotFound(id.Value);
+            }
+
+            return result;
+        }
+        catch (PostgresException pEx)
+        {
+            _logger.LogError(pEx, "Ошибка работы с БД");
+
+            return Error.Failure("department.get", pEx.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка");
+
+            return Error.Failure("department.get", ex.Message);
+        }
     }
 
     public async Task<Result<Guid, Error>> Add(
@@ -70,15 +85,13 @@ public class DepartmentsRepository : IDepartmentsRepository
 
             _logger.LogError(ex, "Database update error while creating Department with name: {name}", department.Name.Value);
 
-            return GeneralErrors.Failure("Database update error while creating Department");
+            return Error.Failure("department.add", pgEx.Message);
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            string message = "Failed to insert Department";
+            _logger.LogError(ex, "Ошибка");
 
-            _logger.LogError(e, message);
-
-            return Error.Failure("department.insert", message);
+            return Error.Failure("department.add", ex.Message);
         }
     }
 
@@ -96,36 +109,66 @@ public class DepartmentsRepository : IDepartmentsRepository
 
             _logger.LogError(e, message);
 
-            return Error.Failure("database", message);
+            return Error.Failure("database.save", message);
         }
     }
 
     public async Task<Result<Department, Error>> GetByIdWithLocations(DepartmentId id, CancellationToken cancellationToken)
     {
-        var result = _dbContext.Departments
+        try
+        {
+            var result = _dbContext.Departments
             .Include(d => d.DepartmentLocations)
             .FirstOrDefault(d => d.Id == id && d.IsActive);
 
-        if (result is null)
-        {
-            return GeneralErrors.NotFound(id.Value);
-        }
+            if (result is null)
+            {
+                return GeneralErrors.NotFound(id.Value);
+            }
 
-        return result;
+            return result;
+        }
+        catch (PostgresException pEx)
+        {
+            _logger.LogError(pEx, "Ошибка работы с БД");
+
+            return Error.Failure("department.get", pEx.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка");
+
+            return Error.Failure("department.get", ex.Message);
+        }
     }
 
     public async Task<Result<Department, Error>> GetByIdWithPositions(DepartmentId id, CancellationToken cancellationToken)
     {
-        var result = _dbContext.Departments
-           .Include(d => d.DepartmentPositions)
-           .FirstOrDefault(d => d.Id == id && d.IsActive);
-
-        if (result is null)
+        try
         {
-            return GeneralErrors.NotFound(id.Value);
-        }
+            var result = _dbContext.Departments
+          .Include(d => d.DepartmentPositions)
+          .FirstOrDefault(d => d.Id == id && d.IsActive);
 
-        return result;
+            if (result is null)
+            {
+                return GeneralErrors.NotFound(id.Value);
+            }
+
+            return result;
+        }
+        catch (PostgresException pEx)
+        {
+            _logger.LogError(pEx, "Ошибка работы с БД");
+
+            return Error.Failure("department.get", pEx.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка");
+
+            return Error.Failure("department.get", ex.Message);
+        }
     }
 
     public async Task<UnitResult<Error>> DepartmentsExist(IEnumerable<DepartmentId> ids, CancellationToken cancellationToken)
@@ -150,25 +193,48 @@ public class DepartmentsRepository : IDepartmentsRepository
                 ? UnitResult.Success<Error>()
                 : Error.NotFound("department.id", "One of department ids were not found");
         }
+        catch (PostgresException pEx)
+        {
+            _logger.LogError(pEx, "Ошибка работы с БД");
+
+            return Error.Failure("department.exist", pEx.Message);
+        }
         catch (Exception ex)
         {
-            return Error.Failure("database", "Department id count failed");
+            _logger.LogError(ex, "Ошибка");
+
+            return Error.Failure("department.exist", ex.Message);
         }
     }
 
     public async Task<Result<Department, Error>> GetByIdWithLock(DepartmentId id, CancellationToken cancellationToken)
     {
-        var department = await _dbContext.Departments
+        try
+        {
+            var department = await _dbContext.Departments
             .FromSql($"SELECT * FROM departments WHERE id = {id.Value} AND is_active = true FOR UPDATE NOWAIT")
             .Include(d => d.Children)
             .FirstOrDefaultAsync(cancellationToken);
 
-        if (department is null)
-        {
-            return GeneralErrors.NotFound(id.Value);
-        }
+            if (department is null)
+            {
+                return GeneralErrors.NotFound(id.Value);
+            }
 
-        return department;
+            return department;
+        }
+        catch (PostgresException pEx)
+        {
+            _logger.LogError(pEx, "Ошибка работы с БД");
+
+            return Error.Failure("department.get", pEx.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка");
+
+            return Error.Failure("department.get", ex.Message);
+        }
     }
 
     public async Task<UnitResult<Error>> ChangeParent(
@@ -200,13 +266,21 @@ public class DepartmentsRepository : IDepartmentsRepository
                 new NpgsqlParameter("@newParentId", newParentId.HasValue ? newParentId : DBNull.Value),
                 new NpgsqlParameter("@departmentId", departmentId)],
                 cancellationToken);
+
+            return Result.Success<Error>();
+        }
+        catch (PostgresException pEx)
+        {
+            _logger.LogError(pEx, "Ошибка работы с БД");
+
+            return Error.Failure("department.change_parent", pEx.Message);
         }
         catch (Exception ex)
         {
-            return Error.Failure("database", ex.Message);
-        }
+            _logger.LogError(ex, "Ошибка");
 
-        return Result.Success<Error>();
+            return Error.Failure("department.change_parent", ex.Message);
+        }
     }
 
     public async Task<UnitResult<Error>> LockDescendants(string rootPath, CancellationToken cancellationToken)
@@ -224,13 +298,21 @@ public class DepartmentsRepository : IDepartmentsRepository
                 sql,
                 [new NpgsqlParameter("@rootPath", rootPath)],
                 cancellationToken);
+
+            return Result.Success<Error>();
+        }
+        catch (PostgresException pEx)
+        {
+            _logger.LogError(pEx, "Ошибка работы с БД");
+
+            return Error.Failure("department.lock_descendants", pEx.Message);
         }
         catch (Exception ex)
         {
-            return Error.Failure("database.lock-descendants", ex.Message);
-        }
+            _logger.LogError(ex, "Ошибка");
 
-        return Result.Success<Error>();
+            return Error.Failure("department.lock_descendants", ex.Message);
+        }
     }
 
     public async Task<List<DepartmenDto>> GetHierarchyLtree(string rootPath)
@@ -247,30 +329,45 @@ public class DepartmentsRepository : IDepartmentsRepository
             ORDER BY depth;
             """;
 
-        var connection = _dbContext.Database.GetDbConnection();
-
-        var parameters = new { rootPath };
-
-        var departmentRows = (await connection.QueryAsync<DepartmenDto>(sql, parameters))
-            .ToList();
-
-        var departmentDictionary = departmentRows.ToDictionary(x => x.Id);
-
-        var roots = new List<DepartmenDto>();
-
-        foreach (var row in departmentRows)
+        try
         {
-            if (row.Parent.HasValue && departmentDictionary.TryGetValue(row.Parent.Value, out var parent))
-            {
-                parent.Children.Add(departmentDictionary[row.Id]);
-            }
-            else
-            {
-                roots.Add(departmentDictionary[row.Id]);
-            }
-        }
+            var connection = _dbContext.Database.GetDbConnection();
 
-        return roots;
+            var parameters = new { rootPath };
+
+            var departmentRows = (await connection.QueryAsync<DepartmenDto>(sql, parameters))
+                .ToList();
+
+            var departmentDictionary = departmentRows.ToDictionary(x => x.Id);
+
+            var roots = new List<DepartmenDto>();
+
+            foreach (var row in departmentRows)
+            {
+                if (row.Parent.HasValue && departmentDictionary.TryGetValue(row.Parent.Value, out var parent))
+                {
+                    parent.Children.Add(departmentDictionary[row.Id]);
+                }
+                else
+                {
+                    roots.Add(departmentDictionary[row.Id]);
+                }
+            }
+
+            return roots;
+        }
+        catch (PostgresException pEx)
+        {
+            _logger.LogError(pEx, "Ошибка работы с БД");
+
+            return Error.Failure("department.get_hierarchy_level", pEx.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка");
+
+            return Error.Failure("department.get_hierarchy_level", ex.Message);
+        }
     }
 
 }
