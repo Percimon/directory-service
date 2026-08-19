@@ -30,18 +30,22 @@ public sealed class RemoveLocationHandler : ICommandHandler<Guid, RemoveLocation
     private readonly ILocationsRepository _locationsRepository;
     private readonly IDepartmentsRepository _departmentsRepository;
     private readonly IValidator<RemoveLocationCommand> _validator;
+    private readonly ITransactionManager _transactionManager;
     private readonly ILogger<RemoveLocationHandler> _logger;
 
     public RemoveLocationHandler(
         ILocationsRepository locationsRepository,
         IDepartmentsRepository departmentsRepository,
         IValidator<RemoveLocationCommand> validator,
+        ITransactionManager transactionManager,
         ILogger<RemoveLocationHandler> logger)
     {
         _locationsRepository = locationsRepository;
         _departmentsRepository = departmentsRepository;
         _validator = validator;
+        _transactionManager = transactionManager;
         _logger = logger;
+
     }
 
     public async Task<Result<Guid, Error>> Handle(RemoveLocationCommand command, CancellationToken cancellationToken)
@@ -61,12 +65,19 @@ public sealed class RemoveLocationHandler : ICommandHandler<Guid, RemoveLocation
         if (locationSearchResult.IsFailure)
             return locationSearchResult.Error;
 
-        var RemoveLocationResult = departmentSearchResult.Value.RemoveLocation(command.LocationId);
+        var removeLocationResult = departmentSearchResult.Value.RemoveLocation(command.LocationId);
 
-        if (RemoveLocationResult.IsFailure)
-            return RemoveLocationResult.Error;
+        if (removeLocationResult.IsFailure)
+            return removeLocationResult.Error;
 
-        await _departmentsRepository.Save(cancellationToken);
+        var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
+
+        if (saveResult.IsFailure)
+        {
+            _logger.LogError("Failed to remove Location with Id={LocationId} from Department with Id={DepartmentId}. Error: {Error}", command.LocationId, command.DepartmentId, saveResult.Error);
+
+            return saveResult.Error;
+        }
 
         _logger.LogInformation("Location with Id={LocationId} removed from Department with Id={DepartmentId}", command.LocationId, command.DepartmentId);
 

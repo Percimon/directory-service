@@ -13,19 +13,19 @@ public class ChangeParentHandler : ICommandHandler<Guid, ChangeParentCommand>
 {
     private readonly IDepartmentsRepository _departmentsRepository;
     private readonly ITransactionManager _transactionManager;
-    private readonly ILogger<ChangeParentHandler> _logger;
     private readonly IValidator<ChangeParentCommand> _validator;
+    private readonly ILogger<ChangeParentHandler> _logger;
 
     public ChangeParentHandler(
         IDepartmentsRepository departmentsRepository,
         ITransactionManager transactionManager,
-        ILogger<ChangeParentHandler> logger,
-        IValidator<ChangeParentCommand> validator)
+        IValidator<ChangeParentCommand> validator,
+        ILogger<ChangeParentHandler> logger)
     {
         _departmentsRepository = departmentsRepository;
         _transactionManager = transactionManager;
-        _logger = logger;
         _validator = validator;
+        _logger = logger;
     }
 
     public async Task<Result<Guid, Error>> Handle(
@@ -63,6 +63,8 @@ public class ChangeParentHandler : ICommandHandler<Guid, ChangeParentCommand>
 
         if (lockDescendantsResult.IsFailure)
         {
+            transactionScope.Rollback();
+
             return lockDescendantsResult.Error;
         }
 
@@ -71,12 +73,18 @@ public class ChangeParentHandler : ICommandHandler<Guid, ChangeParentCommand>
             var newParent = await _departmentsRepository.GetByIdWithLock(command.NewParentId, cancellationToken);
 
             if (newParent.IsFailure)
+            {
+                transactionScope.Rollback();
+
                 return newParent.Error;
+            }
 
             string newParentPath = newParent.Value.Path.Value;
 
             if (newParentPath == oldPath || newParentPath.StartsWith($"{oldPath}."))
             {
+                transactionScope.Rollback();
+
                 return GeneralErrors.Failure("New parent can't be child of current parent");
             }
 
@@ -92,6 +100,8 @@ public class ChangeParentHandler : ICommandHandler<Guid, ChangeParentCommand>
 
         if (updateResult.IsFailure)
         {
+            transactionScope.Rollback();
+
             return updateResult.Error;
         }
 

@@ -64,8 +64,6 @@ public class DepartmentsRepository : IDepartmentsRepository
         {
             await _dbContext.Departments.AddAsync(department, cancellationToken);
 
-            await _dbContext.SaveChangesAsync(cancellationToken);
-
             return department.Id.Value;
         }
         catch (DbUpdateException ex) when (ex.InnerException is PostgresException pgEx)
@@ -92,24 +90,6 @@ public class DepartmentsRepository : IDepartmentsRepository
             _logger.LogError(ex, "Ошибка");
 
             return Error.Failure("department.add", ex.Message);
-        }
-    }
-
-    public async Task<UnitResult<Error>> Save(CancellationToken cancellationToken)
-    {
-        try
-        {
-            await _dbContext.SaveChangesAsync(cancellationToken);
-
-            return UnitResult.Success<Error>();
-        }
-        catch (Exception e)
-        {
-            string message = "Failed to save changes";
-
-            _logger.LogError(e, message);
-
-            return Error.Failure("database.save", message);
         }
     }
 

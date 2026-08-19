@@ -31,8 +31,6 @@ public class LocationsRepository : ILocationsRepository
         {
             await _dbContext.Locations.AddAsync(location, cancellationToken);
 
-            await _dbContext.SaveChangesAsync(cancellationToken);
-
             return location.Id.Value;
         }
         catch (DbUpdateException ex) when (ex.InnerException is PostgresException pgEx)
@@ -171,24 +169,6 @@ public class LocationsRepository : ILocationsRepository
             _logger.LogError(ex, "Ошибка");
 
             return Error.Failure("location.id_list_exists", ex.Message);
-        }
-    }
-
-    public async Task<UnitResult<Error>> Save(CancellationToken cancellationToken)
-    {
-        try
-        {
-            await _dbContext.SaveChangesAsync(cancellationToken);
-
-            return UnitResult.Success<Error>();
-        }
-        catch (Exception e)
-        {
-            string message = "Failed to save changes";
-
-            _logger.LogError(e, message);
-
-            return Error.Failure("database.save", message);
         }
     }
 }
