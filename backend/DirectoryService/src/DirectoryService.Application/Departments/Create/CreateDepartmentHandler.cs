@@ -45,7 +45,7 @@ public class CreateDepartmentHandler
 
         Name name = Name.Create(command.Name).Value;
 
-        Slug identifier = Slug.Create(command.Identifier).Value;
+        Slug identifier = Slug.Create(command.Slug).Value;
 
         List<LocationId> locationIds = command.Locations
                     .Select(i => LocationId.Create(i))

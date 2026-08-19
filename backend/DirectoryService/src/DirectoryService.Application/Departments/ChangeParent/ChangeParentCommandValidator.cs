@@ -1,4 +1,4 @@
-using FluentValidation;
+﻿using FluentValidation;
 using SharedService.Core.Validation;
 using SharedService.SharedKernel;
 
@@ -8,8 +8,16 @@ public class ChangeParentCommandValidator : AbstractValidator<ChangeParentComman
 {
     public ChangeParentCommandValidator()
     {
+        RuleFor(c => c.DepartmentId)
+            .NotEmpty()
+            .WithError(Error.Validation("validation", "DepartmentId is required"));
+
+        RuleFor(c => c.NewParentId)
+            .NotEmpty()
+            .WithError(Error.Validation("validation", "NewParentId is required"));
+
         RuleFor(c => c)
             .Must(command => command.DepartmentId != command.NewParentId)
-            .WithError(Error.Conflict("validation", "Department can'te be parent of itself"));
+            .WithError(Error.Conflict("validation", "Department can't be parent of itself"));
     }
 }

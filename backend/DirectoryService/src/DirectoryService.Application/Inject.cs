@@ -1,5 +1,6 @@
 ﻿using DirectoryService.Application.Departments.ChangeParent;
 using DirectoryService.Application.Departments.Create;
+using DirectoryService.Application.Departments.RemoveLocation;
 using DirectoryService.Application.Departments.Update;
 using DirectoryService.Application.Departments.UpdateLocations;
 using DirectoryService.Application.Locations.Create;
