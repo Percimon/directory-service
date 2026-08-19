@@ -7,6 +7,8 @@ using SharedService.Core.Abstractions;
 using SharedService.Core.Validation;
 using SharedService.SharedKernel;
 
+namespace DirectoryService.Application.Departments.RemoveLocation;
+
 public sealed record RemoveLocationCommand(Guid DepartmentId, Guid LocationId) : ICommand;
 
 public sealed class RemoveLocationCommandValidator : AbstractValidator<RemoveLocationCommand>

@@ -8,6 +8,10 @@ public class UpdateLocationsCommandValidator : AbstractValidator<UpdateLocations
 {
     public UpdateLocationsCommandValidator()
     {
+        RuleFor(x => x.DepartmentId)
+            .NotEmpty()
+            .WithError(GeneralErrors.ValueIsRequired("Department ID"));
+
         RuleFor(x => x.LocationIds)
             .NotEmpty()
             .Must(locations => locations.Distinct().Count() == locations.Count)

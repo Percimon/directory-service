@@ -4,7 +4,7 @@ using FluentValidation;
 using SharedService.Core.Validation;
 using SharedService.SharedKernel;
 
-namespace DirectoryService.Application.Locations.Create;
+namespace DirectoryService.Application.Departments.Create;
 
 public class CreateDepartmentCommandValidator : AbstractValidator<CreateDepartmentCommand>
 {
@@ -13,7 +13,7 @@ public class CreateDepartmentCommandValidator : AbstractValidator<CreateDepartme
         RuleFor(x => x.Name)
             .MustBeValueObject(Name.Create);
 
-        RuleFor(x => x.Identifier)
+        RuleFor(x => x.Slug)
             .MustBeValueObject(Slug.Create);
 
         RuleFor(x => x.Locations)

@@ -7,6 +7,8 @@ using SharedService.Core.Abstractions;
 using SharedService.Core.Validation;
 using SharedService.SharedKernel;
 
+namespace DirectoryService.Application.Departments.AddLocation;
+
 public sealed record AddLocationCommand(Guid DepartmentId, Guid LocationId) : ICommand;
 
 public sealed class AddLocationCommandValidator : AbstractValidator<AddLocationCommand>

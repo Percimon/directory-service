@@ -5,32 +5,31 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 
-namespace SharedService.Framework.Swagger
+namespace SharedService.Framework.Swagger;
+
+public static class OpenApiExtensions
 {
-    public static class OpenApiExtensions
+    public static IServiceCollection AddOpenApiSpec(
+        this IServiceCollection services,
+        string title,
+        string version)
     {
-        public static IServiceCollection AddOpenApiSpec(
-            this IServiceCollection services,
-            string title,
-            string version)
+        services.AddOpenApi();
+
+        services.AddSwaggerGen(options =>
         {
-            services.AddOpenApi();
-
-            services.AddSwaggerGen(options =>
+            options.SwaggerDoc(version, new OpenApiInfo
             {
-                options.SwaggerDoc(version, new OpenApiInfo
+                Title = title,
+                Version = version,
+                Contact = new OpenApiContact
                 {
-                    Title = title,
-                    Version = version,
-                    Contact = new OpenApiContact
-                    {
-                        Name = "Name",
-                        Email = "email@gmail.com",
-                    },
-                });
+                    Name = "Name",
+                    Email = "email@gmail.com",
+                },
             });
+        });
 
-            return services;
-        }
+        return services;
     }
 }
