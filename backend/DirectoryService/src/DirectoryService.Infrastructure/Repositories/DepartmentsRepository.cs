@@ -315,7 +315,7 @@ public class DepartmentsRepository : IDepartmentsRepository
         }
     }
 
-    public async Task<List<DepartmenDto>> GetHierarchyLtree(string rootPath)
+    public async Task<Result<List<DepartmenDto>, Error>> GetHierarchyLtree(string rootPath)
     {
         const string sql =
             """
