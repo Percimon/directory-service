@@ -41,7 +41,7 @@ public class PositionsRepository : IPositionsRepository
                 return GeneralErrors.AlreadyExists(nameof(Position), nameof(Position.Name), position.Name.Value);
             }
 
-            _logger.LogError(ex, "Database update error while creating Position with name: {name}", position.Name.Value);
+            _logger.LogError(pgEx, "Database update error while creating Position with name: {name}", position.Name.Value);
 
             return Error.Failure("position.add", pgEx.Message);
         }

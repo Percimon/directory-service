@@ -49,7 +49,7 @@ public class LocationsRepository : ILocationsRepository
                 }
             }
 
-            _logger.LogError(ex, "Database update error while creating location with name: {name}", location.Name.Value);
+            _logger.LogError(pgEx, "Database update error while creating location with name: {name}", location.Name.Value);
 
             return Error.Failure("location.add", pgEx.Message);
         }
