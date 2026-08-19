@@ -147,8 +147,8 @@ public class DepartmentsRepository : IDepartmentsRepository
         try
         {
             var result = _dbContext.Departments
-          .Include(d => d.DepartmentPositions)
-          .FirstOrDefault(d => d.Id == id && d.IsActive);
+                .Include(d => d.DepartmentPositions)
+                .FirstOrDefault(d => d.Id == id && d.IsActive);
 
             if (result is null)
             {
