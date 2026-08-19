@@ -1,7 +1,9 @@
-﻿namespace DirectoryService.Application.Departments.Create;
+﻿using SharedService.Core.Abstractions;
+
+namespace DirectoryService.Application.Departments.Create;
 
 public record CreateDepartmentCommand(
     string Name,
     string Slug,
     Guid? ParentId,
-    IReadOnlyList<Guid> Locations);
+    IReadOnlyList<Guid> Locations) : ICommand;
