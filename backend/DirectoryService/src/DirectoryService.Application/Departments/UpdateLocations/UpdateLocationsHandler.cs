@@ -5,12 +5,13 @@ using DirectoryService.Domain.Identifiers;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
+using SharedService.Core.Abstractions;
 using SharedService.Core.Validation;
 using SharedService.SharedKernel;
 
 namespace DirectoryService.Application.Departments.UpdateLocations;
 
-public class UpdateLocationsHandler
+public class UpdateLocationsHandler : ICommandHandler<Guid, UpdateLocationsCommand>
 {
     private readonly IDepartmentsRepository _departmentsRepository;
     private readonly ILocationsRepository _locationsRepository;

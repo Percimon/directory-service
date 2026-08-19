@@ -1,13 +1,14 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 using SharedService.Core.Abstractions;
 
 namespace SharedService.Core.Extensions;
 
 public static class HandlerExtensions
 {
-    public static IServiceCollection AddCommands(this IServiceCollection services)
+    public static IServiceCollection AddCommands(this IServiceCollection services, Assembly assembly)
     {
-        services.Scan(scan => scan.FromAssemblies(typeof(HandlerExtensions).Assembly)
+        services.Scan(scan => scan.FromAssemblies(assembly)
             .AddClasses(classes => classes
                 .AssignableToAny(typeof(ICommandHandler<,>), typeof(ICommandHandler<>)))
             .AsSelfWithInterfaces()
@@ -16,9 +17,9 @@ public static class HandlerExtensions
         return services;
     }
 
-    public static IServiceCollection AddQueries(this IServiceCollection services)
+    public static IServiceCollection AddQueries(this IServiceCollection services, Assembly assembly)
     {
-        services.Scan(scan => scan.FromAssemblies(typeof(HandlerExtensions).Assembly)
+        services.Scan(scan => scan.FromAssemblies(assembly)
             .AddClasses(classes => classes
                 .AssignableTo(typeof(IQueryHandler<,>)))
             .AsSelfWithInterfaces()

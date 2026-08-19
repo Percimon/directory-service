@@ -6,12 +6,13 @@ using DirectoryService.Domain.ValueObjects;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
+using SharedService.Core.Abstractions;
 using SharedService.Core.Validation;
 using SharedService.SharedKernel;
 
 namespace DirectoryService.Application.Departments.Create;
 
-public class CreateDepartmentHandler
+public class CreateDepartmentHandler : ICommandHandler<Guid, CreateDepartmentCommand>
 {
     private readonly IDepartmentsRepository _departmentsRepository;
     private readonly ILocationsRepository _locationsRepository;

@@ -6,12 +6,13 @@ using DirectoryService.Domain.ValueObjects;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
+using SharedService.Core.Abstractions;
 using SharedService.Core.Validation;
 using SharedService.SharedKernel;
 
 namespace DirectoryService.Application.Positions.Create;
 
-public class CreatePositionHandler
+public class CreatePositionHandler : ICommandHandler<Guid, CreatePositionCommand>
 {
     private readonly IPositionsRepository _positionsRepository;
     private readonly IDepartmentsRepository _departmentsRepository;
