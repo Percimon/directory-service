@@ -1,10 +1,11 @@
-﻿using DirectoryService.Domain.Identifiers;
+﻿using CSharpFunctionalExtensions;
+using DirectoryService.Domain.Identifiers;
 using DirectoryService.Domain.ValueObjects;
 using SharedService.SharedKernel;
 
 namespace DirectoryService.Domain.Entities;
 
-public sealed class Position : Entity<PositionId>
+public sealed class Position : SharedService.SharedKernel.Entity<PositionId>
 {
     private bool _isActive = true;
 
@@ -35,4 +36,13 @@ public sealed class Position : Entity<PositionId>
     public DateTime CreatedAt { get; }
 
     public DateTime UpdatedAt { get; private set; }
+
+    public UnitResult<Error> Rename(Name newName)
+    {
+        Name = newName;
+
+        UpdatedAt = DateTime.UtcNow;
+
+        return UnitResult.Success<Error>();
+    }
 }

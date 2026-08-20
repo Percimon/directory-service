@@ -1,10 +1,10 @@
 ﻿using CSharpFunctionalExtensions;
-using DirectoryService.Application.Departments.AddLocation;
 using DirectoryService.Application.Departments.ChangeParent;
 using DirectoryService.Application.Departments.Create;
 using DirectoryService.Application.Departments.RemoveLocation;
 using DirectoryService.Application.Departments.Update;
 using DirectoryService.Application.Departments.UpdateLocations;
+using DirectoryService.Application.Features.Departments.AddLocation;
 using DirectoryService.Contracts.Requests;
 using Microsoft.AspNetCore.Mvc;
 using SharedService.Framework.EndpointResults;
