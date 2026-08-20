@@ -1,4 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
+using DirectoryService.Application.Features.Positions.Delete;
+using DirectoryService.Application.Features.Positions.Rename;
 using DirectoryService.Application.Positions.Create;
 using DirectoryService.Contracts.Requests;
 using Microsoft.AspNetCore.Mvc;
@@ -24,18 +26,22 @@ public class PositionsController : Controller
     }
 
     [HttpPatch("{id}")]
-    public EndpointResult Update(
+    public async Task<EndpointResult<Guid>> Rename(
         [FromRoute] Guid id,
-        [FromBody] UpdatePositionRequest request,
+        [FromBody] RenamePositionRequest request,
+        [FromServices] RenamePositionHandler handler,
         CancellationToken cancellationToken = default)
     {
-        return Result.Success<Error>();
+        return await handler.Handle(new RenamePositionCommand(id, request.Name), cancellationToken);
     }
 
     [HttpDelete("{id}")]
-    public EndpointResult Delete([FromRoute] Guid id, CancellationToken cancellationToken = default)
+    public async Task<EndpointResult<Guid>> Delete(
+        [FromRoute] Guid id,
+        [FromServices] DeletePositionHandler handler,
+        CancellationToken cancellationToken = default)
     {
-        return Result.Success<Error>();
+        return await handler.Handle(new DeletePositionCommand(id), cancellationToken);
     }
 
     [HttpPost]

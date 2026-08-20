@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
+using DirectoryService.Application.Features.Locations.Delete;
 using DirectoryService.Application.Locations.Create;
 using DirectoryService.Contracts.Requests;
 using Microsoft.AspNetCore.Mvc;
@@ -44,9 +45,14 @@ public class LocationsController : Controller
     }
 
     [HttpDelete("{id}")]
-    public EndpointResult Delete([FromRoute] Guid id, CancellationToken cancellationToken = default)
+    public async Task<EndpointResult<Guid>> Delete(
+        [FromRoute] Guid id,
+        [FromServices] DeleteLocationHandler handler,
+        CancellationToken cancellationToken = default)
     {
-        return Result.Success<Error>();
+        var command = new DeleteLocationCommand(id);
+
+        return await handler.Handle(command, cancellationToken);
     }
 
     [HttpPost]

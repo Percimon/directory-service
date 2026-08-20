@@ -5,6 +5,4 @@ public record CreatePositionRequest(
     string Description,
     IReadOnlyList<Guid> Departments);
 
-public record UpdatePositionRequest(
-    string Name,
-    string Description);
+public record RenamePositionRequest(string Name);

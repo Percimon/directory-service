@@ -1,4 +1,4 @@
-using SharedService.Core.Abstractions;
+﻿using SharedService.Core.Abstractions;
 
 namespace DirectoryService.Application.Departments.ChangeParent;
 

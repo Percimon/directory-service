@@ -181,17 +181,22 @@ public sealed class Department : SharedService.SharedKernel.Entity<DepartmentId>
         {
             _departmentPositions.Add(DepartmentPosition.Create(Id, PositionId.Create(positionId)).Value);
 
-            return Result.Success<Error>();
+            return UnitResult.Success<Error>();
         }
 
-        return GeneralErrors.AlreadyExists(nameof(Department), nameof(positionId), positionId.ToString());
+        return GeneralErrors.AlreadyExists(nameof(Position), nameof(positionId), positionId.ToString());
     }
 
     public UnitResult<Error> RemovePosition(Guid positionId)
     {
+        var search = _departmentPositions.FirstOrDefault(x => x.PositionId.Value == positionId);
+
+        if (search is null)
+            return GeneralErrors.NotFound(positionId);
+
         _departmentPositions.RemoveAll(x => x.PositionId.Value == positionId);
 
-        return Result.Success<Error>();
+        return UnitResult.Success<Error>();
     }
 
     public UnitResult<Error> UpdateMainInfo(Name name, Slug slug)

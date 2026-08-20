@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Application.Database;
 using DirectoryService.Domain.Entities;
+using DirectoryService.Domain.Identifiers;
 using DirectoryService.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -23,6 +24,28 @@ public class PositionsRepository : IPositionsRepository
         _logger = logger;
     }
 
+    public async Task<Result<Position, Error>> GetById(PositionId id, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var position = await _dbContext.Positions
+                .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
+
+            if (position is null)
+            {
+                return Result.Failure<Position, Error>(GeneralErrors.NotFound(id.Value));
+            }
+
+            return position;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError("Failed to retrieve Position with ID: {Id}", id.Value);
+
+            return Error.Failure("position.get", "Failed to retrieve Position");
+        }
+    }
+
     public async Task<Result<Guid, Error>> Add(Position position, CancellationToken cancellationToken = default)
     {
         try
@@ -39,9 +62,11 @@ public class PositionsRepository : IPositionsRepository
                 return GeneralErrors.AlreadyExists(nameof(Position), nameof(Position.Name), position.Name.Value);
             }
 
-            _logger.LogError(pgEx, "Database update error while creating Position with name: {name}", position.Name.Value);
+            string message = $"Failed to insert Position with Name: {position.Name.Value}";
 
-            return Error.Failure("position.add", pgEx.Message);
+            _logger.LogError(pgEx, message);
+
+            return Error.Failure("position.add", message);
         }
         catch (Exception e)
         {
@@ -49,7 +74,33 @@ public class PositionsRepository : IPositionsRepository
 
             _logger.LogError(e, message);
 
-            return Error.Failure("position.add", e.Message);
+            return Error.Failure("position.add", message);
+        }
+    }
+
+    public async Task<UnitResult<Error>> Delete(PositionId id, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var position = await _dbContext.Positions
+                .FirstOrDefaultAsync(p => p.Id == id && p.IsActive, cancellationToken);
+
+            if (position is null)
+            {
+                return GeneralErrors.NotFound(id.Value);
+            }
+
+            _dbContext.Positions.Remove(position);
+
+            return UnitResult.Success<Error>();
+        }
+        catch (Exception e)
+        {
+            string message = $"Failed to delete Position with ID: {id.Value}";
+
+            _logger.LogError(e, message);
+
+            return Error.Failure("position.delete", message);
         }
     }
 }
