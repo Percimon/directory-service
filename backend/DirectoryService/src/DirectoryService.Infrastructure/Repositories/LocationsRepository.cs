@@ -171,4 +171,30 @@ public class LocationsRepository : ILocationsRepository
             return Error.Failure("location.id_list_exists", ex.Message);
         }
     }
+
+    public async Task<UnitResult<Error>> Delete(LocationId id, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var location = await _dbContext.Locations
+                .FirstOrDefaultAsync(l => l.Id == id, cancellationToken);
+
+            if (location is null)
+            {
+                return GeneralErrors.NotFound(id.Value);
+            }
+
+            _dbContext.Locations.Remove(location);
+
+            return UnitResult.Success<Error>();
+        }
+        catch (Exception e)
+        {
+            string message = $"Failed to delete Location with ID: {id.Value}";
+
+            _logger.LogError(e, message);
+
+            return Error.Failure("location.delete", message);
+        }
+    }
 }
