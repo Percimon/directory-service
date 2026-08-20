@@ -5,6 +5,7 @@ using DirectoryService.Application.Departments.RemoveLocation;
 using DirectoryService.Application.Departments.Update;
 using DirectoryService.Application.Departments.UpdateLocations;
 using DirectoryService.Application.Features.Departments.AddLocation;
+using DirectoryService.Application.Features.Departments.Delete;
 using DirectoryService.Contracts.Requests;
 using Microsoft.AspNetCore.Mvc;
 using SharedService.Framework.EndpointResults;
@@ -41,9 +42,14 @@ public class DepartmentsController : Controller
     }
 
     [HttpDelete("{id}")]
-    public EndpointResult Delete([FromRoute] Guid id, CancellationToken cancellationToken = default)
+    public async Task<EndpointResult<Guid>> Delete(
+        [FromRoute] Guid id,
+        [FromServices] DeleteDepartmentHandler handler,
+        CancellationToken cancellationToken = default)
     {
-        return Result.Success<Error>();
+        var command = new DeleteDepartmentCommand(id);
+
+        return await handler.Handle(command, cancellationToken);
     }
 
     [HttpPost]

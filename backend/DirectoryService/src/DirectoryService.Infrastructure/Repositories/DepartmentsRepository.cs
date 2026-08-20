@@ -350,4 +350,27 @@ public class DepartmentsRepository : IDepartmentsRepository
         }
     }
 
+    public async Task<UnitResult<Error>> Delete(DepartmentId id, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var department = await _dbContext.Departments
+                .FirstOrDefaultAsync(d => d.Id == id && d.IsActive, cancellationToken);
+
+            if (department is null)
+            {
+                return GeneralErrors.NotFound(id.Value);
+            }
+
+            _dbContext.Departments.Remove(department);
+
+            return Result.Success<Error>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Failed to delete department with id: {Id}", id.Value);
+
+            return Error.Failure("department.delete", "Ошибка при удалении отдела");
+        }
+    }
 }
