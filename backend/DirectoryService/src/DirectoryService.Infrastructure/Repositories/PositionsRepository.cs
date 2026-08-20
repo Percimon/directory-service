@@ -83,7 +83,7 @@ public class PositionsRepository : IPositionsRepository
         try
         {
             var position = await _dbContext.Positions
-                .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
+                .FirstOrDefaultAsync(p => p.Id == id && p.IsActive, cancellationToken);
 
             if (position is null)
             {

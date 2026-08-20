@@ -362,6 +362,11 @@ public class DepartmentsRepository : IDepartmentsRepository
                 return GeneralErrors.NotFound(id.Value);
             }
 
+            if (department.Children.Count > 0)
+            {
+                return Error.Failure("department.delete", "Невозможно удалить отдел, так как у него есть дочерние отделы");
+            }
+
             _dbContext.Departments.Remove(department);
 
             return Result.Success<Error>();

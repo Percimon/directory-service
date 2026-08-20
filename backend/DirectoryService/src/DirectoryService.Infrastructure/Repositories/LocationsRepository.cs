@@ -177,7 +177,7 @@ public class LocationsRepository : ILocationsRepository
         try
         {
             var location = await _dbContext.Locations
-                .FirstOrDefaultAsync(l => l.Id == id, cancellationToken);
+                .FirstOrDefaultAsync(l => l.Id == id && l.IsActive, cancellationToken);
 
             if (location is null)
             {
