@@ -70,7 +70,11 @@ public sealed class RenamePositionHandler : ICommandHandler<Guid, RenamePosition
             return renameResult.Error;
         }
 
-        await _transactionManager.SaveChangesAsync(cancellationToken);
+        var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
+        if (saveResult.IsFailure)
+        {
+            return saveResult.Error;
+        }
 
         _logger.LogInformation("Position renamed successfully: {PositionId}", command.PositionId);
 

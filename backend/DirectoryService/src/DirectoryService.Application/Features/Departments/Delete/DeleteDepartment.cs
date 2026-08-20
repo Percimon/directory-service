@@ -4,6 +4,7 @@ using DirectoryService.Domain.Identifiers;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using SharedService.Core.Abstractions;
+using SharedService.Core.Validation;
 using SharedService.SharedKernel;
 
 namespace DirectoryService.Application.Features.Departments.Delete;
@@ -41,6 +42,13 @@ public sealed class DeleteDepartmentHandler : ICommandHandler<Guid, DeleteDepart
 
     public async Task<Result<Guid, Error>> Handle(DeleteDepartmentCommand command, CancellationToken cancellationToken)
     {
+        var validationResult = await _validator.ValidateAsync(command, cancellationToken);
+
+        if (!validationResult.IsValid)
+        {
+            return validationResult.ToError();
+        }
+
         var deleteResult = await _departmentsRepository.Delete(DepartmentId.Create(command.Id), cancellationToken);
 
         if (deleteResult.IsFailure)
