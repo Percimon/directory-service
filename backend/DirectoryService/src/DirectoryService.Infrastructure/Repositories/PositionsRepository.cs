@@ -79,4 +79,30 @@ public class PositionsRepository : IPositionsRepository
             return Error.Failure("position.add", message);
         }
     }
+
+    public async Task<UnitResult<Error>> Delete(PositionId id, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var position = await _dbContext.Positions
+                .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
+
+            if (position is null)
+            {
+                return GeneralErrors.NotFound(id.Value);
+            }
+
+            _dbContext.Positions.Remove(position);
+
+            return UnitResult.Success<Error>();
+        }
+        catch (Exception e)
+        {
+            string message = $"Failed to delete Position with ID: {id.Value}";
+
+            _logger.LogError(e, message);
+
+            return Error.Failure("position.delete", message);
+        }
+    }
 }

@@ -10,4 +10,6 @@ public interface IPositionsRepository
     Task<Result<Position, Error>> GetById(PositionId id, CancellationToken cancellationToken);
 
     Task<Result<Guid, Error>> Add(Position position, CancellationToken cancellationToken);
+
+    Task<UnitResult<Error>> Delete(PositionId id, CancellationToken cancellationToken);
 }
