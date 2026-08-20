@@ -40,11 +40,9 @@ public class PositionsRepository : IPositionsRepository
         }
         catch (Exception e)
         {
-            string message = $"Failed to retrieve Position with ID: {id.Value}";
+            _logger.LogError("Failed to retrieve Position with ID: {Id}", id.Value);
 
-            _logger.LogError(e, message);
-
-            return Error.Failure("position.get", message);
+            return Error.Failure("position.get", "Failed to retrieve Position");
         }
     }
 

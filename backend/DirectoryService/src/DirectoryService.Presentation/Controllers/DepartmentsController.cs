@@ -5,7 +5,9 @@ using DirectoryService.Application.Departments.RemoveLocation;
 using DirectoryService.Application.Departments.Update;
 using DirectoryService.Application.Departments.UpdateLocations;
 using DirectoryService.Application.Features.Departments.AddLocation;
+using DirectoryService.Application.Features.Departments.AddPosition;
 using DirectoryService.Application.Features.Departments.Delete;
+using DirectoryService.Application.Features.Departments.RemovePosition;
 using DirectoryService.Contracts.Requests;
 using Microsoft.AspNetCore.Mvc;
 using SharedService.Framework.EndpointResults;
@@ -99,6 +101,30 @@ public class DepartmentsController : Controller
        CancellationToken cancellationToken = default)
     {
         var command = new UpdateLocationsCommand(id, request.LocationIds);
+
+        return await handler.Handle(command, cancellationToken);
+    }
+
+    [HttpPatch("{id}/positions/{positionId}")]
+    public async Task<EndpointResult<Guid>> AddPosition(
+        [FromRoute] Guid id,
+        [FromRoute] Guid positionId,
+        [FromServices] AddPositionHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var command = new AddPositionCommand(id, positionId);
+
+        return await handler.Handle(command, cancellationToken);
+    }
+
+    [HttpDelete("{id}/positions/{positionId}")]
+    public async Task<EndpointResult<Guid>> RemovePosition(
+       [FromRoute] Guid id,
+       [FromRoute] Guid positionId,
+       [FromServices] RemovePositionHandler handler,
+       CancellationToken cancellationToken = default)
+    {
+        var command = new RemovePositionCommand(id, positionId);
 
         return await handler.Handle(command, cancellationToken);
     }
