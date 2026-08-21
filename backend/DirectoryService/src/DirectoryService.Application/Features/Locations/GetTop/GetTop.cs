@@ -52,23 +52,16 @@ public sealed class GetLocationTopHandler : IQueryHandler<IReadOnlyList<GetLocat
                 l.city, l.district, l.street, l.structure,
                 COUNT(d.department_id) AS DepartmentsCount
             FROM locations AS l
-            INNER JOIN department_locations AS d ON l.id = d.location_id
+            LEFT JOIN department_locations AS d ON l.id = d.location_id
             GROUP BY 
                 l.id, l.city, l.district, l.street, l.structure
-            ORDER BY DepartmentsCount DESC
+            ORDER BY DepartmentsCount DESC, l.id 
             LIMIT 5;
             """;
 
         using (var sqlConnection = _sqlConnectionFactory.Create())
         {
             var response = (await sqlConnection.QueryAsync<GetLocationTopResponse>(sql)).ToList();
-
-            if (response is null || response.Count == 0)
-            {
-                _logger.LogError("No locations found.");
-
-                return Error.NotFound("location", "No locations with departments found.");
-            }
 
             _logger.LogInformation("Successfully retrieved top locations with departments.");
 
