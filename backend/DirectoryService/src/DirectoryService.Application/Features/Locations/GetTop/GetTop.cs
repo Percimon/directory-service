@@ -1,34 +1,31 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Application.Database;
 using DirectoryService.Contracts.Responses;
-using DirectoryService.Domain.Identifiers;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using SharedService.Core.Abstractions;
 using SharedService.Core.Validation;
 using SharedService.SharedKernel;
 
-namespace DirectoryService.Application.Features.Locations.GetById;
+namespace DirectoryService.Application.Features.Locations.GetTop;
 
-public sealed record GetLocationByIdQuery(Guid Id) : IQuery;
+public sealed record GetLocationTopQuery() : IQuery;
 
-public sealed class GetLocationByIdQueryValidator : AbstractValidator<GetLocationByIdQuery>
+public sealed class GetLocationTopQueryValidator : AbstractValidator<GetLocationTopQuery>
 {
-    public GetLocationByIdQueryValidator()
-    {
-        RuleFor(x => x.Id).NotEmpty().WithMessage("Location id is required.");
-    }
+    public GetLocationTopQueryValidator()
+    { }
 }
 
-public sealed class GetLocationByIdHandler : IQueryHandler<GetLocationResponse, GetLocationByIdQuery>
+public sealed class GetLocationByIdHandler : IQueryHandler<GetLocationTopResponse, GetLocationTopQuery>
 {
     private readonly IReadDbContext _readDbContext;
-    private readonly IValidator<GetLocationByIdQuery> _validator;
+    private readonly IValidator<GetLocationTopQuery> _validator;
     private readonly ILogger<GetLocationByIdHandler> _logger;
 
     public GetLocationByIdHandler(
         IReadDbContext readDbContext,
-        IValidator<GetLocationByIdQuery> validator,
+        IValidator<GetLocationTopQuery> validator,
         ILogger<GetLocationByIdHandler> logger)
     {
         _readDbContext = readDbContext;
@@ -36,21 +33,13 @@ public sealed class GetLocationByIdHandler : IQueryHandler<GetLocationResponse, 
         _logger = logger;
     }
 
-    public async Task<Result<GetLocationResponse, Error>> Handle(GetLocationByIdQuery query, CancellationToken cancellationToken = default)
+    public async Task<Result<GetLocationTopResponse, Error>> Handle(GetLocationTopQuery query, CancellationToken cancellationToken = default)
     {
         var validationResult = await _validator.ValidateAsync(query, cancellationToken);
 
         if (!validationResult.IsValid)
         {
             return validationResult.ToError();
-        }
-
-        var location = _readDbContext.LocationsRead
-            .FirstOrDefault(l => l.Id == LocationId.Create(query.Id));
-
-        if (location is null)
-        {
-            return GeneralErrors.NotFound(query.Id);
         }
 
         _logger.LogInformation("Location with id {LocationId} found.", query.Id);

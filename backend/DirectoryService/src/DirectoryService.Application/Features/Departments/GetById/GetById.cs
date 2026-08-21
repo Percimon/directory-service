@@ -9,25 +9,25 @@ using SharedService.SharedKernel;
 
 namespace DirectoryService.Application.Features.Departments.GetById;
 
-public sealed record GetByIdDepartmentQuery(Guid Id) : IQuery;
+public sealed record GetDepartmentByIdQuery(Guid Id) : IQuery;
 
-public sealed class GetByIdDepartmentQueryValidator : AbstractValidator<GetByIdDepartmentQuery>
+public sealed class GetDepartmentByIdQueryValidator : AbstractValidator<GetDepartmentByIdQuery>
 {
-    public GetByIdDepartmentQueryValidator()
+    public GetDepartmentByIdQueryValidator()
     {
         RuleFor(x => x.Id).NotEmpty().WithMessage("Department id is required.");
     }
 }
 
-public sealed class GetDepartmentByIdHandler : IQueryHandler<DepartmentDto, GetByIdDepartmentQuery>
+public sealed class GetDepartmentByIdHandler : IQueryHandler<GetDepartmentResponse, GetDepartmentByIdQuery>
 {
     private readonly IReadDbContext _readDbContext;
-    private readonly IValidator<GetByIdDepartmentQuery> _validator;
+    private readonly IValidator<GetDepartmentByIdQuery> _validator;
     private readonly ILogger<GetDepartmentByIdHandler> _logger;
 
     public GetDepartmentByIdHandler(
         IReadDbContext readDbContext,
-        IValidator<GetByIdDepartmentQuery> validator,
+        IValidator<GetDepartmentByIdQuery> validator,
         ILogger<GetDepartmentByIdHandler> logger)
     {
         _readDbContext = readDbContext;
@@ -35,7 +35,7 @@ public sealed class GetDepartmentByIdHandler : IQueryHandler<DepartmentDto, GetB
         _logger = logger;
     }
 
-    public async Task<Result<DepartmentDto, Error>> Handle(GetByIdDepartmentQuery query, CancellationToken cancellationToken = default)
+    public async Task<Result<GetDepartmentResponse, Error>> Handle(GetDepartmentByIdQuery query, CancellationToken cancellationToken = default)
     {
         var validationResult = await _validator.ValidateAsync(query, cancellationToken);
 
@@ -54,7 +54,7 @@ public sealed class GetDepartmentByIdHandler : IQueryHandler<DepartmentDto, GetB
 
         _logger.LogInformation("Department with id {DepartmentId} found.", query.Id);
 
-        return new DepartmentDto(
+        return new GetDepartmentResponse(
             department.Id.Value,
             department.Name.Value,
             department.Slug.Value,

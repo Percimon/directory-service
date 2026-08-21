@@ -1,6 +1,6 @@
 ﻿namespace DirectoryService.Contracts.Dtos;
 
-public record DepartmentDto(
+public record GetDepartmentResponse(
     Guid Id,
     string Name,
     string Slug,

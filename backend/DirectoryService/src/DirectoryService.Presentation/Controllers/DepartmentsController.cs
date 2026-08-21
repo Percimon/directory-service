@@ -28,12 +28,12 @@ public class DepartmentsController : Controller
     }
 
     [HttpGet("{id}")]
-    public async Task<EndpointResult<DepartmentDto>> GetById(
+    public async Task<EndpointResult<GetDepartmentResponse>> GetById(
         [FromRoute] Guid id,
         [FromServices] GetDepartmentByIdHandler handler,
         CancellationToken cancellationToken = default)
     {
-        var query = new GetByIdDepartmentQuery(id);
+        var query = new GetDepartmentByIdQuery(id);
 
         return await handler.Handle(query, cancellationToken);
     }
