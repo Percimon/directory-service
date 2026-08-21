@@ -5,13 +5,18 @@ using DirectoryService.Infrastructure.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-public static class Inject
+namespace DirectoryService.Infrastructure;
+
+public static class DependencyInjectionExtensions
 {
     public static IServiceCollection InjectInfrastructure(
         this IServiceCollection services,
         IConfiguration configuration)
     {
         services.AddScoped<AppDbContext>(_ =>
+            new AppDbContext(configuration.GetConnectionString("DirectoryServiceDb")!));
+
+        services.AddScoped<IReadDbContext, AppDbContext>(_ =>
             new AppDbContext(configuration.GetConnectionString("DirectoryServiceDb")!));
 
         services.AddScoped<ISqlConnectionFactory, SqlConnectionFactory>();

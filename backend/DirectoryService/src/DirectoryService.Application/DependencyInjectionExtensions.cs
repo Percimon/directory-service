@@ -12,6 +12,8 @@ public static class DependencyInjectionExtensions
 
         services.AddCommands();
 
+        services.AddQueries();
+
         return services;
     }
 
@@ -20,6 +22,17 @@ public static class DependencyInjectionExtensions
         services.Scan(scan => scan.FromAssemblies(typeof(DependencyInjectionExtensions).Assembly)
             .AddClasses(classes => classes
                 .AssignableToAny(typeof(ICommandHandler<,>), typeof(ICommandHandler<>)))
+            .AsSelfWithInterfaces()
+            .WithScopedLifetime());
+
+        return services;
+    }
+
+    public static IServiceCollection AddQueries(this IServiceCollection services)
+    {
+        services.Scan(scan => scan.FromAssemblies(typeof(DependencyInjectionExtensions).Assembly)
+            .AddClasses(classes => classes
+                .AssignableTo(typeof(IQueryHandler<,>)))
             .AsSelfWithInterfaces()
             .WithScopedLifetime());
 

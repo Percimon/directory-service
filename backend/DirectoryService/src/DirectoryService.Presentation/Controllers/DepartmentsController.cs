@@ -7,7 +7,9 @@ using DirectoryService.Application.Departments.UpdateLocations;
 using DirectoryService.Application.Features.Departments.AddLocation;
 using DirectoryService.Application.Features.Departments.AddPosition;
 using DirectoryService.Application.Features.Departments.Delete;
+using DirectoryService.Application.Features.Departments.GetById;
 using DirectoryService.Application.Features.Departments.RemovePosition;
+using DirectoryService.Contracts.Dtos;
 using DirectoryService.Contracts.Requests;
 using Microsoft.AspNetCore.Mvc;
 using SharedService.Framework.EndpointResults;
@@ -26,9 +28,14 @@ public class DepartmentsController : Controller
     }
 
     [HttpGet("{id}")]
-    public EndpointResult GetById([FromRoute] Guid id, CancellationToken cancellationToken = default)
+    public async Task<EndpointResult<DepartmentDto>> GetById(
+        [FromRoute] Guid id,
+        [FromServices] GetDepartmentByIdHandler handler,
+        CancellationToken cancellationToken = default)
     {
-        return Result.Success<Error>();
+        var query = new GetByIdDepartmentQuery(id);
+
+        return await handler.Handle(query, cancellationToken);
     }
 
     [HttpPatch("{id}")]
