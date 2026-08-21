@@ -1,6 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Application.Database;
-using DirectoryService.Contracts.Dtos;
+using DirectoryService.Contracts.Responses;
 using DirectoryService.Domain.Identifiers;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
@@ -10,25 +10,25 @@ using SharedService.SharedKernel;
 
 namespace DirectoryService.Application.Features.Locations.GetById;
 
-public sealed record GetByIdLocationQuery(Guid Id) : IQuery;
+public sealed record GetLocationByIdQuery(Guid Id) : IQuery;
 
-public sealed class GetByIdLocationQueryValidator : AbstractValidator<GetByIdLocationQuery>
+public sealed class GetLocationByIdQueryValidator : AbstractValidator<GetLocationByIdQuery>
 {
-    public GetByIdLocationQueryValidator()
+    public GetLocationByIdQueryValidator()
     {
         RuleFor(x => x.Id).NotEmpty().WithMessage("Location id is required.");
     }
 }
 
-public sealed class GetLocationByIdHandler : IQueryHandler<LocationDto, GetByIdLocationQuery>
+public sealed class GetLocationByIdHandler : IQueryHandler<GetLocationResponse, GetLocationByIdQuery>
 {
     private readonly IReadDbContext _readDbContext;
-    private readonly IValidator<GetByIdLocationQuery> _validator;
+    private readonly IValidator<GetLocationByIdQuery> _validator;
     private readonly ILogger<GetLocationByIdHandler> _logger;
 
     public GetLocationByIdHandler(
         IReadDbContext readDbContext,
-        IValidator<GetByIdLocationQuery> validator,
+        IValidator<GetLocationByIdQuery> validator,
         ILogger<GetLocationByIdHandler> logger)
     {
         _readDbContext = readDbContext;
@@ -36,7 +36,7 @@ public sealed class GetLocationByIdHandler : IQueryHandler<LocationDto, GetByIdL
         _logger = logger;
     }
 
-    public async Task<Result<LocationDto, Error>> Handle(GetByIdLocationQuery query, CancellationToken cancellationToken = default)
+    public async Task<Result<GetLocationResponse, Error>> Handle(GetLocationByIdQuery query, CancellationToken cancellationToken = default)
     {
         var validationResult = await _validator.ValidateAsync(query, cancellationToken);
 
@@ -55,7 +55,7 @@ public sealed class GetLocationByIdHandler : IQueryHandler<LocationDto, GetByIdL
 
         _logger.LogInformation("Location with id {LocationId} found.", query.Id);
 
-        return new LocationDto(
+        return new GetLocationResponse(
                 location.Id.Value,
                 location.Name.Value,
                 location.Address.City,

@@ -20,7 +20,10 @@ public class AppDbContext : DbContext, IReadDbContext
 
     public IQueryable<Location> LocationsRead => Set<Location>().AsNoTracking();
 
-    public IQueryable<Department> DepartmentsRead => Set<Department>().Include(x => x.Parent).AsNoTracking();
+    public IQueryable<Department> DepartmentsRead =>
+        Set<Department>()
+            .Include(x => x.Parent)
+            .AsNoTracking();
 
     public AppDbContext(string connectionString)
     {
