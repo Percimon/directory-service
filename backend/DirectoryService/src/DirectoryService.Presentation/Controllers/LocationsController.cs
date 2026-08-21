@@ -1,7 +1,9 @@
 ﻿using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using DirectoryService.Application.Features.Locations.Delete;
+using DirectoryService.Application.Features.Locations.GetById;
 using DirectoryService.Application.Locations.Create;
+using DirectoryService.Contracts.Dtos;
 using DirectoryService.Contracts.Requests;
 using Microsoft.AspNetCore.Mvc;
 using SharedService.Framework.EndpointResults;
@@ -20,9 +22,14 @@ public class LocationsController : Controller
     }
 
     [HttpGet("{id}")]
-    public EndpointResult GetById([FromRoute] Guid id, CancellationToken cancellationToken = default)
+    public async Task<EndpointResult<LocationDto>> GetById(
+        [FromRoute] Guid id,
+        [FromServices] GetLocationByIdHandler handler,
+        CancellationToken cancellationToken = default)
     {
-        return Result.Success<Error>();
+        var query = new GetByIdLocationQuery(id);
+
+        return await handler.Handle(query, cancellationToken);
     }
 
     [HttpPatch("{id}")]
