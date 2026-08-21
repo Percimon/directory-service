@@ -11,11 +11,12 @@ public record GetLocationResponse(
     DateTime CreatedAt,
     DateTime UpdatedAt);
 
-public record GetLocationTopResponse(
-    Guid Id,
-    string Name,
-    string City,
-    string District,
-    string Street,
-    string Structure,
-    int DepartmentCount);
+public record GetLocationTopResponse
+{
+    public Guid LocationId { get; init; }
+    public string City { get; init; } = string.Empty;
+    public string District { get; init; } = string.Empty;
+    public string Street { get; init; } = string.Empty;
+    public string Structure { get; init; } = string.Empty;
+    public int DepartmentsCount { get; init; }
+};

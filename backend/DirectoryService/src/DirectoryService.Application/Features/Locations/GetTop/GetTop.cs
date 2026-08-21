@@ -1,6 +1,9 @@
 ﻿using CSharpFunctionalExtensions;
+using Dapper;
+using DirectoryService.Application.Abstractions;
 using DirectoryService.Application.Database;
 using DirectoryService.Contracts.Responses;
+using DirectoryService.Domain.Entities;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using SharedService.Core.Abstractions;
@@ -17,23 +20,23 @@ public sealed class GetLocationTopQueryValidator : AbstractValidator<GetLocation
     { }
 }
 
-public sealed class GetLocationByIdHandler : IQueryHandler<GetLocationTopResponse, GetLocationTopQuery>
+public sealed class GetLocationTopHandler : IQueryHandler<IReadOnlyList<GetLocationTopResponse>, GetLocationTopQuery>
 {
-    private readonly IReadDbContext _readDbContext;
+    private readonly ISqlConnectionFactory _sqlConnectionFactory;
     private readonly IValidator<GetLocationTopQuery> _validator;
-    private readonly ILogger<GetLocationByIdHandler> _logger;
+    private readonly ILogger<GetLocationTopHandler> _logger;
 
-    public GetLocationByIdHandler(
-        IReadDbContext readDbContext,
+    public GetLocationTopHandler(
+        ISqlConnectionFactory sqlConnectionFactory,
         IValidator<GetLocationTopQuery> validator,
-        ILogger<GetLocationByIdHandler> logger)
+        ILogger<GetLocationTopHandler> logger)
     {
-        _readDbContext = readDbContext;
+        _sqlConnectionFactory = sqlConnectionFactory;
         _validator = validator;
         _logger = logger;
     }
 
-    public async Task<Result<GetLocationTopResponse, Error>> Handle(GetLocationTopQuery query, CancellationToken cancellationToken = default)
+    public async Task<Result<IReadOnlyList<GetLocationTopResponse>, Error>> Handle(GetLocationTopQuery query, CancellationToken cancellationToken = default)
     {
         var validationResult = await _validator.ValidateAsync(query, cancellationToken);
 
@@ -42,17 +45,35 @@ public sealed class GetLocationByIdHandler : IQueryHandler<GetLocationTopRespons
             return validationResult.ToError();
         }
 
-        _logger.LogInformation("Location with id {LocationId} found.", query.Id);
+        const string sql =
+            """
+            SELECT 
+                l.id AS LocationId, 
+                l.city, l.district, l.street, l.structure,
+                COUNT(d.department_id) AS DepartmentsCount
+            FROM locations AS l
+            INNER JOIN department_locations AS d ON l.id = d.location_id
+            GROUP BY 
+                l.id, l.city, l.district, l.street, l.structure
+            ORDER BY DepartmentsCount DESC
+            LIMIT 5;
+            """;
 
-        return new GetLocationResponse(
-                location.Id.Value,
-                location.Name.Value,
-                location.Address.City,
-                location.Address.District,
-                location.Address.Street,
-                location.Address.Structure,
-                location.TimeZone.Value,
-                location.CreatedAt,
-                location.UpdatedAt);
+        using (var sqlConnection = _sqlConnectionFactory.Create())
+        {
+            var response = (await sqlConnection.QueryAsync<GetLocationTopResponse>(sql)).ToList();
+
+            if (response is null || response.Count == 0)
+            {
+                _logger.LogError("No locations found.");
+
+                return Error.NotFound("location", "No locations with departments found.");
+            }
+
+            _logger.LogInformation("Successfully retrieved top locations with departments.");
+
+            return response;
+        }
+
     }
 }

@@ -2,6 +2,7 @@
 using CSharpFunctionalExtensions;
 using DirectoryService.Application.Features.Locations.Delete;
 using DirectoryService.Application.Features.Locations.GetById;
+using DirectoryService.Application.Features.Locations.GetTop;
 using DirectoryService.Application.Locations.Create;
 using DirectoryService.Contracts.Requests;
 using DirectoryService.Contracts.Responses;
@@ -33,9 +34,11 @@ public class LocationsController : Controller
     }
 
     [HttpGet("top")]
-    public EndpointResult GetTop(CancellationToken cancellationToken = default)
+    public async Task<EndpointResult<IReadOnlyList<GetLocationTopResponse>>> GetTop(
+        [FromServices] GetLocationTopHandler handler,
+        CancellationToken cancellationToken = default)
     {
-        return Result.Success<Error>();
+        return await handler.Handle(new GetLocationTopQuery(), cancellationToken);
     }
 
     [HttpPatch("{id}")]
