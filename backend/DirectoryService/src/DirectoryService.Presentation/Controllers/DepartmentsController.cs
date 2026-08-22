@@ -7,10 +7,12 @@ using DirectoryService.Application.Departments.UpdateLocations;
 using DirectoryService.Application.Features.Departments.AddLocation;
 using DirectoryService.Application.Features.Departments.AddPosition;
 using DirectoryService.Application.Features.Departments.Delete;
+using DirectoryService.Application.Features.Departments.Get;
 using DirectoryService.Application.Features.Departments.GetById;
 using DirectoryService.Application.Features.Departments.RemovePosition;
 using DirectoryService.Contracts.Dtos;
 using DirectoryService.Contracts.Requests;
+using DirectoryService.Contracts.Responses;
 using Microsoft.AspNetCore.Mvc;
 using SharedService.Framework.EndpointResults;
 using SharedService.SharedKernel;
@@ -22,9 +24,19 @@ namespace DirectoryService.Presentation.Controllers;
 public class DepartmentsController : Controller
 {
     [HttpGet]
-    public EndpointResult Get(CancellationToken cancellationToken = default)
+    public async Task<EndpointResult<PagedList<DepartmentListItemDto>>> Get(
+        [FromQuery] GetDepartmentsRequest request,
+        [FromServices] GetDepartmentsHandler handler,
+        CancellationToken cancellationToken = default)
     {
-        return Result.Success<Error>();
+        var query = new GetDepartmentsQuery(
+            request.Page,
+            request.PageSize,
+            request.SortBy,
+            request.SortDirection,
+            request.Search);
+
+        return await handler.Handle(query, cancellationToken);
     }
 
     [HttpGet("{id}")]
