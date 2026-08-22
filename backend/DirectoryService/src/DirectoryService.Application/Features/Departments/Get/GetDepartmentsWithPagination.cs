@@ -24,10 +24,14 @@ namespace DirectoryService.Application.Features.Departments.Get
         public GetDepartmentsQueryValidator()
         {
             RuleFor(x => x.Page)
-                .GreaterThan(0).WithMessage("Page must be greater than 0.");
+                .GreaterThan(0).WithError(
+                    Error.Validation("department.get", "Page must be greater than 0."));
 
             RuleFor(x => x.PageSize)
-                .GreaterThan(0).WithMessage("PageSize must be greater than 0.");
+                .GreaterThan(0).WithError(
+                    Error.Validation("department.get", "Page must be greater than 0."))
+                .LessThanOrEqualTo(100).WithError(
+                    Error.Validation("department.get", "PageSize must be at most 100."));
 
             RuleFor(x => x.SortBy)
                 .Custom((sortBy, context) =>
@@ -37,7 +41,7 @@ namespace DirectoryService.Application.Features.Departments.Get
                     {
                         context.AddFailure(
                             JsonSerializer.Serialize(
-                                Error.Validation(
+                                 Error.Validation(
                                     "department.get",
                                     $"SortBy must be one of the following: {string.Join(", ", validSortByFields)}.")));
                     }
