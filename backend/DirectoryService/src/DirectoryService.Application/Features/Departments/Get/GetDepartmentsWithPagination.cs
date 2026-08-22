@@ -49,6 +49,12 @@ namespace DirectoryService.Application.Features.Departments.Get
                 .WithError(Error.Validation(
                     "department.get",
                     "SortDirection must be either 'asc' or 'desc'."));
+
+            RuleFor(x => x.Search)
+                .Must(x => string.IsNullOrWhiteSpace(x) ? true : x.Length <= Constants.TextLength.LENGTH_50)
+                .WithError(Error.Validation(
+                    "department.get",
+                    "Search must be empty or less than 50 characters"));
         }
     }
 
