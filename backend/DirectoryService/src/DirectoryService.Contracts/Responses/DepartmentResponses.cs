@@ -8,3 +8,10 @@ public record GetDepartmentResponse(
     Guid? ParentId,
     DateTime CreatedAt,
     DateTime UpdatedAt);
+
+public record DepartmentListItemDto(
+    Guid Id,
+    string Name,
+    string Slug,
+    string Path,
+    DateTime CreatedAt);

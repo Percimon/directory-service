@@ -1,5 +1,12 @@
 ﻿namespace DirectoryService.Contracts.Requests;
 
+public record GetDepartmentsRequest(
+    int Page,
+    int PageSize,
+    string SortBy,
+    string SortDirection,
+    string? Search);
+
 public record CreateDepartmentRequest(
     string Name,
     string Slug,
