@@ -26,7 +26,7 @@ public partial class Initial : Migration
                 is_active = table.Column<bool>(type: "boolean", nullable: false),
                 created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                 updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                depth = table.Column<int>(type: "integer", nullable: false)
+                depth = table.Column<int>(type: "integer", nullable: false),
             },
             constraints: table =>
             {
@@ -52,7 +52,7 @@ public partial class Initial : Migration
                 is_active = table.Column<bool>(type: "boolean", nullable: false),
                 created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                 updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                timezone = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
+                timezone = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
             },
             constraints: table =>
             {
@@ -68,7 +68,7 @@ public partial class Initial : Migration
                 is_active = table.Column<bool>(type: "boolean", nullable: false),
                 created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                 updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false)
+                description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
             },
             constraints: table =>
             {
@@ -81,7 +81,7 @@ public partial class Initial : Migration
             {
                 id = table.Column<Guid>(type: "uuid", nullable: false),
                 department_id = table.Column<Guid>(type: "uuid", nullable: false),
-                location_id = table.Column<Guid>(type: "uuid", nullable: false)
+                location_id = table.Column<Guid>(type: "uuid", nullable: false),
             },
             constraints: table =>
             {
@@ -106,7 +106,7 @@ public partial class Initial : Migration
             {
                 id = table.Column<Guid>(type: "uuid", nullable: false),
                 department_id = table.Column<Guid>(type: "uuid", nullable: false),
-                position_id = table.Column<Guid>(type: "uuid", nullable: false)
+                position_id = table.Column<Guid>(type: "uuid", nullable: false),
             },
             constraints: table =>
             {

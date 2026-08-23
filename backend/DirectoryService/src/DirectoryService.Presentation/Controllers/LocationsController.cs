@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using DirectoryService.Application.Features.Locations.Delete;
+using DirectoryService.Application.Features.Locations.Get;
 using DirectoryService.Application.Features.Locations.GetById;
 using DirectoryService.Application.Features.Locations.GetTop;
 using DirectoryService.Application.Locations.Create;
@@ -17,9 +18,20 @@ namespace DirectoryService.Presentation.Controllers;
 public class LocationsController : Controller
 {
     [HttpGet]
-    public EndpointResult Get(CancellationToken cancellationToken = default)
+    public async Task<EndpointResult<PagedList<LocationListItemDto>>> Get(
+        [FromQuery] GetLocationsRequest request,
+        [FromServices] GetLocationsHandler handler,
+        CancellationToken cancellationToken = default)
     {
-        return Result.Success<Error>();
+        var query = new GetLocationsQuery(
+            request.Page,
+            request.PageSize,
+            request.SortBy,
+            request.SortDirection,
+            request.MinDepartmentsCount,
+            request.Search);
+
+        return await handler.Handle(query, cancellationToken);
     }
 
     [HttpGet("{id}")]

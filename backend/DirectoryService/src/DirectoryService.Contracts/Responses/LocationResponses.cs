@@ -19,4 +19,16 @@ public record GetLocationTopResponse
     public string Street { get; init; } = string.Empty;
     public string Structure { get; init; } = string.Empty;
     public int DepartmentsCount { get; init; }
-};
+}
+
+public record LocationListItemDto
+{
+    public Guid Id { get; init; }
+    public string Name { get; init; } = string.Empty;
+    public string City { get; init; } = string.Empty;
+    public string District { get; init; } = string.Empty;
+    public string Street { get; init; } = string.Empty;
+    public string Structure { get; init; } = string.Empty;
+    public DateTime CreatedAt { get; init; }
+    public int DepartmentsCount { get; init; }
+}
