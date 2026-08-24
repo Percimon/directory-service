@@ -1,4 +1,4 @@
-using DirectoryService.Application.Features.Locations.Get;
+﻿using DirectoryService.Application.Features.Locations.Get;
 using DirectoryService.Contracts.Responses;
 using DirectoryService.Domain.Identifiers;
 

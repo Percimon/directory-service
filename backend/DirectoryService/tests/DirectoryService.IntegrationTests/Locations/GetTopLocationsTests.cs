@@ -1,4 +1,4 @@
-using DirectoryService.Application.Features.Locations.GetTop;
+﻿using DirectoryService.Application.Features.Locations.GetTop;
 using DirectoryService.Contracts.Responses;
 using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.Identifiers;

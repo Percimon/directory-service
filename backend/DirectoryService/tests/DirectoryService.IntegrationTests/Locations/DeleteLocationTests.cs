@@ -1,4 +1,4 @@
-using DirectoryService.Application.Features.Locations.Delete;
+﻿using DirectoryService.Application.Features.Locations.Delete;
 using DirectoryService.Domain.Identifiers;
 using Microsoft.EntityFrameworkCore;
 using DirectoryService.Infrastructure.Database;

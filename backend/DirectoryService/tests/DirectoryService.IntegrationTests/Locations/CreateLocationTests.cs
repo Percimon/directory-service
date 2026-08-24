@@ -1,4 +1,4 @@
-using DirectoryService.Application.Locations.Create;
+﻿using DirectoryService.Application.Locations.Create;
 using DirectoryService.Domain.Identifiers;
 
 namespace DirectoryService.IntegrationTests.Locations;

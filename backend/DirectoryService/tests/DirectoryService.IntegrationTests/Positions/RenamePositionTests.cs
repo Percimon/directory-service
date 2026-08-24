@@ -1,4 +1,4 @@
-using DirectoryService.Application.Features.Positions.Rename;
+﻿using DirectoryService.Application.Features.Positions.Rename;
 using DirectoryService.Domain.Identifiers;
 
 namespace DirectoryService.IntegrationTests.Positions;
