@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using DirectoryService.Application.Departments.Create;
+using DirectoryService.Application.Features.Departments.Create;
 using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.Identifiers;
 using DirectoryService.Domain.ValueObjects;
@@ -9,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Writers;
 using TimeZone = DirectoryService.Domain.ValueObjects.TimeZone;
 
-namespace DirectoryService.IntegrationTests;
+namespace DirectoryService.IntegrationTests.Departments;
 
 public class CreateDepartmentTests : DirectoryServiceBaseTests
 {
