@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Data.Common;
+using DirectoryService.Application.Abstractions;
+using DirectoryService.Application.Database;
 using DirectoryService.Infrastructure.Database;
 using DirectoryService.Presentation;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -34,9 +37,22 @@ public class DirectoryTestWebFactory : WebApplicationFactory<Program>, IAsyncLif
         builder.ConfigureTestServices(services =>
         {
             services.RemoveAll<AppDbContext>();
+            services.RemoveAll<IReadDbContext>();
+            services.RemoveAll<ISqlConnectionFactory>();
 
             services.AddScoped<AppDbContext>(_ =>
                 new AppDbContext(_dbContainer.GetConnectionString()));
+
+            services.AddScoped<IReadDbContext>(_ =>
+                new AppDbContext(_dbContainer.GetConnectionString()));
+
+            services.AddScoped<ISqlConnectionFactory>(_ =>
+                new SqlConnectionFactory(new ConfigurationBuilder()
+                    .AddInMemoryCollection(new Dictionary<string, string?>
+                    {
+                        ["ConnectionStrings:DirectoryServiceDb"] = _dbContainer.GetConnectionString(),
+                    })
+                    .Build()));
         });
     }
 

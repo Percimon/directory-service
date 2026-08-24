@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using DirectoryService.Application.Departments.Create;
+using DirectoryService.Application.Features.Departments.Create;
 using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.Identifiers;
 using DirectoryService.Domain.ValueObjects;
@@ -9,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Writers;
 using TimeZone = DirectoryService.Domain.ValueObjects.TimeZone;
 
-namespace DirectoryService.IntegrationTests;
+namespace DirectoryService.IntegrationTests.Departments;
 
 public class CreateDepartmentTests : DirectoryServiceBaseTests
 {
@@ -71,6 +72,16 @@ public class CreateDepartmentTests : DirectoryServiceBaseTests
         Assert.True(result.IsSuccess);
 
         Assert.NotEqual(Guid.Empty, result.Value);
+    }
+
+    [Fact]
+    public async Task CreateDepartment_should_fail_when_location_not_found()
+    {
+        var result = await ExecuteHandler(sut => sut.Handle(
+            new CreateDepartmentCommand("DepartmentName", "DepName", null, [Guid.NewGuid()]),
+            CancellationToken.None));
+
+        Assert.True(result.IsFailure);
     }
 
     private async Task<T> ExecuteHandler<T>(Func<CreateDepartmentHandler, Task<T>> action)

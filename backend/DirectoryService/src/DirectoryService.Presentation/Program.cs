@@ -2,9 +2,20 @@
 using DirectoryService.Presentation.Configuration;
 using Serilog;
 
-Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
-    .CreateBootstrapLogger();
+var isTesting = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Testing"
+    || AppDomain.CurrentDomain.GetAssemblies().Any(a => a.FullName.Contains("test"));
+
+if (!isTesting)
+{
+    Log.Logger = new LoggerConfiguration()
+        .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
+        .CreateBootstrapLogger();
+}
+else
+{
+    // Для тестов ставим заглушку или простую конфигурацию без заморозки
+    Log.Logger = new LoggerConfiguration().CreateLogger();
+}
 
 try
 {

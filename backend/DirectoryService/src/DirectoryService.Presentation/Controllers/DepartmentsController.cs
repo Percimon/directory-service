@@ -6,6 +6,7 @@ using DirectoryService.Application.Departments.Update;
 using DirectoryService.Application.Departments.UpdateLocations;
 using DirectoryService.Application.Features.Departments.AddLocation;
 using DirectoryService.Application.Features.Departments.AddPosition;
+using DirectoryService.Application.Features.Departments.Create;
 using DirectoryService.Application.Features.Departments.Delete;
 using DirectoryService.Application.Features.Departments.Get;
 using DirectoryService.Application.Features.Departments.GetById;
