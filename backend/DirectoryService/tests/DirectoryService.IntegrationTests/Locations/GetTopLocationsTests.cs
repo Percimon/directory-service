@@ -29,4 +29,14 @@ public class GetTopLocationsTests : DirectoryServiceBaseTests
         Assert.Equal(locationId.Value, location.LocationId);
         Assert.Equal(1, location.DepartmentsCount);
     }
+
+    [Fact]
+    public async Task GetTop_should_return_empty_result_when_locations_are_absent()
+    {
+        var result = await LocationTestData.ExecuteAsync<GetLocationTopHandler, IReadOnlyList<GetLocationTopResponse>>(Services, sut => sut.Handle(
+            new GetLocationTopQuery(), CancellationToken.None));
+
+        Assert.True(result.IsSuccess);
+        Assert.Empty(result.Value);
+    }
 }

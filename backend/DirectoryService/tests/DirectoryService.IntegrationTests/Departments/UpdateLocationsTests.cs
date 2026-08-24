@@ -32,4 +32,13 @@ public class UpdateLocationsTests : DirectoryServiceBaseTests
         Assert.Equal(departmentId.Value, result.Value);
         Assert.Equal(secondLocationId, Assert.Single(department.DepartmentLocations).LocationId);
     }
+
+    [Fact]
+    public async Task UpdateLocations_should_fail_when_department_not_found()
+    {
+        var result = await DepartmentTestData.ExecuteAsync<UpdateLocationsHandler, Guid>(Services, sut => sut.Handle(
+            new UpdateLocationsCommand(Guid.NewGuid(), [Guid.NewGuid()]), CancellationToken.None));
+
+        Assert.True(result.IsFailure);
+    }
 }

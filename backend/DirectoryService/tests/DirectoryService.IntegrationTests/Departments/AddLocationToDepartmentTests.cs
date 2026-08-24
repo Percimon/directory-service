@@ -95,6 +95,15 @@ public class AddLocationToDepartmentTests : DirectoryServiceBaseTests
         Assert.Contains(departmentResult.DepartmentLocations, l => l.LocationId == locationId);
     }
 
+    [Fact]
+    public async Task AddLocation_should_fail_when_department_not_found()
+    {
+        var result = await ExecuteHandler(sut => sut.Handle(
+            new AddLocationCommand(Guid.NewGuid(), Guid.NewGuid()), CancellationToken.None));
+
+        Assert.True(result.IsFailure);
+    }
+
     private async Task<T> ExecuteHandler<T>(Func<AddLocationHandler, Task<T>> action)
     {
         await using var scope = Services.CreateAsyncScope();

@@ -35,4 +35,13 @@ public class ChangeParentTests : DirectoryServiceBaseTests
         Assert.Equal(newParentId, child.Parent.Id);
         Assert.Equal("newparent.child", child.Path.Value);
     }
+
+    [Fact]
+    public async Task ChangeParent_should_fail_when_department_not_found()
+    {
+        var result = await DepartmentTestData.ExecuteAsync<ChangeParentHandler, Guid>(Services, sut => sut.Handle(
+            new ChangeParentCommand(Guid.NewGuid(), Guid.NewGuid()), CancellationToken.None));
+
+        Assert.True(result.IsFailure);
+    }
 }

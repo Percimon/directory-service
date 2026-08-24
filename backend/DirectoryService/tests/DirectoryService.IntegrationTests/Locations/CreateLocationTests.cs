@@ -20,4 +20,14 @@ public class CreateLocationTests : DirectoryServiceBaseTests
         Assert.NotEqual(Guid.Empty, result.Value);
         Assert.Equal("Created location", location.Name.Value);
     }
+
+    [Fact]
+    public async Task CreateLocation_should_fail_when_name_is_invalid()
+    {
+        var result = await LocationTestData.ExecuteAsync<CreateLocationHandler, Guid>(Services, sut => sut.Handle(
+            new CreateLocationCommand("", "city", "district", "street", "structure", "Europe/Moscow"),
+            CancellationToken.None));
+
+        Assert.True(result.IsFailure);
+    }
 }

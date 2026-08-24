@@ -74,6 +74,16 @@ public class CreateDepartmentTests : DirectoryServiceBaseTests
         Assert.NotEqual(Guid.Empty, result.Value);
     }
 
+    [Fact]
+    public async Task CreateDepartment_should_fail_when_location_not_found()
+    {
+        var result = await ExecuteHandler(sut => sut.Handle(
+            new CreateDepartmentCommand("DepartmentName", "DepName", null, [Guid.NewGuid()]),
+            CancellationToken.None));
+
+        Assert.True(result.IsFailure);
+    }
+
     private async Task<T> ExecuteHandler<T>(Func<CreateDepartmentHandler, Task<T>> action)
     {
         await using var scope = Services.CreateAsyncScope();

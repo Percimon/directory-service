@@ -26,4 +26,13 @@ public class RemoveLocationTests : DirectoryServiceBaseTests
         Assert.Equal(locationId.Value, result.Value);
         Assert.Empty(department.DepartmentLocations);
     }
+
+    [Fact]
+    public async Task RemoveLocation_should_fail_when_department_not_found()
+    {
+        var result = await DepartmentTestData.ExecuteAsync<RemoveLocationHandler, Guid>(Services, sut => sut.Handle(
+            new RemoveLocationCommand(Guid.NewGuid(), Guid.NewGuid()), CancellationToken.None));
+
+        Assert.True(result.IsFailure);
+    }
 }

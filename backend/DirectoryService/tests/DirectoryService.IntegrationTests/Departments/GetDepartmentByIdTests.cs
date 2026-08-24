@@ -27,4 +27,13 @@ public class GetDepartmentByIdTests : DirectoryServiceBaseTests
         Assert.Equal("Department", result.Value.Name);
         Assert.Equal("department", result.Value.Slug);
     }
+
+    [Fact]
+    public async Task GetById_should_fail_when_department_not_found()
+    {
+        var result = await DepartmentTestData.ExecuteAsync<GetDepartmentByIdHandler, GetDepartmentResponse>(Services, sut => sut.Handle(
+            new GetDepartmentByIdQuery(Guid.NewGuid()), CancellationToken.None));
+
+        Assert.True(result.IsFailure);
+    }
 }

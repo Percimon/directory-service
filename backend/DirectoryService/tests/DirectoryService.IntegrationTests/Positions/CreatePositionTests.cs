@@ -32,6 +32,16 @@ public class CreatePositionTests : DirectoryServiceBaseTests
         Assert.Contains(position.Id.Value, await GetDepartmentPositionIdsAsync(departmentId));
     }
 
+    [Fact]
+    public async Task CreatePosition_should_fail_when_department_not_found()
+    {
+        var result = await PositionTestData.ExecuteAsync<CreatePositionHandler, Guid>(Services, sut => sut.Handle(
+            new CreatePositionCommand("Created position", "Position description", [Guid.NewGuid()]),
+            CancellationToken.None));
+
+        Assert.True(result.IsFailure);
+    }
+
     private async Task<IReadOnlyList<Guid>> GetDepartmentPositionIdsAsync(DepartmentId departmentId)
     {
         await using var scope = Services.CreateAsyncScope();

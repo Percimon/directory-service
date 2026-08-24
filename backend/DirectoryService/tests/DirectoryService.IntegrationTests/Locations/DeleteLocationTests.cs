@@ -28,4 +28,13 @@ public class DeleteLocationTests : DirectoryServiceBaseTests
         Assert.Equal(locationId.Value, result.Value);
         Assert.Null(location);
     }
+
+    [Fact]
+    public async Task DeleteLocation_should_fail_when_location_not_found()
+    {
+        var result = await LocationTestData.ExecuteAsync<DeleteLocationHandler, Guid>(Services, sut => sut.Handle(
+            new DeleteLocationCommand(Guid.NewGuid()), CancellationToken.None));
+
+        Assert.True(result.IsFailure);
+    }
 }

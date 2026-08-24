@@ -27,4 +27,13 @@ public class UpdateDepartmentTests : DirectoryServiceBaseTests
         Assert.Equal("Updated department", department.Name.Value);
         Assert.Equal("updateddepartment", department.Slug.Value);
     }
+
+    [Fact]
+    public async Task UpdateDepartment_should_fail_when_department_not_found()
+    {
+        var result = await DepartmentTestData.ExecuteAsync<UpdateDepartmentHandler, Guid>(Services, sut => sut.Handle(
+            new UpdateDepartmentCommand(Guid.NewGuid(), "Updated department", "updateddepartment"), CancellationToken.None));
+
+        Assert.True(result.IsFailure);
+    }
 }

@@ -28,4 +28,13 @@ public class DeletePositionTests : DirectoryServiceBaseTests
         Assert.Equal(positionId.Value, result.Value);
         Assert.Null(position);
     }
+
+    [Fact]
+    public async Task DeletePosition_should_fail_when_position_not_found()
+    {
+        var result = await PositionTestData.ExecuteAsync<DeletePositionHandler, Guid>(Services, sut => sut.Handle(
+            new DeletePositionCommand(Guid.NewGuid()), CancellationToken.None));
+
+        Assert.True(result.IsFailure);
+    }
 }

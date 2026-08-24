@@ -28,4 +28,13 @@ public class AddPositionTests : DirectoryServiceBaseTests
         Assert.Equal(positionId.Value, result.Value);
         Assert.Contains(department.DepartmentPositions, item => item.PositionId == positionId);
     }
+
+    [Fact]
+    public async Task AddPosition_should_fail_when_department_not_found()
+    {
+        var result = await DepartmentTestData.ExecuteAsync<AddPositionHandler, Guid>(Services, sut => sut.Handle(
+            new AddPositionCommand(Guid.NewGuid(), Guid.NewGuid()), CancellationToken.None));
+
+        Assert.True(result.IsFailure);
+    }
 }

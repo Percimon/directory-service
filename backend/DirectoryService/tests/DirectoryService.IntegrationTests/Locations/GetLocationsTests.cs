@@ -27,4 +27,13 @@ public class GetLocationsTests : DirectoryServiceBaseTests
         Assert.Equal(firstId.Value, item.Id);
         Assert.Equal(1, result.Value.TotalCount);
     }
+
+    [Fact]
+    public async Task GetLocations_should_fail_when_page_is_invalid()
+    {
+        var result = await LocationTestData.ExecuteAsync<GetLocationsHandler, PagedList<LocationListItemDto>>(Services, sut => sut.Handle(
+            new GetLocationsQuery(0, 10, "name", "asc", 0, null), CancellationToken.None));
+
+        Assert.True(result.IsFailure);
+    }
 }

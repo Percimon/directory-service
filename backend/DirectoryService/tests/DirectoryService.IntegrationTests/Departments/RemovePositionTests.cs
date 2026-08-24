@@ -30,4 +30,13 @@ public class RemovePositionTests : DirectoryServiceBaseTests
         Assert.Equal(positionId.Value, result.Value);
         Assert.Empty(department.DepartmentPositions);
     }
+
+    [Fact]
+    public async Task RemovePosition_should_fail_when_department_not_found()
+    {
+        var result = await DepartmentTestData.ExecuteAsync<RemovePositionHandler, Guid>(Services, sut => sut.Handle(
+            new RemovePositionCommand(Guid.NewGuid(), Guid.NewGuid()), CancellationToken.None));
+
+        Assert.True(result.IsFailure);
+    }
 }

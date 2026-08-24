@@ -22,4 +22,13 @@ public class RenamePositionTests : DirectoryServiceBaseTests
         Assert.Equal(positionId.Value, result.Value);
         Assert.Equal("Renamed position", position.Name.Value);
     }
+
+    [Fact]
+    public async Task RenamePosition_should_fail_when_position_not_found()
+    {
+        var result = await PositionTestData.ExecuteAsync<RenamePositionHandler, Guid>(Services, sut => sut.Handle(
+            new RenamePositionCommand(Guid.NewGuid(), "Renamed position"), CancellationToken.None));
+
+        Assert.True(result.IsFailure);
+    }
 }

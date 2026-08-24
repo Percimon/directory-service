@@ -25,4 +25,14 @@ public class UpdateLocationTests : DirectoryServiceBaseTests
         Assert.Equal("new city", location.Address.City);
         Assert.Equal("UTC", location.TimeZone.Value);
     }
+
+    [Fact]
+    public async Task UpdateLocation_should_fail_when_location_not_found()
+    {
+        var result = await LocationTestData.ExecuteAsync<UpdateLocationHandler, Guid>(Services, sut => sut.Handle(
+            new UpdateLocationCommand(Guid.NewGuid(), "Updated location", "city", "district", "street", "structure", "UTC"),
+            CancellationToken.None));
+
+        Assert.True(result.IsFailure);
+    }
 }

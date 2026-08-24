@@ -30,4 +30,13 @@ public class GetDepartmentsTests : DirectoryServiceBaseTests
         Assert.Equal(firstDepartmentId.Value, item.Id);
         Assert.Equal(1, result.Value.TotalCount);
     }
+
+    [Fact]
+    public async Task GetDepartments_should_fail_when_page_is_invalid()
+    {
+        var result = await DepartmentTestData.ExecuteAsync<GetDepartmentsHandler, PagedList<DepartmentListItemDto>>(Services, sut => sut.Handle(
+            new GetDepartmentsQuery(0, 10, "name", "asc", null), CancellationToken.None));
+
+        Assert.True(result.IsFailure);
+    }
 }

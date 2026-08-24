@@ -31,4 +31,13 @@ public class DeleteDepartmentTests : DirectoryServiceBaseTests
         Assert.Equal(departmentId.Value, result.Value);
         Assert.Null(department);
     }
+
+    [Fact]
+    public async Task DeleteDepartment_should_fail_when_department_not_found()
+    {
+        var result = await DepartmentTestData.ExecuteAsync<DeleteDepartmentHandler, Guid>(Services, sut => sut.Handle(
+            new DeleteDepartmentCommand(Guid.NewGuid()), CancellationToken.None));
+
+        Assert.True(result.IsFailure);
+    }
 }
