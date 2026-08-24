@@ -355,6 +355,7 @@ public class DepartmentsRepository : IDepartmentsRepository
         try
         {
             var department = await _dbContext.Departments
+                .Include(d => d.Children)
                 .FirstOrDefaultAsync(d => d.Id == id && d.IsActive, cancellationToken);
 
             if (department is null)

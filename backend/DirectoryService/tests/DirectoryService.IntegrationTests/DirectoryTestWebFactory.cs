@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.Common;
+using DirectoryService.Application.Database;
 using DirectoryService.Infrastructure.Database;
 using DirectoryService.Presentation;
 using Microsoft.AspNetCore.Hosting;
@@ -34,8 +35,12 @@ public class DirectoryTestWebFactory : WebApplicationFactory<Program>, IAsyncLif
         builder.ConfigureTestServices(services =>
         {
             services.RemoveAll<AppDbContext>();
+            services.RemoveAll<IReadDbContext>();
 
             services.AddScoped<AppDbContext>(_ =>
+                new AppDbContext(_dbContainer.GetConnectionString()));
+
+            services.AddScoped<IReadDbContext>(_ =>
                 new AppDbContext(_dbContainer.GetConnectionString()));
         });
     }
