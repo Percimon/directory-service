@@ -49,12 +49,17 @@ public sealed class DeleteDepartmentHandler : ICommandHandler<Guid, DeleteDepart
             return validationResult.ToError();
         }
 
-        var deleteResult = await _departmentsRepository.Delete(DepartmentId.Create(command.Id), cancellationToken);
+        var searchResult = await _departmentsRepository.GetById(DepartmentId.Create(command.Id), cancellationToken);
+
+        if (searchResult.IsFailure)
+        {
+            return searchResult.Error;
+        }
+
+        var deleteResult = searchResult.Value.SoftDelete();
 
         if (deleteResult.IsFailure)
-        {
             return deleteResult.Error;
-        }
 
         var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
 

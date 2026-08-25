@@ -48,12 +48,17 @@ public sealed class DeleteLocationHandler : ICommandHandler<Guid, DeleteLocation
             return validationResult.ToError();
         }
 
-        var deleteResult = await _locationsRepository.Delete(LocationId.Create(command.Id), cancellationToken);
+        var searchResult = await _locationsRepository.GetById(LocationId.Create(command.Id), cancellationToken);
+
+        if (searchResult.IsFailure)
+        {
+            return searchResult.Error;
+        }
+
+        var deleteResult = searchResult.Value.SoftDelete();
 
         if (deleteResult.IsFailure)
-        {
             return deleteResult.Error;
-        }
 
         var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
 

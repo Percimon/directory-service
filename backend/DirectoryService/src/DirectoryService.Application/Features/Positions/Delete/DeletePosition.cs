@@ -48,12 +48,17 @@ public sealed class DeletePositionHandler : ICommandHandler<Guid, DeletePosition
             return validationResult.ToError();
         }
 
-        var deleteResult = await _positionRepository.Delete(PositionId.Create(command.Id), cancellationToken);
+        var searchResult = await _positionRepository.GetById(PositionId.Create(command.Id), cancellationToken);
+
+        if (searchResult.IsFailure)
+        {
+            return searchResult.Error;
+        }
+
+        var deleteResult = searchResult.Value.SoftDelete();
 
         if (deleteResult.IsFailure)
-        {
             return deleteResult.Error;
-        }
 
         var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
 

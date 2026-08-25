@@ -349,34 +349,4 @@ public class DepartmentsRepository : IDepartmentsRepository
             return Error.Failure("department.get_hierarchy_level", ex.Message);
         }
     }
-
-    public async Task<UnitResult<Error>> Delete(DepartmentId id, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            var department = await _dbContext.Departments
-                .Include(d => d.Children)
-                .FirstOrDefaultAsync(d => d.Id == id && d.IsActive, cancellationToken);
-
-            if (department is null)
-            {
-                return GeneralErrors.NotFound(id.Value);
-            }
-
-            if (department.Children.Count > 0)
-            {
-                return Error.Failure("department.delete", "Невозможно удалить отдел, так как у него есть дочерние отделы");
-            }
-
-            _dbContext.Departments.Remove(department);
-
-            return Result.Success<Error>();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("Failed to delete department with id: {Id}", id.Value);
-
-            return Error.Failure("department.delete", "Ошибка при удалении отдела");
-        }
-    }
 }
