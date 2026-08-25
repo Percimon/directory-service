@@ -48,5 +48,7 @@ public class PositionConfiguration : IEntityTypeConfiguration<Position>
 
         builder.Property(p => p.UpdatedAt)
             .HasColumnName("updated_at");
+
+        builder.HasQueryFilter(x => x.IsActive);
     }
 }

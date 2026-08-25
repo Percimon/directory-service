@@ -40,5 +40,7 @@ public class DepartmentLocationConfiguration : IEntityTypeConfiguration<Departme
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder.HasQueryFilter(x => x.Department.IsActive);
+
     }
 }
