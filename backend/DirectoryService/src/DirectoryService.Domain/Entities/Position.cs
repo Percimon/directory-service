@@ -45,4 +45,13 @@ public sealed class Position : SharedService.SharedKernel.Entity<PositionId>
 
         return UnitResult.Success<Error>();
     }
+
+    public UnitResult<Error> SoftDelete()
+    {
+        _isActive = false;
+
+        UpdatedAt = DateTime.UtcNow;
+
+        return UnitResult.Success<Error>();
+    }
 }

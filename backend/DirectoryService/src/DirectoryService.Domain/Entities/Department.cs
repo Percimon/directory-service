@@ -146,6 +146,8 @@ public sealed class Department : SharedService.SharedKernel.Entity<DepartmentId>
 
         _departmentLocations.Add(DepartmentLocation.Create(Id, LocationId.Create(locationId)).Value);
 
+        UpdatedAt = DateTime.UtcNow;
+
         return UnitResult.Success<Error>();
     }
 
@@ -156,6 +158,8 @@ public sealed class Department : SharedService.SharedKernel.Entity<DepartmentId>
             .ToList();
 
         _departmentLocations = departmentLocations;
+
+        UpdatedAt = DateTime.UtcNow;
 
         return UnitResult.Success<Error>();
     }
@@ -168,6 +172,8 @@ public sealed class Department : SharedService.SharedKernel.Entity<DepartmentId>
             return GeneralErrors.NotFound(locationId);
 
         _departmentLocations.RemoveAll(x => x.LocationId.Value == locationId);
+
+        UpdatedAt = DateTime.UtcNow;
 
         return UnitResult.Success<Error>();
     }
@@ -184,6 +190,8 @@ public sealed class Department : SharedService.SharedKernel.Entity<DepartmentId>
             return UnitResult.Success<Error>();
         }
 
+        UpdatedAt = DateTime.UtcNow;
+
         return GeneralErrors.AlreadyExists(nameof(Position), nameof(positionId), positionId.ToString());
     }
 
@@ -196,6 +204,8 @@ public sealed class Department : SharedService.SharedKernel.Entity<DepartmentId>
 
         _departmentPositions.RemoveAll(x => x.PositionId.Value == positionId);
 
+        UpdatedAt = DateTime.UtcNow;
+
         return UnitResult.Success<Error>();
     }
 
@@ -203,6 +213,17 @@ public sealed class Department : SharedService.SharedKernel.Entity<DepartmentId>
     {
         Name = name;
         Slug = slug;
+
+        UpdatedAt = DateTime.UtcNow;
+
+        return UnitResult.Success<Error>();
+    }
+
+    public UnitResult<Error> SoftDelete()
+    {
+        _isActive = false;
+
+        UpdatedAt = DateTime.UtcNow;
 
         return UnitResult.Success<Error>();
     }

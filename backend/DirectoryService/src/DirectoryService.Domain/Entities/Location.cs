@@ -52,6 +52,16 @@ public sealed class Location : SharedService.SharedKernel.Entity<LocationId>
         Name = name;
         Address = address;
         TimeZone = timeZone;
+
+        UpdatedAt = DateTime.UtcNow;
+
+        return UnitResult.Success<Error>();
+    }
+
+    public UnitResult<Error> SoftDelete()
+    {
+        _isActive = false;
+
         UpdatedAt = DateTime.UtcNow;
 
         return UnitResult.Success<Error>();
