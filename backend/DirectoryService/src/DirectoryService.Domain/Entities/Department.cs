@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using DirectoryService.Domain.Abstractions;
 using DirectoryService.Domain.Identifiers;
 using DirectoryService.Domain.ValueObjects;
 using SharedService.SharedKernel;
@@ -6,7 +7,7 @@ using Path = DirectoryService.Domain.ValueObjects.Path;
 
 namespace DirectoryService.Domain.Entities;
 
-public sealed class Department : SharedService.SharedKernel.Entity<DepartmentId>
+public sealed class Department : SharedService.SharedKernel.Entity<DepartmentId>, ISoftDeletable
 {
     private List<Department> _children;
 
@@ -68,6 +69,8 @@ public sealed class Department : SharedService.SharedKernel.Entity<DepartmentId>
     public DateTime CreatedAt { get; }
 
     public DateTime UpdatedAt { get; private set; }
+
+    public DateTime? DeletedAt { get; private set; }
 
     public static Result<Department, Error> CreateParent(
         Name name,
@@ -223,7 +226,7 @@ public sealed class Department : SharedService.SharedKernel.Entity<DepartmentId>
     {
         _isActive = false;
 
-        UpdatedAt = DateTime.UtcNow;
+        DeletedAt = DateTime.UtcNow;
 
         return UnitResult.Success<Error>();
     }

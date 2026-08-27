@@ -1,11 +1,12 @@
 ﻿using CSharpFunctionalExtensions;
+using DirectoryService.Domain.Abstractions;
 using DirectoryService.Domain.Identifiers;
 using DirectoryService.Domain.ValueObjects;
 using SharedService.SharedKernel;
 
 namespace DirectoryService.Domain.Entities;
 
-public sealed class Position : SharedService.SharedKernel.Entity<PositionId>
+public sealed class Position : SharedService.SharedKernel.Entity<PositionId>, ISoftDeletable
 {
     private bool _isActive = true;
 
@@ -37,6 +38,8 @@ public sealed class Position : SharedService.SharedKernel.Entity<PositionId>
 
     public DateTime UpdatedAt { get; private set; }
 
+    public DateTime? DeletedAt { get; private set; }
+
     public UnitResult<Error> Rename(Name newName)
     {
         Name = newName;
@@ -50,7 +53,7 @@ public sealed class Position : SharedService.SharedKernel.Entity<PositionId>
     {
         _isActive = false;
 
-        UpdatedAt = DateTime.UtcNow;
+        DeletedAt = DateTime.UtcNow;
 
         return UnitResult.Success<Error>();
     }

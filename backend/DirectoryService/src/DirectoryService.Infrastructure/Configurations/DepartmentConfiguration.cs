@@ -72,6 +72,9 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
         builder.Property(p => p.UpdatedAt)
             .HasColumnName("updated_at");
 
+        builder.Property(p => p.DeletedAt)
+            .HasColumnName("deleted_at");
+
         builder.HasOne(x => x.Parent)
             .WithMany(x => x.Children)
             .HasForeignKey("fk_parent_id")

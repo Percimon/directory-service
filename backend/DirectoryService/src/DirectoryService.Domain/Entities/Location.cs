@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using DirectoryService.Domain.Abstractions;
 using DirectoryService.Domain.Identifiers;
 using DirectoryService.Domain.ValueObjects;
 using SharedService.SharedKernel;
@@ -6,7 +7,7 @@ using TimeZone = DirectoryService.Domain.ValueObjects.TimeZone;
 
 namespace DirectoryService.Domain.Entities;
 
-public sealed class Location : SharedService.SharedKernel.Entity<LocationId>
+public sealed class Location : SharedService.SharedKernel.Entity<LocationId>, ISoftDeletable
 {
     private bool _isActive = true;
 
@@ -44,6 +45,8 @@ public sealed class Location : SharedService.SharedKernel.Entity<LocationId>
 
     public DateTime UpdatedAt { get; private set; }
 
+    public DateTime? DeletedAt { get; private set; }
+
     public UnitResult<Error> UpdateMainInfo(
         Name name,
         Address address,
@@ -62,7 +65,7 @@ public sealed class Location : SharedService.SharedKernel.Entity<LocationId>
     {
         _isActive = false;
 
-        UpdatedAt = DateTime.UtcNow;
+        DeletedAt = DateTime.UtcNow;
 
         return UnitResult.Success<Error>();
     }

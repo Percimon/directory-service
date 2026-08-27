@@ -2,21 +2,20 @@
 
 #nullable disable
 
-namespace DirectoryService.Infrastructure.Migrations
+namespace DirectoryService.Infrastructure.Migrations;
+
+/// <inheritdoc />
+public partial class DS_20 : Migration
 {
     /// <inheritdoc />
-    public partial class DS_20 : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
 
-        }
+    }
 
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
 
-        }
     }
 }
