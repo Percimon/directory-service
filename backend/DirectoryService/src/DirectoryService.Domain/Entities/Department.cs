@@ -228,6 +228,14 @@ public sealed class Department : SharedService.SharedKernel.Entity<DepartmentId>
 
         DeletedAt = DateTime.UtcNow;
 
+        if (Children.Count > 0)
+        {
+            foreach (var child in Children)
+            {
+                child.SoftDelete();
+            }
+        }
+
         return UnitResult.Success<Error>();
     }
 }
