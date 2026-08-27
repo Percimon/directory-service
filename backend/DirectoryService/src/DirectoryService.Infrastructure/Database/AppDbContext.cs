@@ -69,7 +69,7 @@ public class AppDbContext : DbContext, IReadDbContext
             cancellationToken);
 
         if (deletedLocationsResult.IsFailure)
-            return deletedDepartmentsResult.Error;
+            return deletedLocationsResult.Error;
 
         var deletedPositions = await PurgeEntityAsync<Position>(
             thresholdDate,
@@ -77,7 +77,7 @@ public class AppDbContext : DbContext, IReadDbContext
             cancellationToken);
 
         if (deletedPositions.IsFailure)
-            return deletedDepartmentsResult.Error;
+            return deletedPositions.Error;
 
         return Result.Success<Error>();
     }
@@ -114,7 +114,7 @@ public class AppDbContext : DbContext, IReadDbContext
         }
         catch
         {
-            return Error.Failure("databe.delete", $"Failed to delete {typeof(TEntity)}");
+            return Error.Failure("database.delete", $"Failed to delete {typeof(TEntity)}");
         }
     }
 }
