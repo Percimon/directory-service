@@ -96,6 +96,7 @@ public class AppDbContext : DbContext, IReadDbContext
             while (hasMore && !cancellationToken.IsCancellationRequested)
             {
                 int deletedInBatch = await Set<TEntity>()
+                    .IgnoreQueryFilters()
                     .Where(x => !x.IsActive && x.DeletedAt < thresholdDate)
                     .Take(batchSize)
                     .ExecuteDeleteAsync(cancellationToken);

@@ -22,7 +22,7 @@ public static class DependencyInjectionExtensions
 
         services.Configure<SoftDeleteCleanerOptions>(configuration.GetSection("SoftDeleteCleanerOptions"));
 
-        services.AddHostedService<SoftDeleteCleanerService>();
+        services.AddHostedService<SoftDeleteCleanerBackgroundService>();
 
         services.AddScoped<ISqlConnectionFactory, SqlConnectionFactory>();
 

@@ -1,7 +1,7 @@
 ﻿using DirectoryService.Application.Features.Locations.Delete;
 using DirectoryService.Domain.Identifiers;
-using Microsoft.EntityFrameworkCore;
 using DirectoryService.Infrastructure.Database;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DirectoryService.IntegrationTests.Locations;

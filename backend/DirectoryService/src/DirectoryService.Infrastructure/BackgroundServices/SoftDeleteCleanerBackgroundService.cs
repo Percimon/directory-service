@@ -6,16 +6,16 @@ using Microsoft.Extensions.Options;
 
 namespace DirectoryService.Infrastructure.BackgroundServices;
 
-public class SoftDeleteCleanerService : BackgroundService
+public class SoftDeleteCleanerBackgroundService : BackgroundService
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly SoftDeleteCleanerOptions _options;
-    private readonly ILogger<SoftDeleteCleanerService> _logger;
+    private readonly ILogger<SoftDeleteCleanerBackgroundService> _logger;
 
-    public SoftDeleteCleanerService(
+    public SoftDeleteCleanerBackgroundService(
         IServiceScopeFactory serviceScopeFactory,
         IOptions<SoftDeleteCleanerOptions> options,
-        ILogger<SoftDeleteCleanerService> logger)
+        ILogger<SoftDeleteCleanerBackgroundService> logger)
     {
         _serviceScopeFactory = serviceScopeFactory;
         _options = options.Value;
@@ -42,6 +42,8 @@ public class SoftDeleteCleanerService : BackgroundService
                     _logger.LogError(deleteResult.Error.GetMessage());
                 }
             }
+
+            await Task.Delay(_options.Interval, cancellationToken);
         }
 
         await Task.CompletedTask;
