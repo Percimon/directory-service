@@ -9,11 +9,11 @@ namespace DirectoryService.Domain.Entities;
 
 public sealed class Department : SharedService.SharedKernel.Entity<DepartmentId>, ISoftDeletable
 {
-    private List<Department> _children;
+    private List<Department> _children = [];
 
-    private List<DepartmentPosition> _departmentPositions;
+    private List<DepartmentPosition> _departmentPositions = [];
 
-    private List<DepartmentLocation> _departmentLocations;
+    private List<DepartmentLocation> _departmentLocations = [];
 
     private bool _isActive = true;
 

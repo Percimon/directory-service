@@ -33,6 +33,7 @@ public class DepartmentsRepository : IDepartmentsRepository
         try
         {
             var result = await _dbContext.Departments
+                .Include(d => d.Children)
                 .FirstOrDefaultAsync(d => d.Id == id && d.IsActive, cancellationToken);
 
             if (result is null)
