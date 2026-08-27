@@ -25,11 +25,15 @@ public class DeleteDepartmentTests : DirectoryServiceBaseTests
             new DeleteDepartmentCommand(departmentId.Value), CancellationToken.None));
         await using var scope = Services.CreateAsyncScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        var department = await dbContext.Departments.FirstOrDefaultAsync(item => item.Id == departmentId);
+        var department = await dbContext.Departments
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(item => item.Id == departmentId);
 
-        Assert.True(result.IsSuccess, result.IsFailure ? result.Error.ToString() : string.Empty);
+        Assert.True(result.IsSuccess, result.IsFailure ? result.Error.GetMessage() : string.Empty);
         Assert.Equal(departmentId.Value, result.Value);
-        Assert.Null(department);
+        Assert.NotNull(department);
+        Assert.False(department.IsActive);
+        Assert.NotNull(department.DeletedAt);
     }
 
     [Fact]
