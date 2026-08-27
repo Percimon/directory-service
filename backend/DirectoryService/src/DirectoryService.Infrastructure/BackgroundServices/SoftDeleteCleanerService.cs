@@ -32,10 +32,15 @@ public class SoftDeleteCleanerService : BackgroundService
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-                await dbContext.PurgeAllDeletedRecordsAsync(
+                var deleteResult = await dbContext.PurgeAllDeletedRecordsAsync(
                     _options.RetentionDays,
                     _options.BatchSize,
                     cancellationToken);
+
+                if (deleteResult.IsFailure)
+                {
+                    _logger.LogError(deleteResult.Error.GetMessage());
+                }
             }
         }
 
