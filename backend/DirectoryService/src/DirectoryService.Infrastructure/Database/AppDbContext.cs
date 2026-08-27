@@ -1,8 +1,11 @@
-﻿using DirectoryService.Application.Database;
+﻿using CSharpFunctionalExtensions;
+using DirectoryService.Application.Database;
 using DirectoryService.Contracts.Dtos;
+using DirectoryService.Domain.Abstractions;
 using DirectoryService.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Infrastructure.Database;
 
@@ -44,4 +47,74 @@ public class AppDbContext : DbContext, IReadDbContext
 
     private ILoggerFactory CreateLoggerFactory() =>
           LoggerFactory.Create(builder => builder.AddConsole());
+
+    public async Task<UnitResult<Error>> PurgeAllDeletedRecordsAsync(
+        int retentionDays,
+        int batchSize,
+        CancellationToken cancellationToken)
+    {
+        var thresholdDate = DateTime.UtcNow.AddDays(-retentionDays);
+
+        var deletedDepartmentsResult = await PurgeEntityAsync<Department>(
+            thresholdDate,
+            batchSize,
+            cancellationToken);
+
+        if (deletedDepartmentsResult.IsFailure)
+            return deletedDepartmentsResult.Error;
+
+        var deletedLocationsResult = await PurgeEntityAsync<Location>(
+            thresholdDate,
+            batchSize,
+            cancellationToken);
+
+        if (deletedLocationsResult.IsFailure)
+            return deletedLocationsResult.Error;
+
+        var deletedPositions = await PurgeEntityAsync<Position>(
+            thresholdDate,
+            batchSize,
+            cancellationToken);
+
+        if (deletedPositions.IsFailure)
+            return deletedPositions.Error;
+
+        return Result.Success<Error>();
+    }
+
+    private async Task<Result<int, Error>> PurgeEntityAsync<TEntity>(
+       DateTime thresholdDate,
+       int batchSize,
+       CancellationToken cancellationToken)
+       where TEntity : class, ISoftDeletable
+    {
+        int totalDeleted = 0;
+        bool hasMore = true;
+
+        try
+        {
+            while (hasMore && !cancellationToken.IsCancellationRequested)
+            {
+                int deletedInBatch = await Set<TEntity>()
+                    .IgnoreQueryFilters()
+                    .Where(x => !x.IsActive && x.DeletedAt < thresholdDate)
+                    .Take(batchSize)
+                    .ExecuteDeleteAsync(cancellationToken);
+
+                totalDeleted += deletedInBatch;
+                hasMore = deletedInBatch == batchSize;
+
+                if (deletedInBatch > 0)
+                {
+                    await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
+                }
+            }
+
+            return totalDeleted;
+        }
+        catch
+        {
+            return Error.Failure("database.delete", $"Failed to delete {typeof(TEntity)}");
+        }
+    }
 }

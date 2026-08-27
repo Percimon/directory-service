@@ -32,5 +32,7 @@ public class DepartmentPositionConfiguration : IEntityTypeConfiguration<Departme
             .HasForeignKey(x => x.PositionId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasQueryFilter(x => x.Department.IsActive);
     }
 }

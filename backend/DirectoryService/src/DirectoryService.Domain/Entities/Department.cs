@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using DirectoryService.Domain.Abstractions;
 using DirectoryService.Domain.Identifiers;
 using DirectoryService.Domain.ValueObjects;
 using SharedService.SharedKernel;
@@ -6,13 +7,13 @@ using Path = DirectoryService.Domain.ValueObjects.Path;
 
 namespace DirectoryService.Domain.Entities;
 
-public sealed class Department : SharedService.SharedKernel.Entity<DepartmentId>
+public sealed class Department : SharedService.SharedKernel.Entity<DepartmentId>, ISoftDeletable
 {
-    private List<Department> _children;
+    private List<Department> _children = [];
 
-    private List<DepartmentPosition> _departmentPositions;
+    private List<DepartmentPosition> _departmentPositions = [];
 
-    private List<DepartmentLocation> _departmentLocations;
+    private List<DepartmentLocation> _departmentLocations = [];
 
     private bool _isActive = true;
 
@@ -68,6 +69,8 @@ public sealed class Department : SharedService.SharedKernel.Entity<DepartmentId>
     public DateTime CreatedAt { get; }
 
     public DateTime UpdatedAt { get; private set; }
+
+    public DateTime? DeletedAt { get; private set; }
 
     public static Result<Department, Error> CreateParent(
         Name name,
@@ -146,6 +149,8 @@ public sealed class Department : SharedService.SharedKernel.Entity<DepartmentId>
 
         _departmentLocations.Add(DepartmentLocation.Create(Id, LocationId.Create(locationId)).Value);
 
+        UpdatedAt = DateTime.UtcNow;
+
         return UnitResult.Success<Error>();
     }
 
@@ -156,6 +161,8 @@ public sealed class Department : SharedService.SharedKernel.Entity<DepartmentId>
             .ToList();
 
         _departmentLocations = departmentLocations;
+
+        UpdatedAt = DateTime.UtcNow;
 
         return UnitResult.Success<Error>();
     }
@@ -168,6 +175,8 @@ public sealed class Department : SharedService.SharedKernel.Entity<DepartmentId>
             return GeneralErrors.NotFound(locationId);
 
         _departmentLocations.RemoveAll(x => x.LocationId.Value == locationId);
+
+        UpdatedAt = DateTime.UtcNow;
 
         return UnitResult.Success<Error>();
     }
@@ -184,6 +193,8 @@ public sealed class Department : SharedService.SharedKernel.Entity<DepartmentId>
             return UnitResult.Success<Error>();
         }
 
+        UpdatedAt = DateTime.UtcNow;
+
         return GeneralErrors.AlreadyExists(nameof(Position), nameof(positionId), positionId.ToString());
     }
 
@@ -196,6 +207,8 @@ public sealed class Department : SharedService.SharedKernel.Entity<DepartmentId>
 
         _departmentPositions.RemoveAll(x => x.PositionId.Value == positionId);
 
+        UpdatedAt = DateTime.UtcNow;
+
         return UnitResult.Success<Error>();
     }
 
@@ -203,6 +216,25 @@ public sealed class Department : SharedService.SharedKernel.Entity<DepartmentId>
     {
         Name = name;
         Slug = slug;
+
+        UpdatedAt = DateTime.UtcNow;
+
+        return UnitResult.Success<Error>();
+    }
+
+    public UnitResult<Error> SoftDelete()
+    {
+        _isActive = false;
+
+        DeletedAt = DateTime.UtcNow;
+
+        if (Children.Count > 0)
+        {
+            foreach (var child in Children)
+            {
+                child.SoftDelete();
+            }
+        }
 
         return UnitResult.Success<Error>();
     }

@@ -1,7 +1,7 @@
 ﻿using DirectoryService.Application.Features.Locations.Delete;
 using DirectoryService.Domain.Identifiers;
-using Microsoft.EntityFrameworkCore;
 using DirectoryService.Infrastructure.Database;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DirectoryService.IntegrationTests.Locations;
@@ -22,11 +22,15 @@ public class DeleteLocationTests : DirectoryServiceBaseTests
 
         await using var scope = Services.CreateAsyncScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        var location = await dbContext.Locations.FirstOrDefaultAsync(item => item.Id == locationId);
+        var location = await dbContext.Locations
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(item => item.Id == locationId);
 
         Assert.True(result.IsSuccess);
         Assert.Equal(locationId.Value, result.Value);
-        Assert.Null(location);
+        Assert.NotNull(location);
+        Assert.False(location.IsActive);
+        Assert.NotNull(location.DeletedAt);
     }
 
     [Fact]

@@ -27,6 +27,4 @@ public interface IDepartmentsRepository
         CancellationToken cancellationToken);
 
     Task<UnitResult<Error>> LockDescendants(string rootPath, CancellationToken cancellationToken);
-
-    Task<UnitResult<Error>> Delete(DepartmentId id, CancellationToken cancellationToken);
 }

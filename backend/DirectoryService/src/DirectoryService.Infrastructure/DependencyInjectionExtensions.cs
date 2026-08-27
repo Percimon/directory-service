@@ -1,5 +1,6 @@
 ﻿using DirectoryService.Application.Abstractions;
 using DirectoryService.Application.Database;
+using DirectoryService.Infrastructure.BackgroundServices;
 using DirectoryService.Infrastructure.Database;
 using DirectoryService.Infrastructure.Repositories;
 using Microsoft.Extensions.Configuration;
@@ -18,6 +19,10 @@ public static class DependencyInjectionExtensions
 
         services.AddScoped<IReadDbContext, AppDbContext>(_ =>
             new AppDbContext(configuration.GetConnectionString("DirectoryServiceDb")!));
+
+        services.Configure<SoftDeleteCleanerOptions>(configuration.GetSection("SoftDeleteCleanerOptions"));
+
+        services.AddHostedService<SoftDeleteCleanerBackgroundService>();
 
         services.AddScoped<ISqlConnectionFactory, SqlConnectionFactory>();
 
