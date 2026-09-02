@@ -49,6 +49,7 @@ public sealed class SearchDepartmentsTreeHandler
             """
             SELECT
                 department.id AS Id,
+                department.fk_parent_id AS ParentId,
                 department.name AS Name,
                 department.slug AS Slug,
                 department.path::text AS Path,

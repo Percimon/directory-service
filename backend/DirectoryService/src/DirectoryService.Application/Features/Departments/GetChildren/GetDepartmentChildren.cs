@@ -36,6 +36,7 @@ public sealed class GetDepartmentChildrenHandler
             .OrderBy(department => department.Name.Value)
             .Select(department => new DepartmentTreeDto(
                 department.Id.Value,
+                department.Parent!.Id.Value,
                 department.Name.Value,
                 department.Slug.Value,
                 department.Path.Value,

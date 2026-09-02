@@ -28,6 +28,7 @@ public sealed class GetDepartmentsTreeHandler
             .OrderBy(department => department.Name.Value)
             .Select(department => new DepartmentTreeDto(
                 department.Id.Value,
+                null,
                 department.Name.Value,
                 department.Slug.Value,
                 department.Path.Value,
