@@ -9,8 +9,12 @@ using DirectoryService.Application.Features.Departments.AddPosition;
 using DirectoryService.Application.Features.Departments.Create;
 using DirectoryService.Application.Features.Departments.Delete;
 using DirectoryService.Application.Features.Departments.Get;
+using DirectoryService.Application.Features.Departments.GetAncestors;
 using DirectoryService.Application.Features.Departments.GetById;
+using DirectoryService.Application.Features.Departments.GetChildren;
+using DirectoryService.Application.Features.Departments.GetTree;
 using DirectoryService.Application.Features.Departments.RemovePosition;
+using DirectoryService.Application.Features.Departments.SearchTree;
 using DirectoryService.Contracts.Dtos;
 using DirectoryService.Contracts.Requests;
 using DirectoryService.Contracts.Responses;
@@ -38,6 +42,41 @@ public class DepartmentsController : Controller
             request.Search);
 
         return await handler.Handle(query, cancellationToken);
+    }
+
+    [HttpGet("tree")]
+    public async Task<EndpointResult<IReadOnlyList<DepartmentTreeDto>>> GetTree(
+        [FromServices] GetDepartmentsTreeHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        return await handler.Handle(new GetDepartmentsTreeQuery(), cancellationToken);
+    }
+
+    [HttpGet("tree/search")]
+    public async Task<EndpointResult<IReadOnlyList<DepartmentTreeDto>>> SearchTree(
+        [FromQuery(Name = "q")] string query,
+        [FromServices] SearchDepartmentsTreeHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        return await handler.Handle(new SearchDepartmentsTreeQuery(query), cancellationToken);
+    }
+
+    [HttpGet("{id}/children")]
+    public async Task<EndpointResult<IReadOnlyList<DepartmentTreeDto>>> GetChildren(
+        [FromRoute] Guid id,
+        [FromServices] GetDepartmentChildrenHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        return await handler.Handle(new GetDepartmentChildrenQuery(id), cancellationToken);
+    }
+
+    [HttpGet("{id}/ancestors")]
+    public async Task<EndpointResult<IReadOnlyList<DepartmentTreeDto>>> GetAncestors(
+        [FromRoute] Guid id,
+        [FromServices] GetDepartmentAncestorsHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        return await handler.Handle(new GetDepartmentAncestorsQuery(id), cancellationToken);
     }
 
     [HttpGet("{id}")]

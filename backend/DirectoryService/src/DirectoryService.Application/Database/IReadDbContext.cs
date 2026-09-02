@@ -8,4 +8,5 @@ public interface IReadDbContext
     IQueryable<Location> LocationsRead { get; }
 
     IQueryable<Department> DepartmentsRead { get; }
+
 }
