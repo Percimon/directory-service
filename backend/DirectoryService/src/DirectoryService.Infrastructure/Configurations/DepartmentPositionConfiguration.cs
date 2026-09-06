@@ -33,6 +33,12 @@ public class DepartmentPositionConfiguration : IEntityTypeConfiguration<Departme
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder.HasIndex(x => x.DepartmentId)
+            .HasDatabaseName("IX_department_positions_department_id");
+
+        builder.HasIndex(x => x.PositionId)
+            .HasDatabaseName("IX_department_positions_position_id");
+
         builder.HasQueryFilter(x => x.Department.IsActive);
     }
 }

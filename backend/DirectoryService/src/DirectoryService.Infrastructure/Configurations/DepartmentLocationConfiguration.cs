@@ -40,6 +40,12 @@ public class DepartmentLocationConfiguration : IEntityTypeConfiguration<Departme
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder.HasIndex(x => x.DepartmentId)
+            .HasDatabaseName("IX_department_locations_department_id");
+
+        builder.HasIndex(x => x.LocationId)
+            .HasDatabaseName("IX_department_locations_location_id");
+
         builder.HasQueryFilter(x => x.Department.IsActive);
 
     }
