@@ -79,6 +79,7 @@ public class GetDepartmentsTests : DirectoryServiceBaseTests
         Assert.Equal(2, items.Count);
         var rootItem = Assert.Single(items, item => item.Id == rootId.Value);
         Assert.Equal("Root", rootItem.Name);
+        Assert.Null(rootItem.ParentId);
         Assert.Equal("root", rootItem.Slug);
         Assert.Equal("root", rootItem.Path);
         Assert.Equal(0, rootItem.Depth);
@@ -126,6 +127,7 @@ public class GetDepartmentsTests : DirectoryServiceBaseTests
         Assert.True(result.IsSuccess, result.IsFailure ? result.Error.ToString() : string.Empty);
         var item = Assert.Single(result.Value);
         Assert.Equal(childId.Value, item.Id);
+        Assert.Equal(rootId.Value, item.ParentId);
         Assert.Equal(1, item.Depth);
         Assert.True(item.HasChildren);
         Assert.Equal(1, item.ChildrenCount);
@@ -197,6 +199,8 @@ public class GetDepartmentsTests : DirectoryServiceBaseTests
 
         Assert.True(result.IsSuccess, result.IsFailure ? result.Error.ToString() : string.Empty);
         Assert.Equal([rootId.Value, parentId.Value], result.Value.Select(item => item.Id));
+        Assert.Null(result.Value[0].ParentId);
+        Assert.Equal(rootId.Value, result.Value[1].ParentId);
         Assert.DoesNotContain(result.Value, item => item.Id == departmentId.Value);
     }
 
@@ -244,6 +248,7 @@ public class GetDepartmentsTests : DirectoryServiceBaseTests
         Assert.True(result.IsSuccess, result.IsFailure ? result.Error.ToString() : string.Empty);
         var item = Assert.Single(result.Value);
         Assert.Equal(rootId.Value, item.Id);
+        Assert.Null(item.ParentId);
         Assert.Equal("accounting", item.Path);
         Assert.False(item.HasChildren);
     }

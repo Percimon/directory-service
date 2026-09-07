@@ -35,6 +35,7 @@ public sealed class GetDepartmentAncestorsHandler
             """
             SELECT
                 ancestor.id AS Id,
+                ancestor.fk_parent_id AS ParentId,
                 ancestor.name AS Name,
                 ancestor.slug AS Slug,
                 ancestor.path::text AS Path,
