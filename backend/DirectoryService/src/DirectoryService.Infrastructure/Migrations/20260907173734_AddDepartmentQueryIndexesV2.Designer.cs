@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DirectoryService.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260906211430_AddDepartmentQueryIndexes")]
-    partial class AddDepartmentQueryIndexesExtensions
+    [Migration("20260907173734_AddDepartmentQueryIndexesV2")]
+    partial class AddDepartmentQueryIndexesV2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

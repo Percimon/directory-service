@@ -194,7 +194,9 @@ public class DepartmentsRepository : IDepartmentsRepository
         {
             var department = await _dbContext.Departments
             .FromSql($"SELECT * FROM departments WHERE id = {id.Value} AND is_active = true FOR UPDATE NOWAIT")
+            .AsNoTracking()
             .Include(d => d.Children)
+            .Include(d => d.Parent)
             .FirstOrDefaultAsync(cancellationToken);
 
             if (department is null)
@@ -229,8 +231,15 @@ public class DepartmentsRepository : IDepartmentsRepository
             """
             UPDATE departments
             SET 
-                path = (@newParentPath::ltree || subpath(path, nlevel(@rootPath::ltree) - 1)), 
-                depth = nlevel(@newParentPath::ltree || subpath(path, nlevel(@rootPath::ltree) - 1)) - 1
+                path = CASE
+                    WHEN @newParentPath = '' THEN subpath(path, nlevel(@rootPath::ltree) - 1)
+                    ELSE @newParentPath::ltree || subpath(path, nlevel(@rootPath::ltree) - 1)
+                END,
+                depth = CASE
+                    WHEN @newParentPath = '' THEN nlevel(subpath(path, nlevel(@rootPath::ltree) - 1)) - 1
+                    ELSE nlevel(@newParentPath::ltree || subpath(path, nlevel(@rootPath::ltree) - 1)) - 1
+                END,
+                updated_at = NOW()
             WHERE path <@ @rootPath::ltree;
 
             UPDATE departments

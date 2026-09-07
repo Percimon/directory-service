@@ -189,7 +189,7 @@ public class DepartmentsController : Controller
     }
 
     [HttpPut("{id}/parent")]
-    public async Task<EndpointResult<Guid>> ChangeParent(
+    public async Task<EndpointResult<ChangeParentResponseDto>> ChangeParent(
         [FromRoute] Guid id,
         [FromServices] ChangeParentHandler handler,
         [FromBody] ChangeParentRequest request,
