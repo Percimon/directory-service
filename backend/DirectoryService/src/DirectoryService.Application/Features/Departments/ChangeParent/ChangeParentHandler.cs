@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Application.Database;
+using DirectoryService.Contracts.Dtos;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
@@ -9,7 +10,7 @@ using SharedService.SharedKernel;
 
 namespace DirectoryService.Application.Departments.ChangeParent;
 
-public class ChangeParentHandler : ICommandHandler<Guid, ChangeParentCommand>
+public class ChangeParentHandler : ICommandHandler<ChangeParentResponseDto, ChangeParentCommand>
 {
     private readonly IDepartmentsRepository _departmentsRepository;
     private readonly ITransactionManager _transactionManager;
@@ -28,7 +29,7 @@ public class ChangeParentHandler : ICommandHandler<Guid, ChangeParentCommand>
         _logger = logger;
     }
 
-    public async Task<Result<Guid, Error>> Handle(
+    public async Task<Result<ChangeParentResponseDto, Error>> Handle(
         ChangeParentCommand command,
         CancellationToken cancellationToken)
     {
@@ -55,11 +56,11 @@ public class ChangeParentHandler : ICommandHandler<Guid, ChangeParentCommand>
             return queryResult.Error;
         }
 
-        string oldPath = queryResult.Value.Path.Value;
+        string currentPath = queryResult.Value.Path.Value;
 
         string newPath = string.Empty;
 
-        var lockDescendantsResult = await _departmentsRepository.LockDescendants(oldPath, cancellationToken);
+        var lockDescendantsResult = await _departmentsRepository.LockDescendants(currentPath, cancellationToken);
 
         if (lockDescendantsResult.IsFailure)
         {
@@ -79,20 +80,32 @@ public class ChangeParentHandler : ICommandHandler<Guid, ChangeParentCommand>
                 return newParent.Error;
             }
 
-            string newParentPath = newParent.Value.Path.Value;
-
-            if (newParentPath == oldPath || newParentPath.StartsWith($"{oldPath}."))
+            if (queryResult.Value.Parent?.Id == command.NewParentId)
             {
                 transactionScope.Rollback();
 
-                return GeneralErrors.Failure("New parent can't be child of current parent");
+                return new ChangeParentResponseDto(
+                    queryResult.Value.Id.Value,
+                    queryResult.Value.Parent?.Id.Value,
+                    queryResult.Value.Path.Value,
+                    queryResult.Value.Depth.Value,
+                    queryResult.Value.UpdatedAt);
+            }
+
+            string newParentPath = newParent.Value.Path.Value;
+
+            if (newParentPath == currentPath || newParentPath.StartsWith($"{currentPath}.", StringComparison.Ordinal))
+            {
+                transactionScope.Rollback();
+
+                return Error.Failure("department.move.cycle", "New parent can't be child of current parent");
             }
 
             newPath = newParentPath;
         }
 
         var updateResult = await _departmentsRepository.ChangeParent(
-            oldPath,
+            currentPath,
             newPath,
             command.DepartmentId,
             command.NewParentId,
@@ -103,6 +116,17 @@ public class ChangeParentHandler : ICommandHandler<Guid, ChangeParentCommand>
             transactionScope.Rollback();
 
             return updateResult.Error;
+        }
+
+        var updatedDepartmentResult = await _departmentsRepository.GetByIdWithLock(
+            command.DepartmentId,
+            cancellationToken);
+
+        if (updatedDepartmentResult.IsFailure)
+        {
+            transactionScope.Rollback();
+
+            return updatedDepartmentResult.Error;
         }
 
         var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
@@ -125,6 +149,11 @@ public class ChangeParentHandler : ICommandHandler<Guid, ChangeParentCommand>
 
         _logger.LogInformation("Родитель  отдела с Id={id} обновлен, включая его дочерние сущности", command.DepartmentId);
 
-        return command.DepartmentId;
+        return new ChangeParentResponseDto(
+            updatedDepartmentResult.Value.Id.Value,
+            updatedDepartmentResult.Value.Parent?.Id.Value,
+            updatedDepartmentResult.Value.Path.Value,
+            updatedDepartmentResult.Value.Depth.Value,
+            updatedDepartmentResult.Value.UpdatedAt);
     }
 }

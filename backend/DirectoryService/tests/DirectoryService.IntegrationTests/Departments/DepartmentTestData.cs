@@ -40,6 +40,20 @@ internal static class DepartmentTestData
             .SingleAsync(item => item.Id == id);
     }
 
+    public static async Task ExecuteSqlAsync(IServiceProvider services, string sql)
+    {
+        await using var scope = services.CreateAsyncScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        await dbContext.Database.ExecuteSqlRawAsync(sql);
+    }
+
+    public static async Task<TResult> ScalarAsync<TResult>(IServiceProvider services, string sql)
+    {
+        await using var scope = services.CreateAsyncScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        return await dbContext.Database.SqlQueryRaw<TResult>(sql).SingleAsync();
+    }
+
     public static Location Location(LocationId id, string name = "Location") => new(
         id,
         Name.Create(name).Value,

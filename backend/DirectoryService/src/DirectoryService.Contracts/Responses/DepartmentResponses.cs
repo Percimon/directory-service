@@ -15,3 +15,10 @@ public record DepartmentListItemDto(
     string Slug,
     string Path,
     DateTime CreatedAt);
+
+public record ChangeParentResponseDto(
+    Guid Id,
+    Guid? ParentId,
+    string Path,
+    int Depth,
+    DateTime UpdatedAt);
