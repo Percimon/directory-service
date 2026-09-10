@@ -12,8 +12,5 @@ public class ChangeParentCommandValidator : AbstractValidator<ChangeParentComman
             .NotEmpty()
             .WithError(Error.Validation("validation", "DepartmentId is required"));
 
-        RuleFor(c => c)
-            .Must(command => command.DepartmentId != command.NewParentId)
-            .WithError(Error.Conflict("department.move.parent_is_self", "Department can't be parent of itself"));
     }
 }

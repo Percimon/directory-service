@@ -1,14 +1,25 @@
-﻿using DirectoryService.Application.Departments.ChangeParent;
+﻿using System.Net;
+using System.Net.Http.Json;
+using DirectoryService.Application.Departments.ChangeParent;
 using DirectoryService.Contracts.Dtos;
 using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.Identifiers;
 using DirectoryService.Domain.ValueObjects;
+using DirectoryService.Infrastructure.Database;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Npgsql;
 
 namespace DirectoryService.IntegrationTests.Departments;
 
 public class ChangeParentTests : DirectoryServiceBaseTests
 {
-    public ChangeParentTests(DirectoryTestWebFactory factory) : base(factory) { }
+    private readonly DirectoryTestWebFactory _factory;
+
+    public ChangeParentTests(DirectoryTestWebFactory factory) : base(factory)
+    {
+        _factory = factory;
+    }
 
     [Fact]
     public async Task ChangeParent_should_update_department_parent_and_path()
@@ -147,6 +158,13 @@ public class ChangeParentTests : DirectoryServiceBaseTests
     public async Task ChangeParent_should_reject_self_parent()
     {
         var departmentId = DepartmentId.New();
+        var locationId = LocationId.New();
+        await DepartmentTestData.SeedAsync(Services, dbContext =>
+        {
+            dbContext.Locations.Add(DepartmentTestData.Location(locationId));
+            dbContext.Departments.Add(DepartmentTestData.Department(departmentId, locationId));
+        });
+
         var result = await DepartmentTestData.ExecuteAsync<ChangeParentHandler, ChangeParentResponseDto>(Services, sut => sut.Handle(
             new ChangeParentCommand(departmentId.Value, departmentId.Value), CancellationToken.None));
 
@@ -282,6 +300,59 @@ public class ChangeParentTests : DirectoryServiceBaseTests
                 DROP FUNCTION IF EXISTS {auditFunction}();
                 DROP TABLE IF EXISTS {auditTable};
                 """);
+        }
+    }
+
+    [Fact]
+    public async Task ChangeParent_should_return_conflict_for_parallel_requests_when_row_is_locked()
+    {
+        var departmentId = DepartmentId.New();
+        var newParentId = DepartmentId.New();
+        var locationId = LocationId.New();
+        await DepartmentTestData.SeedAsync(Services, dbContext =>
+        {
+            dbContext.Locations.Add(DepartmentTestData.Location(locationId));
+            dbContext.Departments.AddRange(
+                DepartmentTestData.Department(departmentId, locationId, "Department", "department"),
+                DepartmentTestData.Department(newParentId, locationId, "New parent", "newparent"));
+        });
+
+        string connectionString;
+        await using (var scope = Services.CreateAsyncScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            connectionString = dbContext.Database.GetConnectionString()!;
+        }
+
+        await using var lockConnection = new NpgsqlConnection(connectionString);
+        await lockConnection.OpenAsync();
+        await using var lockTransaction = await lockConnection.BeginTransactionAsync();
+        await using (var lockCommand = new NpgsqlCommand(
+            "SELECT id FROM departments WHERE id = @departmentId FOR UPDATE",
+            lockConnection,
+            lockTransaction))
+        {
+            lockCommand.Parameters.AddWithValue("departmentId", departmentId.Value);
+            await lockCommand.ExecuteScalarAsync();
+        }
+
+        using var client = _factory.CreateClient();
+        var requests = Enumerable.Range(0, 2)
+            .Select(_ => client.PutAsJsonAsync(
+                $"/api/departments/{departmentId.Value}/parent",
+                new { NewParentId = newParentId.Value }))
+            .ToArray();
+
+        var responses = await Task.WhenAll(requests);
+
+        foreach (var response in responses)
+        {
+            var body = await response.Content.ReadAsStringAsync();
+
+            Assert.True(
+                response.StatusCode == HttpStatusCode.Conflict,
+                $"Expected 409, got {(int)response.StatusCode}: {body}");
+            Assert.Contains("department.move.conflict", body);
         }
     }
 
