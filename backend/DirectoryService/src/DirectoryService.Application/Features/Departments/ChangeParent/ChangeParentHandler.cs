@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Application.Database;
 using DirectoryService.Contracts.Dtos;
+using DirectoryService.Domain.Entities;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
@@ -47,16 +48,41 @@ public class ChangeParentHandler : ICommandHandler<ChangeParentResponseDto, Chan
 
         using var transactionScope = transactionScopeResult.Value;
 
-        var queryResult = await _departmentsRepository.GetByIdWithLock(command.DepartmentId, cancellationToken);
+        Department? department = null;
+        Department? newParent = null;
 
-        if (queryResult.IsFailure)
+        var idsToLock = new[]
+            {
+                command.DepartmentId,
+                command.NewParentId,
+            }
+            .Where(id => id.HasValue)
+            .Select(id => id!.Value)
+            .Distinct()
+            .OrderBy(id => id);
+
+        foreach (var id in idsToLock)
         {
-            transactionScope.Rollback();
+            var queryResult = await _departmentsRepository.GetByIdWithLock(id, cancellationToken);
 
-            return queryResult.Error;
+            if (queryResult.IsFailure)
+            {
+                transactionScope.Rollback();
+
+                return queryResult.Error;
+            }
+
+            if (id == command.DepartmentId)
+            {
+                department = queryResult.Value;
+            }
+            else
+            {
+                newParent = queryResult.Value;
+            }
         }
 
-        string currentPath = queryResult.Value.Path.Value;
+        string currentPath = department!.Path.Value;
 
         string newPath = string.Empty;
 
@@ -69,30 +95,28 @@ public class ChangeParentHandler : ICommandHandler<ChangeParentResponseDto, Chan
             return lockDescendantsResult.Error;
         }
 
+        if (command.DepartmentId == command.NewParentId)
+        {
+            transactionScope.Rollback();
+
+            return Error.Conflict("department.move.parent_is_self", "Department can't be parent of itself");
+        }
+
         if (command.NewParentId is not null)
         {
-            var newParent = await _departmentsRepository.GetByIdWithLock(command.NewParentId, cancellationToken);
-
-            if (newParent.IsFailure)
-            {
-                transactionScope.Rollback();
-
-                return newParent.Error;
-            }
-
-            if (queryResult.Value.Parent?.Id == command.NewParentId)
+            if (department.Parent?.Id == command.NewParentId)
             {
                 transactionScope.Rollback();
 
                 return new ChangeParentResponseDto(
-                    queryResult.Value.Id.Value,
-                    queryResult.Value.Parent?.Id.Value,
-                    queryResult.Value.Path.Value,
-                    queryResult.Value.Depth.Value,
-                    queryResult.Value.UpdatedAt);
+                    department.Id.Value,
+                    department.Parent?.Id.Value,
+                    department.Path.Value,
+                    department.Depth.Value,
+                    department.UpdatedAt);
             }
 
-            string newParentPath = newParent.Value.Path.Value;
+            string newParentPath = newParent!.Path.Value;
 
             if (newParentPath == currentPath || newParentPath.StartsWith($"{currentPath}.", StringComparison.Ordinal))
             {

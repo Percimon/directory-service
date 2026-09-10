@@ -47,11 +47,25 @@ public class DepartmentsRepository : IDepartmentsRepository
         {
             _logger.LogError(pEx, "Ошибка работы с БД");
 
+            if (IsMoveConcurrencyConflict(pEx))
+            {
+                return Error.Conflict(
+                    "department.move.conflict",
+                    "Department tree was changed concurrently. Refresh the tree and retry the operation.");
+            }
+
             return Error.Failure("department.get", pEx.Message);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Ошибка");
+
+            if (IsMoveConcurrencyConflict(ex))
+            {
+                return Error.Conflict(
+                    "department.move.conflict",
+                    "Department tree was changed concurrently. Refresh the tree and retry the operation.");
+            }
 
             return Error.Failure("department.get", ex.Message);
         }
@@ -210,11 +224,25 @@ public class DepartmentsRepository : IDepartmentsRepository
         {
             _logger.LogError(pEx, "Ошибка работы с БД");
 
+            if (IsMoveConcurrencyConflict(pEx))
+            {
+                return Error.Conflict(
+                    "department.move.conflict",
+                    "Department tree was changed concurrently. Refresh the tree and retry the operation.");
+            }
+
             return Error.Failure("department.get", pEx.Message);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Ошибка");
+
+            if (IsMoveConcurrencyConflict(ex))
+            {
+                return Error.Conflict(
+                    "department.move.conflict",
+                    "Department tree was changed concurrently. Refresh the tree and retry the operation.");
+            }
 
             return Error.Failure("department.get", ex.Message);
         }
@@ -263,11 +291,25 @@ public class DepartmentsRepository : IDepartmentsRepository
         {
             _logger.LogError(pEx, "Ошибка работы с БД");
 
+            if (IsMoveConcurrencyConflict(pEx))
+            {
+                return Error.Conflict(
+                    "department.move.conflict",
+                    "Department tree was changed concurrently. Refresh the tree and retry the operation.");
+            }
+
             return Error.Failure("department.change_parent", pEx.Message);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Ошибка");
+
+            if (IsMoveConcurrencyConflict(ex))
+            {
+                return Error.Conflict(
+                    "department.move.conflict",
+                    "Department tree was changed concurrently. Refresh the tree and retry the operation.");
+            }
 
             return Error.Failure("department.change_parent", ex.Message);
         }
@@ -295,14 +337,42 @@ public class DepartmentsRepository : IDepartmentsRepository
         {
             _logger.LogError(pEx, "Ошибка работы с БД");
 
+            if (IsMoveConcurrencyConflict(pEx))
+            {
+                return Error.Conflict(
+                    "department.move.conflict",
+                    "Department tree was changed concurrently. Refresh the tree and retry the operation.");
+            }
+
             return Error.Failure("department.lock_descendants", pEx.Message);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Ошибка");
 
+            if (IsMoveConcurrencyConflict(ex))
+            {
+                return Error.Conflict(
+                    "department.move.conflict",
+                    "Department tree was changed concurrently. Refresh the tree and retry the operation.");
+            }
+
             return Error.Failure("department.lock_descendants", ex.Message);
         }
+    }
+
+    private static bool IsMoveConcurrencyConflict(Exception exception)
+    {
+        for (var current = exception; current is not null; current = current.InnerException)
+        {
+            if (current is PostgresException postgresException &&
+                postgresException.SqlState is PostgresErrorCodes.DeadlockDetected or PostgresErrorCodes.LockNotAvailable)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public async Task<Result<List<DepartmenDto>, Error>> GetHierarchyLtree(string rootPath)

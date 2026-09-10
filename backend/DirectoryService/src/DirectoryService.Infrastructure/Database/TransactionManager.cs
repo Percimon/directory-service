@@ -1,5 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Application.Database;
+using System.Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 using SharedService.SharedKernel;
@@ -26,7 +28,10 @@ public class TransactionManager : ITransactionManager
     {
         try
         {
-            var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+            // Блокировки строк защищают инварианты перемещения; Serializable добавил бы лишние ошибки сериализации.
+            var transaction = await _dbContext.Database.BeginTransactionAsync(
+                IsolationLevel.ReadCommitted,
+                cancellationToken);
 
             var transactionScopeLogger = _loggerFactory.CreateLogger<TransactionScope>();
 
