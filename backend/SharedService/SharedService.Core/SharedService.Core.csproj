@@ -2,7 +2,7 @@
   <PropertyGroup>
     <!-- Package Metadata Properties -->
     <PackageId>Percimon.Core</PackageId>
-    <Version>0.0.2</Version>
+    <Version>0.0.3</Version>
     <Authors>Percimon</Authors>
     <Description>Core</Description>
     <RepositoryUrl>https://github.com/Percimon/directory-service</RepositoryUrl>

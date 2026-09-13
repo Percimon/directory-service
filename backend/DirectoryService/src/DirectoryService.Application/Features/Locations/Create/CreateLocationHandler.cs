@@ -1,5 +1,4 @@
 ﻿using CSharpFunctionalExtensions;
-using DirectoryService.Application.Abstractions;
 using DirectoryService.Application.Database;
 using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.Identifiers;
@@ -8,6 +7,7 @@ using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
 using SharedService.Core.Abstractions;
+using SharedService.Core.Database;
 using SharedService.Core.Validation;
 using SharedService.SharedKernel;
 using TimeZone = DirectoryService.Domain.ValueObjects.TimeZone;

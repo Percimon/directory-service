@@ -3,7 +3,6 @@ using System.Text.Json;
 using CSharpFunctionalExtensions;
 using Dapper;
 using DirectoryService.Application.Abstractions;
-using DirectoryService.Application.Database;
 using DirectoryService.Contracts.Responses;
 using FluentValidation;
 using Microsoft.Extensions.Logging;

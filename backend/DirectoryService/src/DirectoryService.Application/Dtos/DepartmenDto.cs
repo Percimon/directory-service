@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace DirectoryService.Application.Dtos;
+﻿namespace DirectoryService.Application.Dtos;
 
 public class DepartmenDto
 {

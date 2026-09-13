@@ -1,5 +1,4 @@
-﻿using DirectoryService.Contracts.Dtos;
-using DirectoryService.Domain.Entities;
+﻿using DirectoryService.Domain.Entities;
 
 namespace DirectoryService.Application.Database;
 

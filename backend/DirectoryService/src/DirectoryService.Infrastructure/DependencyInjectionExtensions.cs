@@ -5,6 +5,7 @@ using DirectoryService.Infrastructure.Database;
 using DirectoryService.Infrastructure.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SharedService.Core.Database;
 
 namespace DirectoryService.Infrastructure;
 

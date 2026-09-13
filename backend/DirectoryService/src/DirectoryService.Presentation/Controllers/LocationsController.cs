@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-using CSharpFunctionalExtensions;
-using DirectoryService.Application.Features.Locations.Delete;
+﻿using DirectoryService.Application.Features.Locations.Delete;
 using DirectoryService.Application.Features.Locations.Get;
 using DirectoryService.Application.Features.Locations.GetById;
 using DirectoryService.Application.Features.Locations.GetTop;
@@ -9,7 +7,6 @@ using DirectoryService.Contracts.Requests;
 using DirectoryService.Contracts.Responses;
 using Microsoft.AspNetCore.Mvc;
 using SharedService.Framework.EndpointResults;
-using SharedService.SharedKernel;
 
 namespace DirectoryService.Presentation.Controllers;
 
