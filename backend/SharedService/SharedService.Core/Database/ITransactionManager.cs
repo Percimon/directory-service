@@ -1,7 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using SharedService.SharedKernel;
 
-namespace DirectoryService.Application.Database;
+namespace SharedService.Core.Database;
 
 public interface ITransactionManager
 {

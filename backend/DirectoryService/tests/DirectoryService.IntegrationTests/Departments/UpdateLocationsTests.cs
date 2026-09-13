@@ -1,7 +1,5 @@
 ﻿using DirectoryService.Application.Departments.UpdateLocations;
 using DirectoryService.Domain.Identifiers;
-using DirectoryService.Infrastructure.Database;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace DirectoryService.IntegrationTests.Departments;
 

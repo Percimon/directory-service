@@ -5,6 +5,7 @@ using DirectoryService.Domain.ValueObjects;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using SharedService.Core.Abstractions;
+using SharedService.Core.Database;
 using SharedService.Core.Validation;
 using SharedService.SharedKernel;
 

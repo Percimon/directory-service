@@ -1,5 +1,4 @@
 ﻿using DirectoryService.Domain.Identifiers;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace DirectoryService.IntegrationTests.Locations;
 

@@ -1,13 +1,10 @@
-﻿using DirectoryService.Application.Departments.Create;
-using DirectoryService.Application.Features.Departments.AddLocation;
+﻿using DirectoryService.Application.Features.Departments.AddLocation;
 using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.Identifiers;
 using DirectoryService.Domain.ValueObjects;
 using DirectoryService.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using SharedService.SharedKernel;
-using Path = DirectoryService.Domain.ValueObjects.Path;
 using TimeZone = DirectoryService.Domain.ValueObjects.TimeZone;
 
 namespace DirectoryService.IntegrationTests.Departments;

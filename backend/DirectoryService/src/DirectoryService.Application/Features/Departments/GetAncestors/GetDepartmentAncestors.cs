@@ -1,7 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using Dapper;
 using DirectoryService.Application.Abstractions;
-using DirectoryService.Application.Database;
 using DirectoryService.Contracts.Dtos;
 using SharedService.Core.Abstractions;
 using SharedService.SharedKernel;
