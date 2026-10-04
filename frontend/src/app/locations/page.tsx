@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { LocationsList } from "./locations-list";
 
 export const metadata: Metadata = {
   title: "Локации",
@@ -6,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function LocationsPage() {
-  return <div className="font-semibold">Локации</div>;
+  return <LocationsList />;
 }

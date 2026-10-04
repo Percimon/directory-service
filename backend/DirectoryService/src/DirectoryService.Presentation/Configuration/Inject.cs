@@ -9,6 +9,8 @@ public static class Inject
 {
     public static IServiceCollection AddConfiguration(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddCors();
+
         services.AddControllers();
 
         services.AddHealthChecks();
