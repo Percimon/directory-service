@@ -1,9 +1,9 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import useTodos from "@/hooks/use-todos";
+import { Button } from "@/shared/components/ui/button";
+import { Checkbox } from "@/shared/components/ui/checkbox";
+import { Input } from "@/shared/components/ui/input";
+import useTodos from "@/shared/hooks/use-todos";
 import { useState } from "react";
 
 export default function PlaygroundPage() {
