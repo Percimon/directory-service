@@ -67,7 +67,7 @@ public sealed class GetLocationsQueryValidator : AbstractValidator<GetLocationsQ
     }
 }
 
-public sealed class GetLocationsHandler : IQueryHandler<PagedList<LocationListItemDto>, GetLocationsQuery>
+public sealed class GetLocationsHandler : IQueryHandler<PaginatedLocationsResponse, GetLocationsQuery>
 {
     private readonly IValidator<GetLocationsQuery> _validator;
     private readonly ISqlConnectionFactory _sqlConnectionFactory;
@@ -83,7 +83,7 @@ public sealed class GetLocationsHandler : IQueryHandler<PagedList<LocationListIt
         _logger = logger;
     }
 
-    public async Task<Result<PagedList<LocationListItemDto>, Error>> Handle(
+    public async Task<Result<PaginatedLocationsResponse, Error>> Handle(
         GetLocationsQuery query,
         CancellationToken cancellationToken)
     {
@@ -175,13 +175,12 @@ public sealed class GetLocationsHandler : IQueryHandler<PagedList<LocationListIt
                     dataSelector.Parameters)).ToList();
             }
 
-            return new PagedList<LocationListItemDto>
-            {
-                Items = items,
-                TotalCount = totalCount,
-                Page = query.Page,
-                PageSize = query.PageSize,
-            };
+            return new PaginatedLocationsResponse(
+                items,
+                totalCount,
+                query.Page,
+                query.PageSize,
+                (int)Math.Ceiling((double)totalCount / query.PageSize));
         }
         catch (Exception ex)
         {

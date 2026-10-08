@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { DepartmentsList } from "./departments-list";
 
 export const metadata: Metadata = {
   title: "Отделы",
@@ -6,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function DepartmentsPage() {
-  return <div className="font-semibold">Отделы</div>;
+  return <DepartmentsList />;
 }

@@ -19,19 +19,21 @@ public class GetLocationsTests : DirectoryServiceBaseTests
             dbContext.Locations.Add(LocationTestData.CreateLocation(secondId, "Engineering office"));
         });
 
-        var result = await LocationTestData.ExecuteAsync<GetLocationsHandler, PagedList<LocationListItemDto>>(Services, sut => sut.Handle(
+        var result = await LocationTestData.ExecuteAsync<GetLocationsHandler, PaginatedLocationsResponse>(Services, sut => sut.Handle(
             new GetLocationsQuery(1, 10, "name", "asc", 0, "Accounting"), CancellationToken.None));
 
         Assert.True(result.IsSuccess);
         var item = Assert.Single(result.Value.Items);
         Assert.Equal(firstId.Value, item.Id);
         Assert.Equal(1, result.Value.TotalCount);
+        Assert.Equal(1, result.Value.PageNumber);
+        Assert.Equal(1, result.Value.TotalPages);
     }
 
     [Fact]
     public async Task GetLocations_should_fail_when_page_is_invalid()
     {
-        var result = await LocationTestData.ExecuteAsync<GetLocationsHandler, PagedList<LocationListItemDto>>(Services, sut => sut.Handle(
+        var result = await LocationTestData.ExecuteAsync<GetLocationsHandler, PaginatedLocationsResponse>(Services, sut => sut.Handle(
             new GetLocationsQuery(0, 10, "name", "asc", 0, null), CancellationToken.None));
 
         Assert.True(result.IsFailure);

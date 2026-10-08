@@ -16,6 +16,13 @@ public record DepartmentListItemDto(
     string Path,
     DateTime CreatedAt);
 
+public record PaginatedDepartmentsResponse(
+    IReadOnlyList<DepartmentListItemDto> Items,
+    long TotalCount,
+    int PageNumber,
+    int PageSize,
+    int TotalPages);
+
 public record ChangeParentResponseDto(
     Guid Id,
     Guid? ParentId,

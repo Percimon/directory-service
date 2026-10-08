@@ -1,4 +1,5 @@
-﻿using DirectoryService.Application.Departments.ChangeParent;
+﻿using CSharpFunctionalExtensions;
+using DirectoryService.Application.Departments.ChangeParent;
 using DirectoryService.Application.Departments.Create;
 using DirectoryService.Application.Departments.RemoveLocation;
 using DirectoryService.Application.Departments.Update;
@@ -19,6 +20,7 @@ using DirectoryService.Contracts.Requests;
 using DirectoryService.Contracts.Responses;
 using Microsoft.AspNetCore.Mvc;
 using SharedService.Framework.EndpointResults;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Presentation.Controllers;
 
@@ -27,7 +29,7 @@ namespace DirectoryService.Presentation.Controllers;
 public class DepartmentsController : Controller
 {
     [HttpGet]
-    public async Task<EndpointResult<PagedList<DepartmentListItemDto>>> Get(
+    public async Task<EndpointResult<PaginatedDepartmentsResponse>> Get(
         [FromQuery] GetDepartmentsRequest request,
         [FromServices] GetDepartmentsHandler handler,
         CancellationToken cancellationToken = default)
@@ -39,7 +41,20 @@ public class DepartmentsController : Controller
             request.SortDirection,
             request.Search);
 
-        return await handler.Handle(query, cancellationToken);
+        var result = await handler.Handle(query, cancellationToken);
+        if (result.IsFailure)
+        {
+            return Result.Failure<PaginatedDepartmentsResponse, Error>(result.Error);
+        }
+
+        var page = result.Value;
+        return Result.Success<PaginatedDepartmentsResponse, Error>(
+            new PaginatedDepartmentsResponse(
+                page.Items,
+                page.TotalCount,
+                page.Page,
+                page.PageSize,
+                (int)Math.Ceiling((double)page.TotalCount / page.PageSize)));
     }
 
     [HttpGet("tree")]

@@ -1,29 +1,29 @@
 import { apiClient } from "@/shared/api/axios-instance";
 import { unwrapEnvelope } from "@/shared/api/envelope";
 import type { Envelope } from "@/shared/api/envelope";
-import type { Location } from "./types";
+import type { Department } from "./types";
 
-export type GetLocationsRequest = {
-  search?: string;
+export type GetDepartmentsRequest = {
   page: number;
   pageSize: number;
+  search?: string;
 };
 
-export type GetLocationsResponse = {
-  items: Location[];
+export type GetDepartmentsResponse = {
+  items: Department[];
   totalCount: number;
   pageNumber: number;
   pageSize: number;
   totalPages: number;
 };
 
-export const locationsApi = {
-  getLocations: async (
-    request: GetLocationsRequest,
+export const departmentsApi = {
+  getDepartments: async (
+    request: GetDepartmentsRequest,
     signal?: AbortSignal,
-  ): Promise<GetLocationsResponse> => {
-    const response = await apiClient.get<Envelope<GetLocationsResponse>>(
-      "/locations",
+  ): Promise<GetDepartmentsResponse> => {
+    const response = await apiClient.get<Envelope<GetDepartmentsResponse>>(
+      "/departments",
       {
         params: request,
         signal,
@@ -32,7 +32,7 @@ export const locationsApi = {
 
     const result = unwrapEnvelope(
       response.data,
-      "Не удалось загрузить локации",
+      "Не удалось загрузить подразделения",
     );
     if (
       !Array.isArray(result.items) ||
@@ -41,7 +41,7 @@ export const locationsApi = {
       typeof result.pageSize !== "number" ||
       typeof result.totalPages !== "number"
     ) {
-      throw new Error("Сервер вернул некорректный список локаций");
+      throw new Error("Сервер вернул некорректный список подразделений");
     }
 
     return result;

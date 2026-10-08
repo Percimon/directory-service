@@ -11,6 +11,13 @@ public record GetLocationResponse(
     DateTime CreatedAt,
     DateTime UpdatedAt);
 
+public record PaginatedLocationsResponse(
+    IReadOnlyList<LocationListItemDto> Items,
+    long TotalCount,
+    int PageNumber,
+    int PageSize,
+    int TotalPages);
+
 public record GetLocationTopResponse
 {
     public Guid LocationId { get; init; }
