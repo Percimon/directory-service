@@ -26,7 +26,6 @@ export const locationsApi = {
       "/locations",
       {
         params: request,
-        signal,
       },
     );
 

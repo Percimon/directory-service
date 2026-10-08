@@ -41,20 +41,7 @@ public class DepartmentsController : Controller
             request.SortDirection,
             request.Search);
 
-        var result = await handler.Handle(query, cancellationToken);
-        if (result.IsFailure)
-        {
-            return Result.Failure<PaginatedDepartmentsResponse, Error>(result.Error);
-        }
-
-        var page = result.Value;
-        return Result.Success<PaginatedDepartmentsResponse, Error>(
-            new PaginatedDepartmentsResponse(
-                page.Items,
-                page.TotalCount,
-                page.Page,
-                page.PageSize,
-                (int)Math.Ceiling((double)page.TotalCount / page.PageSize)));
+        return await handler.Handle(query, cancellationToken);
     }
 
     [HttpGet("tree")]

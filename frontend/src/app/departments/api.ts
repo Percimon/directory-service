@@ -26,7 +26,6 @@ export const departmentsApi = {
       "/departments",
       {
         params: request,
-        signal,
       },
     );
 
