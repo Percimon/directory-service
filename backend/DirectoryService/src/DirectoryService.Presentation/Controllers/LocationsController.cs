@@ -15,7 +15,7 @@ namespace DirectoryService.Presentation.Controllers;
 public class LocationsController : Controller
 {
     [HttpGet]
-    public async Task<EndpointResult<PagedList<LocationListItemDto>>> Get(
+    public async Task<EndpointResult<PaginatedLocationsResponse>> Get(
         [FromQuery] GetLocationsRequest request,
         [FromServices] GetLocationsHandler handler,
         CancellationToken cancellationToken = default)

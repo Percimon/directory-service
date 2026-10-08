@@ -62,7 +62,7 @@ public sealed class GetDepartmentsQueryValidator : AbstractValidator<GetDepartme
     }
 }
 
-public sealed class GetDepartmentsHandler : IQueryHandler<PagedList<DepartmentListItemDto>, GetDepartmentsQuery>
+public sealed class GetDepartmentsHandler : IQueryHandler<PaginatedDepartmentsResponse, GetDepartmentsQuery>
 {
     private readonly IReadDbContext _readDbContext;
     private readonly IValidator<GetDepartmentsQuery> _validator;
@@ -78,7 +78,7 @@ public sealed class GetDepartmentsHandler : IQueryHandler<PagedList<DepartmentLi
         _logger = logger;
     }
 
-    public async Task<Result<PagedList<DepartmentListItemDto>, Error>> Handle(
+    public async Task<Result<PaginatedDepartmentsResponse, Error>> Handle(
         GetDepartmentsQuery request,
         CancellationToken cancellationToken)
     {
@@ -126,12 +126,11 @@ public sealed class GetDepartmentsHandler : IQueryHandler<PagedList<DepartmentLi
 
         var totalCount = await query.CountAsync(cancellationToken);
 
-        return new PagedList<DepartmentListItemDto>
-        {
-            Items = departments,
-            Page = request.Page,
-            PageSize = request.PageSize,
-            TotalCount = totalCount,
-        };
+        return new PaginatedDepartmentsResponse(
+            departments,
+            totalCount,
+            request.Page,
+            request.PageSize,
+            (int)Math.Ceiling(totalCount / (double)request.PageSize));
     }
 }
