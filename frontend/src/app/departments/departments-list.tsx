@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/shared/components/ui/button";
 import { Spinner } from "@/shared/components/ui/spinner";
-import { departmentsApi } from "./api";
+import { departmentsApi } from "../../entities/departments/api";
 
 export function DepartmentsList() {
   const queryClient = useQueryClient();
@@ -51,9 +51,7 @@ export function DepartmentsList() {
           {departments.items.map((department) => (
             <li className="rounded-md border p-3" key={department.id}>
               <p className="font-medium">{department.name}</p>
-              <p className="text-sm text-muted-foreground">
-                {department.path}
-              </p>
+              <p className="text-sm text-muted-foreground">{department.path}</p>
               <p className="text-sm text-muted-foreground">
                 Slug: {department.slug}
               </p>

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { Spinner } from "@/shared/components/ui/spinner";
-import { locationsApi } from "./api";
+import { locationsApi } from "../../entities/locations/api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function LocationsList() {
