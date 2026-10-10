@@ -3,6 +3,13 @@
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/shared/components/ui/button";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/shared/components/ui/pagination";
 import { Spinner } from "@/shared/components/ui/spinner";
 import { departmentsApi } from "../../entities/departments/api";
 
@@ -59,23 +66,53 @@ export function DepartmentsList() {
           ))}
         </ul>
       )}
-      <div className="flex items-center gap-3">
-        <Button
-          disabled={page <= 1}
-          onClick={() => setPage((currentPage) => currentPage - 1)}
-        >
-          Назад
-        </Button>
-        <span>
-          Страница {departments.pageNumber} из {departments.totalPages}
-        </span>
-        <Button
-          disabled={page >= departments.totalPages}
-          onClick={() => setPage((currentPage) => currentPage + 1)}
-        >
-          Далее
-        </Button>
-      </div>
+      <Pagination aria-label="Навигация по страницам">
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              aria-label="Предыдущая страница"
+              aria-disabled={page <= 1}
+              className={page <= 1 ? "pointer-events-none opacity-50" : undefined}
+              href="#"
+              tabIndex={page <= 1 ? -1 : undefined}
+              onClick={(event) => {
+                event.preventDefault();
+                if (page <= 1) return;
+                setPage((currentPage) => Math.max(1, currentPage - 1));
+              }}
+            >
+              Назад
+            </PaginationPrevious>
+          </PaginationItem>
+          <PaginationItem>
+            <span className="px-3 text-sm">
+              Страница {departments.pageNumber} из {departments.totalPages}
+            </span>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationNext
+              aria-label="Следующая страница"
+              aria-disabled={page >= departments.totalPages}
+              className={
+                page >= departments.totalPages
+                  ? "pointer-events-none opacity-50"
+                  : undefined
+              }
+              href="#"
+              tabIndex={page >= departments.totalPages ? -1 : undefined}
+              onClick={(event) => {
+                event.preventDefault();
+                if (page >= departments.totalPages) return;
+                setPage((currentPage) =>
+                  Math.min(departments.totalPages, currentPage + 1),
+                );
+              }}
+            >
+              Далее
+            </PaginationNext>
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </section>
   );
 }
