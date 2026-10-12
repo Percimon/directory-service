@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/shared/components/ui/button";
 import {
   Pagination,
@@ -10,23 +11,22 @@ import {
   PaginationPrevious,
 } from "@/shared/components/ui/pagination";
 import { Spinner } from "@/shared/components/ui/spinner";
-import { locationsApi } from "../../entities/locations/api";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { departmentsApi } from "../../../entities/departments/api";
 
-export function LocationsList() {
+export function DepartmentsList() {
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
   const {
-    data: locations,
+    data: departments,
     isPending,
     isError,
     error,
   } = useQuery({
-    queryKey: ["locations", { page, pageSize }],
+    queryKey: ["departments", { page, pageSize }],
     queryFn: ({ signal }) =>
-      locationsApi.getLocations({ page, pageSize }, signal),
+      departmentsApi.getDepartments({ page, pageSize }, signal),
   });
 
   if (isPending) {
@@ -39,7 +39,7 @@ export function LocationsList() {
         <p role="alert">Ошибка: {error.message}</p>
         <Button
           onClick={() => {
-            queryClient.invalidateQueries({ queryKey: ["locations"] });
+            queryClient.invalidateQueries({ queryKey: ["departments"] });
           }}
         >
           Попробовать снова
@@ -50,26 +50,17 @@ export function LocationsList() {
 
   return (
     <section className="space-y-4">
-      <h1 className="text-xl font-semibold">Локации</h1>
-      {locations.items.length === 0 ? (
-        <p>Локации не найдены.</p>
+      <h1 className="text-xl font-semibold">Подразделения</h1>
+      {departments.items.length === 0 ? (
+        <p>Подразделения не найдены.</p>
       ) : (
         <ul className="space-y-2">
-          {locations.items.map((location) => (
-            <li className="rounded-md border p-3" key={location.id}>
-              <p className="font-medium">{location.name}</p>
+          {departments.items.map((department) => (
+            <li className="rounded-md border p-3" key={department.id}>
+              <p className="font-medium">{department.name}</p>
+              <p className="text-sm text-muted-foreground">{department.path}</p>
               <p className="text-sm text-muted-foreground">
-                {[
-                  location.city,
-                  location.district,
-                  location.street,
-                  location.structure,
-                ]
-                  .filter(Boolean)
-                  .join(", ")}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Подразделений: {location.departmentsCount}
+                Slug: {department.slug}
               </p>
             </li>
           ))}
@@ -81,7 +72,9 @@ export function LocationsList() {
             <PaginationPrevious
               aria-label="Предыдущая страница"
               aria-disabled={page <= 1}
-              className={page <= 1 ? "pointer-events-none opacity-50" : undefined}
+              className={
+                page <= 1 ? "pointer-events-none opacity-50" : undefined
+              }
               href="#"
               tabIndex={page <= 1 ? -1 : undefined}
               onClick={(event) => {
@@ -95,25 +88,25 @@ export function LocationsList() {
           </PaginationItem>
           <PaginationItem>
             <span className="px-3 text-sm">
-              Страница {locations.pageNumber} из {locations.totalPages}
+              Страница {departments.pageNumber} из {departments.totalPages}
             </span>
           </PaginationItem>
           <PaginationItem>
             <PaginationNext
               aria-label="Следующая страница"
-              aria-disabled={page >= locations.totalPages}
+              aria-disabled={page >= departments.totalPages}
               className={
-                page >= locations.totalPages
+                page >= departments.totalPages
                   ? "pointer-events-none opacity-50"
                   : undefined
               }
               href="#"
-              tabIndex={page >= locations.totalPages ? -1 : undefined}
+              tabIndex={page >= departments.totalPages ? -1 : undefined}
               onClick={(event) => {
                 event.preventDefault();
-                if (page >= locations.totalPages) return;
+                if (page >= departments.totalPages) return;
                 setPage((currentPage) =>
-                  Math.min(locations.totalPages, currentPage + 1),
+                  Math.min(departments.totalPages, currentPage + 1),
                 );
               }}
             >

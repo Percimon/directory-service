@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { DepartmentsList } from "./departments-list";
+import { DepartmentsList } from "../../features/departments/departments-pagination";
 
 export const metadata: Metadata = {
   title: "Отделы",

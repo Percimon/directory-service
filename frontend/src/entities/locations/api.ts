@@ -2,10 +2,11 @@ import { apiClient } from "@/shared/api/axios-instance";
 import { unwrapEnvelope } from "@/shared/api/envelope";
 import type { Envelope } from "@/shared/api/envelope";
 import type { Location } from "./types";
+import { queryOptions } from "@tanstack/react-query";
 
 export type GetLocationsRequest = {
   search?: string;
-  page: number;
+  pageNumber: number;
   pageSize: number;
 };
 
@@ -46,3 +47,12 @@ export const locationsApi = {
     return result;
   },
 };
+
+export const locationsQueryOptions = {
+  baseKey: "lessons",
+  getLocationsOptions: ({pageNumber, pageSize} : {pageNumber: number, pageSize: number}) => {
+    return queryOptions({
+    queryKey: [locationsQueryOptions.baseKey, { pageNumber, pageSize }],
+    queryFn: () => locationsApi.getLocations({ pageNumber: pageNumber, pageSize: pageSize }),
+  }
+}
