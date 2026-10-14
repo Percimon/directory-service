@@ -1,6 +1,6 @@
 import { apiClient } from "@/shared/api/axios-instance";
 import type { Envelope } from "@/shared/api/envelope";
-import type { CreateLocationRequest, GetLocationsParams, GetLocationsResponse, Location } from "./types";
+import type { CreateLocationRequest, GetLocationsParams, GetLocationsResponse } from "./types";
 import { queryOptions } from "@tanstack/react-query";
 
 export const locationsApi = {
@@ -29,6 +29,6 @@ export const locationsQueryOptions = {
   getLocationsOptions: ({pageNumber, pageSize} : {pageNumber: number, pageSize: number}) => {
     return queryOptions({
     queryKey: [locationsQueryOptions.baseKey, { pageNumber, pageSize }],
-    queryFn: () => locationsApi.getLocations({ pageNumber: pageNumber, pageSize: pageSize }),
+    queryFn: () => locationsApi.getLocations({ page: pageNumber, pageSize: pageSize }),
   }
 }
