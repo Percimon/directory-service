@@ -2,14 +2,9 @@
 
 // import { Metadata } from "next";
 import { LocationsList } from "../../features/locations/locations-pagination";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-} from "@/shared/components/ui/dialog";
 import { useState } from "react";
 import { Button } from "@/shared/components/ui/button";
+import CreateLocationDialog from "@/features/locations/create-location-dialog";
 
 // export const metadata: Metadata = {
 //   title: "Локации",
@@ -21,17 +16,8 @@ export default function LocationsPage() {
 
   return (
     <div>
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
-          <DialogHeader>Создание локации</DialogHeader>
-          <DialogDescription>
-            Заполните форму для создания локации
-          </DialogDescription>
-        </DialogContent>
-      </Dialog>
-
       <Button onClick={() => setOpen(true)}>Создать локацию</Button>
-
+      <CreateLocationDialog open={open} onOpenChange={setOpen} />
       <LocationsList />
     </div>
   );

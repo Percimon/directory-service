@@ -1,25 +1,11 @@
 import { apiClient } from "@/shared/api/axios-instance";
 import { unwrapEnvelope } from "@/shared/api/envelope";
 import type { Envelope } from "@/shared/api/envelope";
-import type { Department } from "./types";
-
-export type GetDepartmentsRequest = {
-  page: number;
-  pageSize: number;
-  search?: string;
-};
-
-export type GetDepartmentsResponse = {
-  items: Department[];
-  totalCount: number;
-  pageNumber: number;
-  pageSize: number;
-  totalPages: number;
-};
+import { GetDepartmentsParams, GetDepartmentsResponse } from "./types";
 
 export const departmentsApi = {
   getDepartments: async (
-    request: GetDepartmentsRequest,
+    request: GetDepartmentsParams,
     signal?: AbortSignal,
   ): Promise<GetDepartmentsResponse> => {
     const response = await apiClient.get<Envelope<GetDepartmentsResponse>>(

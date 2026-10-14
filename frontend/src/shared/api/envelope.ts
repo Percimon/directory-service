@@ -23,23 +23,3 @@ type ErrorType =
   | "conflict"
   | "authorization"
   | "authentication";
-
-export function unwrapEnvelope<T>(
-  envelope: Envelope<T>,
-  fallbackMessage: string,
-): T {
-  if (envelope.isError) {
-    const message = envelope.error?.messages
-      .map(({ message }) => message)
-      .filter(Boolean)
-      .join(", ");
-
-    throw new Error(message || fallbackMessage);
-  }
-
-  if (envelope.result === null || envelope.result === undefined) {
-    throw new Error("Invalid response format");
-  }
-
-  return envelope.result;
-}

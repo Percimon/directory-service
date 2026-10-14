@@ -1,55 +1,31 @@
 import { apiClient } from "@/shared/api/axios-instance";
-import { unwrapEnvelope } from "@/shared/api/envelope";
 import type { Envelope } from "@/shared/api/envelope";
-import type { Location } from "./types";
+import type { CreateLocationRequest, GetLocationsParams, GetLocationsResponse, Location } from "./types";
 import { queryOptions } from "@tanstack/react-query";
 
-export type GetLocationsRequest = {
-  search?: string;
-  pageNumber: number;
-  pageSize: number;
-};
-
-export type GetLocationsResponse = {
-  items: Location[];
-  totalCount: number;
-  pageNumber: number;
-  pageSize: number;
-  totalPages: number;
-};
-
 export const locationsApi = {
-  getLocations: async (
-    request: GetLocationsRequest,
-    signal?: AbortSignal,
-  ): Promise<GetLocationsResponse> => {
-    const response = await apiClient.get<Envelope<GetLocationsResponse>>(
+  getLocations: async (params: GetLocationsParams) : Promise<Envelope<GetLocationsResponse>> => {
+    const res = await apiClient.get<Envelope<GetLocationsResponse>>(
       "/locations",
       {
-        params: request,
+        params: params,
       },
     );
 
-    const result = unwrapEnvelope(
-      response.data,
-      "Не удалось загрузить локации",
-    );
-    if (
-      !Array.isArray(result.items) ||
-      typeof result.totalCount !== "number" ||
-      typeof result.pageNumber !== "number" ||
-      typeof result.pageSize !== "number" ||
-      typeof result.totalPages !== "number"
-    ) {
-      throw new Error("Сервер вернул некорректный список локаций");
-    }
-
-    return result;
+    return res.data;
   },
+
+  createLocation: async (request: CreateLocationRequest  ) : Promise<Envelope<string>> =>{
+    const response = await apiClient.post<Envelope<string>>(
+      "/locations", request);
+
+    return response.data;
+  }
 };
 
 export const locationsQueryOptions = {
   baseKey: "lessons",
+
   getLocationsOptions: ({pageNumber, pageSize} : {pageNumber: number, pageSize: number}) => {
     return queryOptions({
     queryKey: [locationsQueryOptions.baseKey, { pageNumber, pageSize }],

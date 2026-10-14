@@ -1,19 +1,18 @@
 "use client";
 
-import { QueryClientProvider } from "@tanstack/react-query";
 import { SidebarProvider } from "@/shared/components/ui/sidebar";
-import { queryClient } from "@/shared/api/query-client";
 import AppSidebar from "../sidebar/app-sidebar";
 import Header from "../header/header";
 import { Toaster } from "@/shared/components/ui/sonner";
+import AppProvider from "@/shared/providers/app-provider";
 
-export default function Layout({
+export default function AppLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <QueryClientProvider client={queryClient}>
+    <AppProvider>
       <SidebarProvider>
         <div className="flex h-screen w-full">
           <AppSidebar />
@@ -24,6 +23,6 @@ export default function Layout({
           </div>
         </div>
       </SidebarProvider>
-    </QueryClientProvider>
+    </AppProvider>
   );
 }
