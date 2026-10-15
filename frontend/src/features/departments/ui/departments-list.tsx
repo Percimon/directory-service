@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/shared/components/ui/button";
 import {
   Pagination,
@@ -11,39 +10,22 @@ import {
   PaginationPrevious,
 } from "@/shared/components/ui/pagination";
 import { Spinner } from "@/shared/components/ui/spinner";
-import { departmentsApi } from "../../../entities/departments/api";
+import { UseDepartmentsList } from "../model/use-departments-list";
 
 export function DepartmentsList() {
-  const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
-  const {
-    data: departments,
-    isPending,
-    isError,
-    error,
-  } = useQuery({
-    queryKey: ["departments", { page, pageSize }],
-    queryFn: ({ signal }) =>
-      departmentsApi.getDepartments({ page, pageSize }, signal),
-  });
-
+  const { data, isPending, error } = UseDepartmentsList(page, pageSize);
+  const departments = data || { items: [], pageNumber: 1, totalPages: 1 };
   if (isPending) {
     return <Spinner />;
   }
 
-  if (isError) {
+  if (error) {
     return (
       <div className="space-y-3">
         <p role="alert">Ошибка: {error.message}</p>
-        <Button
-          onClick={() => {
-            queryClient.invalidateQueries({ queryKey: ["departments"] });
-          }}
-        >
-          Попробовать снова
-        </Button>
       </div>
     );
   }

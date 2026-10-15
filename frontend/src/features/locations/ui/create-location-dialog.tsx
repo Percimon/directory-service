@@ -1,11 +1,11 @@
-import { queryClient } from "@/shared/api/query-client";
+"use client";
+
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
 } from "@/shared/components/ui/dialog";
-import { useQueryClient } from "@tanstack/react-query";
 
 type CreateLocationFormProps = {
   open: boolean;

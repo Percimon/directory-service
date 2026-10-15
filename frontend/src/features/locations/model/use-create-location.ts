@@ -1,30 +1,22 @@
 import { locationsApi } from "@/entities/locations/api";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
-export default function useCreateLocation({
-  name,
-  city,
-  district,
-  street,
-  structure,
-  timeZone,
-}: {
-  name: string;
-  city: string;
-  district: string;
-  street: string;
-  structure: string;
-  timeZone: string;
-}) {
+export function useCreateLocation() {
   const queryClient = useQueryClient();
 
-  const [createLocation, isPending, error] = locationsApi.createLocation({
-    name,
-    city,
-    district,
-    street,
-    structure,
-    timeZone,
+  const mutation = useMutation({
+    mutationFn: locationsApi.createLocation,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["locations"] });
+    },
+    onError: (error) => {
+      toast.error(`Failed to create location: ${error}`);
+    },
   });
-  return;
+
+  return {
+    createLocation: mutation.mutateAsync,
+    isPending: mutation.isPending,
+  };
 }

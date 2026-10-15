@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/shared/components/ui/button";
 import {
   Pagination,
   PaginationContent,
@@ -10,16 +9,17 @@ import {
   PaginationPrevious,
 } from "@/shared/components/ui/pagination";
 import { Spinner } from "@/shared/components/ui/spinner";
-import { useLocationsList } from "./model/use-locations-list";
+import { useLocationsList } from "../model/use-locations-list";
+import { Button } from "@/shared/components/ui/button";
+import CreateLocationDialog from "./create-location-dialog";
 
 export function LocationsList() {
   const [pageNumber, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const { locations, totalPages, totalCount, isPending, error } =
-    useLocationsList({
-      pageNumber: pageNumber,
-      pageSize: pageSize,
-    });
+  const { data, isPending, error } = useLocationsList(pageNumber, pageSize);
+  const locations = data?.items || [];
+  const totalPages = data?.totalPages || 0;
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
   if (isPending) {
     return <Spinner />;
@@ -36,11 +36,16 @@ export function LocationsList() {
   return (
     <section className="space-y-4">
       <h1 className="text-xl font-semibold">Локации</h1>
-      {locations?.length === 0 ? (
+
+      <Button onClick={() => setIsCreateDialogOpen(true)}>
+        Создать локацию
+      </Button>
+
+      {locations.length === 0 ? (
         <p>Локации не найдены.</p>
       ) : (
         <ul className="space-y-2">
-          {locations?.map((location) => (
+          {locations.map((location) => (
             <li className="rounded-md border p-3" key={location.id}>
               <p className="font-medium">{location.name}</p>
               <p className="text-sm text-muted-foreground">
@@ -111,6 +116,11 @@ export function LocationsList() {
           )}
         </PaginationContent>
       </Pagination>
+
+      <CreateLocationDialog
+        open={isCreateDialogOpen}
+        onOpenChange={setIsCreateDialogOpen}
+      />
     </section>
   );
 }
