@@ -1,5 +1,5 @@
+import { DepartmentsList } from "@/features/departments";
 import { Metadata } from "next";
-import { DepartmentsList } from "./departments-list";
 
 export const metadata: Metadata = {
   title: "Отделы",
