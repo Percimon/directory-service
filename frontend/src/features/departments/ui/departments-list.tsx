@@ -17,7 +17,10 @@ export function DepartmentsList() {
   const pageSize = 10;
 
   const { data, isPending, error } = UseDepartmentsList(page, pageSize);
-  const departments = data || { items: [], pageNumber: 1, totalPages: 1 };
+  const departments = data?.items;
+  const totalPages = data?.totalPages;
+  const pageNumber = data?.page;
+
   if (isPending) {
     return <Spinner />;
   }
@@ -33,11 +36,11 @@ export function DepartmentsList() {
   return (
     <section className="space-y-4">
       <h1 className="text-xl font-semibold">Подразделения</h1>
-      {departments.items.length === 0 ? (
+      {departments?.length === 0 ? (
         <p>Подразделения не найдены.</p>
       ) : (
         <ul className="space-y-2">
-          {departments.items.map((department) => (
+          {departments?.map((department) => (
             <li className="rounded-md border p-3" key={department.id}>
               <p className="font-medium">{department.name}</p>
               <p className="text-sm text-muted-foreground">{department.path}</p>
@@ -70,26 +73,24 @@ export function DepartmentsList() {
           </PaginationItem>
           <PaginationItem>
             <span className="px-3 text-sm">
-              Страница {departments.pageNumber} из {departments.totalPages}
+              Страница {pageNumber} из {totalPages}
             </span>
           </PaginationItem>
           <PaginationItem>
             <PaginationNext
               aria-label="Следующая страница"
-              aria-disabled={page >= departments.totalPages}
+              aria-disabled={page >= totalPages}
               className={
-                page >= departments.totalPages
+                page >= totalPages
                   ? "pointer-events-none opacity-50"
                   : undefined
               }
               href="#"
-              tabIndex={page >= departments.totalPages ? -1 : undefined}
+              tabIndex={page >= totalPages ? -1 : undefined}
               onClick={(event) => {
                 event.preventDefault();
-                if (page >= departments.totalPages) return;
-                setPage((currentPage) =>
-                  Math.min(departments.totalPages, currentPage + 1),
-                );
+                if (page >= totalPages) return;
+                setPage((currentPage) => Math.min(totalPages, currentPage + 1));
               }}
             >
               Далее

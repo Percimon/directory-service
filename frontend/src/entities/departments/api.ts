@@ -4,14 +4,15 @@ import { GetDepartmentsParams, GetDepartmentsResponse } from "./types";
 
 export const departmentsApi = {
   getDepartments: async (
-    request: GetDepartmentsParams,
+    params: GetDepartmentsParams,
   ): Promise<Envelope<GetDepartmentsResponse>> => {
-    const response = await apiClient.get<Envelope<GetDepartmentsResponse>>(
+    const res = await apiClient.get<Envelope<GetDepartmentsResponse>>(
       "/departments",
       {
-        params: request,
+        params: params,
       },
     );
-    return response.data;
+
+    return res.data;
   },
 };

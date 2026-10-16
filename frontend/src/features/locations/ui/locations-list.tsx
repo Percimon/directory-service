@@ -25,10 +25,10 @@ export function LocationsList() {
     return <Spinner />;
   }
 
-  if (!error) {
+  if (error) {
     return (
       <div className="space-y-3">
-        <p role="alert">Ошибка: {error}</p>
+        <p role="alert">Ошибка: {error.message}</p>
       </div>
     );
   }
