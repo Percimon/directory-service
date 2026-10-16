@@ -4,8 +4,12 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
+  DialogTitle,
 } from "@/shared/components/ui/dialog";
+import { Button } from "@/shared/components/ui/button";
+import { Input } from "@/shared/components/ui/input";
 import { LocationFormData, locationFormSchema } from "../model/schemas";
 import { useCreateLocation } from "../model/use-create-location";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,7 +17,7 @@ import { useForm } from "react-hook-form";
 
 type CreateLocationFormProps = {
   open: boolean;
-  onOpenChange: (open: true) => void;
+  onOpenChange: (open: boolean) => void;
 };
 
 const defaultValues: LocationFormData = {
@@ -25,11 +29,20 @@ const defaultValues: LocationFormData = {
   timeZone: "Europe/Moscow",
 };
 
+const fields = [
+  { name: "name", label: "Название" },
+  { name: "city", label: "Город" },
+  { name: "district", label: "Район" },
+  { name: "street", label: "Улица" },
+  { name: "structure", label: "Строение" },
+  { name: "timeZone", label: "Часовой пояс" },
+] as const;
+
 export default function CreateLocationDialog({
   open,
   onOpenChange,
 }: CreateLocationFormProps) {
-  const { createLocation } = useCreateLocation();
+  const { createLocation, isPending } = useCreateLocation();
 
   const {
     register,
@@ -41,14 +54,15 @@ export default function CreateLocationDialog({
     resolver: zodResolver(locationFormSchema),
   });
 
-  const handleClose = () => {
-    reset(defaultValues);
-    onOpenChange(false);
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) {
+      reset(defaultValues);
+    }
+    onOpenChange(nextOpen);
   };
 
-  const onSubmit = (data: LocationFormData) => {
-    handleClose();
-    void (async () => {
+  const onSubmit = async (data: LocationFormData) => {
+    try {
       await createLocation({
         name: data.name,
         city: data.city,
@@ -56,47 +70,59 @@ export default function CreateLocationDialog({
         street: data.street,
         structure: data.structure,
         timeZone: data.timeZone,
-      }).catch(() => undefined);
-    })();
+      });
+      handleOpenChange(false);
+    } catch {
+      // The mutation reports the request error with a toast.
+    }
   };
 
   return (
-    <>
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent>
-          <DialogHeader>Создание локации</DialogHeader>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto sm:max-w-xl">
+        <DialogHeader>
+          <DialogTitle>Создание локации</DialogTitle>
           <DialogDescription>
             Заполните форму для создания локации
           </DialogDescription>
-          <form className="grid space-y-4" onSubmit={handleSubmit(onSubmit)}>
-            <div>
-              <label htmlFor="name">Название</label>
-              <input id="name" type="text" {...register("name")} />
-            </div>
-            <div>
-              <label htmlFor="city">Город</label>
-              <input id="city" type="text" {...register("city")} />
-            </div>
-            <div>
-              <label htmlFor="district">Район</label>
-              <input id="district" type="text" {...register("district")} />
-            </div>
-            <div>
-              <label htmlFor="street">Улица</label>
-              <input id="street" type="text" {...register("street")} />
-            </div>
-            <div>
-              <label htmlFor="structure">Строение</label>
-              <input id="structure" type="text" {...register("structure")} />
-            </div>
-            <div>
-              <label htmlFor="timeZone">Часовой пояс</label>
-              <input id="timeZone" type="text" {...register("timeZone")} />
-            </div>
-            <button type="submit">Создать</button>
-          </form>
-        </DialogContent>
-      </Dialog>
-    </>
+        </DialogHeader>
+        <form className="space-y-5" onSubmit={handleSubmit(onSubmit)} noValidate>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {fields.map(({ name, label }) => {
+              const error = errors[name];
+              const errorId = `${name}-error`;
+
+              return (
+                <div className="space-y-2" key={name}>
+                  <label
+                    className="text-sm font-medium leading-none"
+                    htmlFor={name}
+                  >
+                    {label}
+                  </label>
+                  <Input
+                    id={name}
+                    type="text"
+                    aria-invalid={Boolean(error)}
+                    aria-describedby={error ? errorId : undefined}
+                    {...register(name)}
+                  />
+                  {error?.message && (
+                    <p className="text-sm text-destructive" id={errorId}>
+                      {error.message}
+                    </p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          <DialogFooter>
+            <Button type="submit" disabled={isPending}>
+              {isPending ? "Создание..." : "Создать"}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }

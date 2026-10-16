@@ -34,7 +34,7 @@ export const locationsApi = {
 };
 
 export const locationsQueryOptions = {
-  baseKey: "lessons",
+  baseKey: "locations",
 
   getLocationsOptions: (page: number, pageSize: number) => {
     return queryOptions({

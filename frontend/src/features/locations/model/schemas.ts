@@ -3,28 +3,28 @@ import { z } from "zod";
 export const locationFormSchema = z.object({
   name: z
     .string()
-    .min(1, { message: "Name is required" })
-    .max(100, { message: "Name must be at most 100 characters" }),
+    .min(1, { message: "Укажите название" })
+    .max(100, { message: "Название не должно превышать 100 символов" }),
   city: z
     .string()
-    .min(1, { message: "City is required" })
-    .max(100, { message: "City must be at most 100 characters" }),
+    .min(1, { message: "Укажите город" })
+    .max(100, { message: "Город не должен превышать 100 символов" }),
   district: z
     .string()
-    .min(1, { message: "District is required" })
-    .max(100, { message: "District must be at most 100 characters" }),
+    .min(1, { message: "Укажите район" })
+    .max(100, { message: "Район не должен превышать 100 символов" }),
   street: z
     .string()
-    .min(1, { message: "Street is required" })
-    .max(100, { message: "Street must be at most 100 characters" }),
+    .min(1, { message: "Укажите улицу" })
+    .max(100, { message: "Улица не должна превышать 100 символов" }),
   structure: z
     .string()
-    .min(1, { message: "Structure is required" })
-    .max(100, { message: "Structure must be at most 100 characters" }),
+    .min(1, { message: "Укажите строение" })
+    .max(100, { message: "Строение не должно превышать 100 символов" }),
   timeZone: z
     .string()
-    .min(1, { message: "Time zone is required" })
-    .max(100, { message: "Time zone must be at most 100 characters" }),
+    .min(1, { message: "Укажите часовой пояс" })
+    .max(100, { message: "Часовой пояс не должен превышать 100 символов" }),
 });
 
 export type LocationFormData = z.infer<typeof locationFormSchema>;
