@@ -13,6 +13,13 @@ export const departmentsApi = {
       },
     );
 
+    if (res.data.isError) {
+      const message =
+        res.data.error?.messages?.map((m) => m.message).join(", ") ||
+        "Не удалось получить отделы";
+      throw new Error(message);
+    }
+
     return res.data;
   },
 };

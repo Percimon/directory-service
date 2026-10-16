@@ -18,6 +18,13 @@ export const locationsApi = {
       },
     );
 
+    if (res.data.isError) {
+      const message =
+        res.data.error?.messages?.map((m) => m.message).join(", ") ||
+        "Не удалось получить локации";
+      throw new Error(message);
+    }
+
     return res.data;
   },
 
@@ -28,6 +35,13 @@ export const locationsApi = {
       "/locations",
       request,
     );
+
+    if (response.data.isError) {
+      const message =
+        response.data.error?.messages?.map((m) => m.message).join(", ") ||
+        "Не удалось создать локацию";
+      throw new Error(message);
+    }
 
     return response.data;
   },
