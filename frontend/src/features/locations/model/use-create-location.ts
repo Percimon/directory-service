@@ -9,6 +9,7 @@ export function useCreateLocation() {
     mutationFn: locationsApi.createLocation,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["locations"] });
+      toast.success("Location created successfully");
     },
     onError: (error) => {
       toast.error(`Failed to create location: ${error}`);
