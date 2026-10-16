@@ -15,7 +15,7 @@ export type GetDepartmentsParams = {
 export type GetDepartmentsResponse = {
   items: Department[];
   totalCount: number;
-  page: number;
+  pageNumber: number;
   pageSize: number;
   totalPages: number;
 };

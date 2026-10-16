@@ -10,16 +10,16 @@ import {
   PaginationPrevious,
 } from "@/shared/components/ui/pagination";
 import { Spinner } from "@/shared/components/ui/spinner";
-import { UseDepartmentsList } from "../model/use-departments-list";
+import { useDepartmentsList } from "../model/use-departments-list";
 
 export function DepartmentsList() {
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
-  const { data, isPending, error } = UseDepartmentsList(page, pageSize);
+  const { data, isPending, error } = useDepartmentsList(page, pageSize);
   const departments = data?.items;
-  const totalPages = data?.totalPages;
-  const pageNumber = data?.page;
+  const totalPages = data?.totalPages ?? 1;
+  const pageNumber = data?.pageNumber;
 
   if (isPending) {
     return <Spinner />;
